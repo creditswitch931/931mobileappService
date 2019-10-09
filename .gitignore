@@ -1,0 +1,16 @@
+
+tmp/
+*.ini
+*.cfg
+*.pyc 
+logs/
+*.log
+__pycache__
+
+alembic.ini
+alembic/README
+alembic/env.py
+alembic/script.py.mako
+docs/
+
+*.txt
