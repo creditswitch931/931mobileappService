@@ -16,7 +16,7 @@ class Response:
 
 
     def add_params(self, key, value):
-        self.params['data'].append({key, value})
+        self.params['data'].append({key: value})
 
 
     def add_message(self, message):
