@@ -1,7 +1,7 @@
 
 from flask import (Blueprint, url_for, request, render_template)
 
-from .resp_handler import Response, RequestHandle
+from .resp_handler import Response, RequestHandler
 from applib.lib import helper  as h
 
 
@@ -13,13 +13,13 @@ app = Blueprint('customers', __name__, url_prefix='/api')
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
-@app.route("/login", methods=['POST', 'GET'])
+@app.route("/login", methods=['POST'])
 def access_login():
     """
     Login Function
     ==============
 
-    Functon to handle login and authentication for the clients. 
+    Function to handle login and authentication for the clients. 
     the below information describes the request and response data for this view.
     
     Request Data:
@@ -70,19 +70,53 @@ def access_login():
     
     url = h.get_config("API", "login")
 
-    rh = RequestHandle(url, method=1, data=content)
+    rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
 
+
+
     resp.api_response_format(retv[1])        
-    resp.add_param("menu", [])
-    resp.add_param("transactions", [])
-    resp.add_param("balance", [])
+    resp.add_params("menu", [])
+    resp.add_params("transactions", [])
+    resp.add_params("balance", [])
     
     return resp.get_body()
 
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
+
+
+@app.route("/register", methods=['POST'])
+def register():
+    content = h.request_data(request)
+    resp = Response()
+    
+    url = h.get_config("API", "register")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
+    resp.api_response_format(retv[1])        
+    
+    return resp.get_body()
+
+    
+
+
+# {
+#     "statusCode": "00",
+#     "statusDescription": "Registration Successful",
+#     "mac_address": "1292999277",
+#     "transaction_ref": "$2y$10$O0XIV8TX7VxAFQjDAhMGO.yhD5b1q..Ub.xSuHcXnDjqQJNIpooqC"
+# }
+
+# {
+# "full_name":"Mr Gonzalo higuain","email":"g.higuain@yahoo.com","mac_address":"1292999277",
+# "password":"password","password_confirmation":"password","phone":"0708934525"
+# }
+
+
 
 @app.route("/errors")
 def store_logs():

@@ -16,7 +16,7 @@ class Response:
 
 
     def add_params(self, key, value):
-        self.params['data'].append({key, value})
+        self.params['data'].append({key: value})
 
 
     def add_message(self, message):
@@ -59,7 +59,7 @@ class Response:
 
 
 
-class RequestHandle:
+class RequestHandler:
 
     def __init__(self, url, method=0, data={}, headers={"content-type": "application/json"}):
 
