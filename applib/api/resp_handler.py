@@ -59,7 +59,7 @@ class Response:
 
 
 
-class RequestHandle:
+class RequestHandler:
 
     def __init__(self, url, method=0, data={}, headers={"content-type": "application/json"}):
 
