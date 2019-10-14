@@ -4,6 +4,8 @@ import requests
 import json
 import random
 from configobj import ConfigObj
+from applib.api.resp_handler import Response, RequestHandler, FormHandler
+
 
 
 def get_config(header, key=None, filename='config.ini'):
@@ -36,8 +38,9 @@ def merchant_details(login_id, public_key, private_key):
 	payload = {'loginId': login_id, 'key': public_key, 
 				'checksum': checksum_data} 
 
-	r = requests.post(request_url, data=payload) 
-	return r.json() 
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv 
 
 
 
@@ -50,8 +53,9 @@ def requery_transaction(login_id, public_key, service_id):
 	payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 
 				'serviceId': service_id}
 
-	r = requests.get(request_url, params=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 

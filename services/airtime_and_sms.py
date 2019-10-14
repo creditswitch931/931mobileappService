@@ -4,6 +4,7 @@ import requests
 import json
 import random
 from api_test import get_config, hash_data
+from applib.api.resp_handler import Response, RequestHandler, FormHandler
 
 
 
@@ -31,8 +32,9 @@ def airtime_vending(login_id, public_key, private_key, amount, recipient, provid
 	payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 
 				'amount': amount, 'recipient' : recipient , 'checksum': checksum_data} 
 
-	r = requests.post(request_url, data=payload) 
-	r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 
@@ -49,8 +51,9 @@ def send_sms(login_id, public_key, private_key, sender_id, msisdn, message_body)
 				'msisdn': msisdn, 'messageBody': message_body, 
 				'transactionRef': transaction_ref, 'checksum': checksum_data}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 

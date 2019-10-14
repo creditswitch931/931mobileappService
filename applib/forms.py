@@ -105,7 +105,8 @@ class Data(Form):
 
 
 class Startimes(Form):
-    smartcard_number = StringField('Enter smartcard number', [input_required(), number_check()])
+    smartcard_number = StringField('Enter smartcard number', 
+                                    [input_required(), number_check()])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
     # email = StringField('Email for receipt sending', [input_required(), Email()])

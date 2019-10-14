@@ -4,6 +4,7 @@ import requests
 import json
 import random
 from api_test import get_config, hash_data
+from applib.api.resp_handler import Response, RequestHandler, FormHandler
 
 
 
@@ -17,8 +18,12 @@ def startimes_validate(login_id, public_key, private_key, smart_card_code):
 	payload = {'loginId': login_id, 'key': public_key, 'smartCardCode': smart_card_code, 
 				'checksum': checksum_data}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
+
+	# r = requests.post(request_url, data=payload) 
+	# return r.json()
 
 
 def startimes_vending(login_id, public_key, private_key, smart_card_code, fee):
@@ -32,8 +37,9 @@ def startimes_vending(login_id, public_key, private_key, smart_card_code, fee):
 	payload = {'loginId': login_id, 'key': public_key, 'smartCardCode': smart_card_code, 
 				'fee': fee, 'transactionRef': transaction_ref, 'checksum': checksum_data}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 def multichoice_validate(login_id, public_key, private_key, customer_no, service_id):
@@ -46,8 +52,10 @@ def multichoice_validate(login_id, public_key, private_key, customer_no, service
 	payload = {'loginId': login_id, 'key': public_key, 'customerNo': customer_no, 
 				'serviceId': service_id, 'checksum': checksum_data}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
+
 
 
 def multichoice_fetch_product(login_id, public_key, service_id):
@@ -56,8 +64,10 @@ def multichoice_fetch_product(login_id, public_key, service_id):
 
 	payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
 
-	r = requests.post(request_url, data=payload)
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
+
 
 
 def multichoice_fetch_product_addons(login_id, public_key, service_id):
@@ -66,8 +76,10 @@ def multichoice_fetch_product_addons(login_id, public_key, service_id):
 
 	payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
+
 
 
 def multichoice_vending(login_id, public_key, private_key, customer_no, customer_name, service_id, amount, invoice_period):
@@ -92,8 +104,9 @@ def multichoice_vending(login_id, public_key, private_key, customer_no, customer
 				'customerNo': customer_no, 'customerName': customer_name, 
 				'productCodes': product_codes, 'amount': amount, 'invoicePeriod': invoice_period}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 

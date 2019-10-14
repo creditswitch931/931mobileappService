@@ -4,6 +4,7 @@ import requests
 import json
 import random
 from api_test import get_config, hash_data
+from applib.api.resp_handler import Response, RequestHandler, FormHandler
 
 
 def electricity_validate(login_id, public_key, private_key, customer_account_id, service_id):
@@ -16,8 +17,9 @@ def electricity_validate(login_id, public_key, private_key, customer_account_id,
 	payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
 				'serviceId': service_id, 'checksum': checksum_data}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 
@@ -35,36 +37,9 @@ def electricity_vending(login_id, public_key, private_key, customer_account_id, 
 				'serviceId': service_id, 'amount': amount, 'requestId': request_id, 'providerRef':'150144078049', 
 				'checksum': checksum_data}
 
-	r = requests.post(request_url, data=payload) 
-	return r.json()  
-
-
-
-def ikeja_prepaid_E01E(login_id, public_key, private_key, customer_account_id, service_id, amount):
-	request_id = random.randrange(10000000, 99999999)
-
-	checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
-	checksum_data = hash_data(checksum)
-
-	electricity_vending = get_config('url')
-	request_url = electricity_vending['electic_recharge']
-
-	payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
-				'serviceId': service_id, 'amount': amount, 'requestId': request_id, 
-				'checksum': checksum_data, 'providerRef':'150144078049',}
-
-# providerRef: to be generated from the validation response
-
-	electricity = electricity_validate(login_id, public_key, private_key, customer_account_id, service_id)
-
-	for key, value in electricity.items():
-		if key == 'details':
-			for key, items in value.items():
-				if key == 'details':
-					payload['customerDtNumber'] = items['customerDtNumber']
-			
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv 
 
 
 
@@ -91,8 +66,9 @@ def ikeja_prepaid_E01E(login_id, public_key, private_key, customer_account_id, s
 				if key == 'details':
 					payload['customerDtNumber'] = items['customerDtNumber']
 			
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 def eko_prepaid_E05E(login_id, public_key, private_key, customer_account_id, service_id, amount):
@@ -118,8 +94,9 @@ def eko_prepaid_E05E(login_id, public_key, private_key, customer_account_id, ser
 				if key == 'details':
 					payload['customerDtNumber'] = items['customerDtNumber']
 			
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
  
@@ -146,8 +123,9 @@ def ibadan_prepaid_E08E(login_id, public_key, private_key, customer_account_id, 
 				if key == 'details':
 					payload['customerDtNumber'] = items['customerDtNumber']
 			
-	r = requests.post(request_url, data=payload) 
-	return r.json()
+	rh = RequestHandler(url, method=1, data=payload)
+	retv = rh.send()
+	return retv
 
 
 

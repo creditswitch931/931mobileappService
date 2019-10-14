@@ -2,7 +2,7 @@
 import json 
 
 import requests as rq 
-
+import urllib
 
 class Response:
     """ 
@@ -76,6 +76,7 @@ class RequestHandler:
 
         print("=== Request Data ===", self.data, '\n\n')
         if self.method == "GET":
+            self.format_get_params()
             output = rq.get(self.url, headers=self.headers)
         else:
             output = rq.post(self.url, data=json.dumps(self.data), 
@@ -89,6 +90,9 @@ class RequestHandler:
         
         return resp 
 
+    def format_get_params(self):
+        if self.data:
+            self.url = self.url + "?" + urllib.parse.urlencode(self.data)
 
 
 
