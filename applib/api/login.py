@@ -1,9 +1,9 @@
 
 from flask import (Blueprint, url_for, request, render_template)
 
-from .resp_handler import Response, RequestHandler
+from .resp_handler import Response, RequestHandler, FormHandler
 from applib.lib import helper  as h
-
+from applib import forms as fm 
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -68,18 +68,30 @@ def access_login():
     content = h.request_data(request)
     resp = Response()
     
-    url = h.get_config("API", "login")
+    form = fm.LoginForm(**content)
 
+    if not form.validate():
+
+        fh = FormHandler(form, 
+                        exclude_data=["password"],
+                        exclude_field=['mac_address'])
+
+        resp.add_params("fields", fh.render())
+        resp.failed()
+        resp.add_message(fh.get_errormsg())
+        return resp.get_body()
+
+    
+    url = h.get_config("API", "login")
+    
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
-
-
 
     resp.api_response_format(retv[1])        
     resp.add_params("menu", [])
     resp.add_params("transactions", [])
     resp.add_params("balance", [])
-    
+
     return resp.get_body()
 
 
@@ -87,34 +99,83 @@ def access_login():
 # +-------------------------+-------------------------+
 
 
-@app.route("/register", methods=['POST'])
+@app.route("/register", methods=['POST', "GET"])
 def register():
-    content = h.request_data(request)
+    content = h.request_data(request) or {}
     resp = Response()
     
     url = h.get_config("API", "register")
 
+    form = fm.RegistrationForm(**content)
+    if request.method == 'GET':
+
+        fh = FormHandler(form, 
+                         exclude_data=["password", "password_confirmation"],
+                         exclude_field=['mac_address'])
+
+        resp.add_params("fields", fh.render())
+
+        resp.success()
+        return resp.get_body()
+
+
+    if not form.validate():
+        fh = FormHandler(form, 
+                        exclude_data=["password", "password_confirmation"],
+                        exclude_field=['mac_address'])
+
+
+        resp.add_params("fields", fh.render())
+        resp.failed()
+        resp.add_message(fh.get_errormsg())
+        return resp.get_body()
+
+
+    # form validated successfully. 
+
+    content['full_name'] = content.pop('first_name') + ' ' + content.pop('last_name')
+
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
-
-    resp.api_response_format(retv[1])        
-    
+    resp.api_response_format(retv[1])
     return resp.get_body()
 
+
+
+
+@app.route("/forgot", methods=['POST'])
+def handle_password_recovery():
     
+    content = h.request_data(request)
+    resp = Response()
+    
+    cfg = h.get_config("API")    
+
+    form = fm.ForgotForm(**content)
+
+    if not form.validate():
+        fh = FormHandler(form)
+
+        resp.add_params("fields", fh.render())
+        resp.failed()
+        resp.add_message(fh.get_errormsg())
+        return resp.get_body()
 
 
-# {
-#     "statusCode": "00",
-#     "statusDescription": "Registration Successful",
-#     "mac_address": "1292999277",
-#     "transaction_ref": "$2y$10$O0XIV8TX7VxAFQjDAhMGO.yhD5b1q..Ub.xSuHcXnDjqQJNIpooqC"
-# }
+    if "@" in content['email']: 
+        url = cfg['reset_password_email']
+        _data = {'email': content['email']}
 
-# {
-# "full_name":"Mr Gonzalo higuain","email":"g.higuain@yahoo.com","mac_address":"1292999277",
-# "password":"password","password_confirmation":"password","phone":"0708934525"
-# }
+    else:
+        url = cfg['reset_password_sms']
+        _data = {"phone": content['email']}
+
+
+    rh = RequestHandler(url, method=1, data=_data)
+    retv = rh.send()
+
+    resp.api_response_format(retv[1])
+    return resp.get_body()
 
 
 
@@ -124,6 +185,8 @@ def store_logs():
     Log Tracker
     -----------
     """
+    
+    # not yet implemented 
     
     from sentry_sdk import capture_message
 

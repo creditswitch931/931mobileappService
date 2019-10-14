@@ -1,7 +1,7 @@
 
 
 from configobj import ConfigObj
-
+import json
 
 
 def get_config(header, key=None, filename='settings.cfg'):
@@ -13,8 +13,6 @@ def get_config(header, key=None, filename='settings.cfg'):
     return cfg[header][key]
 
 
-
-
 def request_data(request):
     """
         Request Data Function 
@@ -22,12 +20,13 @@ def request_data(request):
         Function to get data coming to the application for all methods.
 
     """
+
     if request.method == 'GET':
         return request.args
 
     elif request.method == 'POST':
         if request.data:
-            return request.data 
+            return unloadJson(request.data) 
 
         return request.form
     
@@ -55,7 +54,8 @@ def log_handler(log_msg=''):
 	pass
 
 
-
+def unloadJson(value):
+    return json.loads(value.decode('utf-8'))
 
 
 

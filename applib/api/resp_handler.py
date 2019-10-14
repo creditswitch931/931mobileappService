@@ -29,6 +29,7 @@ class Response:
         self.params['responseCode'] = "1"
 
     def get_body(self):
+        print('API Response', self.params, '\n\n')
         return json.dumps(self.params)
 
     def api_response_format(self, obj_resp):
@@ -73,10 +74,12 @@ class RequestHandler:
         if self.method == "POST":
             assert self.data , "Data parameter is missing for post method"
 
+        print("=== Request Data ===", self.data, '\n\n')
         if self.method == "GET":
             output = rq.get(self.url, headers=self.headers)
         else:
-            output = rq.post(self.url, data=self.data, headers=self.headers)
+            output = rq.post(self.url, data=json.dumps(self.data), 
+                             headers=self.headers)
 
         try:
             resp = output.status_code, output.json()            
@@ -85,3 +88,67 @@ class RequestHandler:
             # log this exception 
         
         return resp 
+
+
+
+
+class FormHandler:
+
+    def __init__(self, form, exclude_data=[], exclude_field=[]):
+        self.form = form
+        self.fields = []
+        self.exclude_data = exclude_data
+        self.exclude_field = exclude_field
+
+    def render(self):
+
+        prev = None
+        total = len(self.form._fields) - len(self.exclude_field)
+        count = 1
+        field_names = []
+        
+        for x in self.form:
+            if x.name in self.exclude_field:
+                continue
+
+            field_names.append(x.name)
+
+
+        for field, obj in self.form._fields.items():
+            if field in self.exclude_field:
+                continue
+
+
+            _f = {
+                "name" : obj.label.text,
+                "field": field,
+                "value": obj.data if field not in self.exclude_data else None,
+                "retkey" : "next" if count < total else "done" ,
+                "error" : obj.errors[0] if obj.errors else None,
+                "nextfield" : field_names[count] if count < total else None,
+                "type": self.set_type(obj.type),
+                "encrypt": True  if obj.type == 'PasswordField' else False
+            }
+
+            self.fields.append(_f)
+            count += 1 
+
+        return self.fields
+
+
+    def set_type(self, _type):
+
+        if _type =='IntegerField':
+            return 'numeric'
+        
+        return 'default'
+
+    def get_errormsg(self):       
+
+        for fld, obj in self.form.errors.items():
+            return "field {} {}".format(fld, obj[0])
+
+
+
+
+
