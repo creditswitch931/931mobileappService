@@ -59,6 +59,10 @@ def unloadJson(value):
 
 
 
+def currency_formatter(value):
+    fmt = "{:" + str(len(str(value))) + ",.2f}"
+    return fmt.format(value)
+
 
 
 

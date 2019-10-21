@@ -69,7 +69,7 @@ class ForgotForm(Form):
         # elif the data is an integer field then validate for phone number 
 
 class Airtime(Form):
-    select_network = SelectField('Select network', coerce=int, [input_required()],
+    select_network = SelectField('Select network', [input_required()], coerce=int,
                                   choices=[(0, 'Select ...'),
                                            (1, 'MTN'),
                                            (2, 'Glo'),
@@ -81,7 +81,7 @@ class Airtime(Form):
 
 
 class Electricity(Form):
-    select_disco = SelectField('Select disco', coerce=int, [input_required()],
+    select_disco = SelectField('Select disco', [input_required()], coerce=int,
                                   choices=[(0, 'Select ...'),
                                            (1, 'Ikeja distribution company'),
                                            (2, 'Eko distribution company'),
@@ -93,7 +93,8 @@ class Electricity(Form):
 
 
 class Data(Form):
-    select_network = SelectField('Select network',coerce=int, [input_required()],
+    select_network = SelectField('Select network', [input_required()], 
+                                  coerce=int, 
                                   choices=[(0, 'Select ...'),
                                            (1, 'MTN'),
                                            (2, 'Glo'),

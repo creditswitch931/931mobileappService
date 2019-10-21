@@ -80,7 +80,6 @@ def access_login():
         resp.failed()
         resp.add_message(fh.get_errormsg())
         return resp.get_body()
-
     
     url = h.get_config("API", "login")
     
@@ -89,8 +88,8 @@ def access_login():
 
     resp.api_response_format(retv[1])        
     resp.add_params("menu", [])
-    resp.add_params("transactions", [])
-    resp.add_params("balance", [])
+    resp.add_params('programs', [])
+    resp.add_params("name", "Jerrey Uzodinma Alpha")
 
     return resp.get_body()
 
@@ -141,6 +140,8 @@ def register():
     return resp.get_body()
 
 
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
 
 
 @app.route("/forgot", methods=['POST'])
@@ -177,6 +178,44 @@ def handle_password_recovery():
     resp.api_response_format(retv[1])
     return resp.get_body()
 
+
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
+
+
+def get_balance(username):
+
+    url = h.get_config("API", "balance")    
+    rh = RequestHandler(url, method=1, data={"username": username})
+    retv = rh.send()
+    print("retv====", retv, "\n\n")
+    
+    bal = retv[1].get('balance') 
+    
+    if bal:
+        retv[1]['balance'] = h.currency_formatter(float(bal))
+    
+    return retv 
+
+
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
+
+
+@app.route("/balance", methods=['GET'])
+def fetch_api_balance():
+    
+    params = h.request_data(request)
+    retv = get_balance(params['username']) 
+    
+    resp = Response()
+    resp.api_response_format(retv[1])        
+
+    return resp.get_body()
+
+
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
 
 
 @app.route("/errors")
