@@ -19,10 +19,10 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 # Sub Module Registraton
 # +---------------------------+---------------------------+
 
-def module_register():
+def module_register(_foldername='api'):
 
     root_folder = app.root_path.split('/')[-1]
-    app_path = os.path.join(root_folder, 'api')
+    app_path = os.path.join(root_folder, _foldername)
     
     if 'docs' in os.getcwd():
         return 
@@ -40,4 +40,6 @@ def module_register():
 
 
 module_register()
+module_register("backend")
+
 

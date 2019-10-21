@@ -3,7 +3,7 @@ import bcrypt
 import requests
 import json
 import random
-from api_test import get_config, hash_data
+from services.api_test import get_config, hash_data
 from applib.api.resp_handler import Response, RequestHandler, FormHandler
 
 
@@ -12,7 +12,7 @@ def startimes_validate(login_id, public_key, private_key, smart_card_code):
 	checksum = str(login_id) + "|" + private_key + "|" + str(smart_card_code)
 	checksum_data = hash_data(checksum)
 
-	startimes_validate = get_config('url')
+	startimes_validate = get_config('SERVICES')
 	request_url = startimes_validate['star_validate']
 
 	payload = {'loginId': login_id, 'key': public_key, 'smartCardCode': smart_card_code, 
@@ -31,7 +31,7 @@ def startimes_vending(login_id, public_key, private_key, smart_card_code, fee):
 	checksum = str(login_id) + "|" + private_key + "|" + str(smart_card_code) + "|" + str(fee)
 	checksum_data = hash_data(checksum)
 
-	startimes_vending = get_config('url')
+	startimes_vending = get_config('SERVICES')
 	request_url = startimes_vending['star_vending']
 
 	payload = {'loginId': login_id, 'key': public_key, 'smartCardCode': smart_card_code, 
@@ -46,7 +46,7 @@ def multichoice_validate(login_id, public_key, private_key, customer_no, service
 	checksum = str(login_id) + "|" + private_key + "|" + str(customer_no)
 	checksum_data = hash_data(checksum)
 
-	multichoice_validate = get_config('url')
+	multichoice_validate = get_config('SERVICES')
 	request_url = multichoice_validate['multi_validate']
 
 	payload = {'loginId': login_id, 'key': public_key, 'customerNo': customer_no, 
@@ -59,7 +59,7 @@ def multichoice_validate(login_id, public_key, private_key, customer_no, service
 
 
 def multichoice_fetch_product(login_id, public_key, service_id):
-	multichoice_fetch_product = get_config('url')
+	multichoice_fetch_product = get_config('SERVICES')
 	request_url = multichoice_fetch_product['multi_fetch_prod']
 
 	payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
@@ -71,7 +71,7 @@ def multichoice_fetch_product(login_id, public_key, service_id):
 
 
 def multichoice_fetch_product_addons(login_id, public_key, service_id):
-	multichoice_fetch_product_addons = get_config('url')
+	multichoice_fetch_product_addons = get_config('SERVICES')
 	request_url = multichoice_fetch_product['multi_fetch_prod']
 
 	payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
@@ -96,7 +96,7 @@ def multichoice_vending(login_id, public_key, private_key, customer_no, customer
 				for x in items:
 					product_codes.append(x['code'])
 
-	multichoice_vending = get_config('url')
+	multichoice_vending = get_config('SERVICES')
 	request_url = multichoice_vending['multi_recharge']
 
 	payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id, 

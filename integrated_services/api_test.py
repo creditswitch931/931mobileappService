@@ -4,11 +4,11 @@ import requests
 import json
 import random
 from configobj import ConfigObj
-from applib.api.resp_handler import Response, RequestHandler, FormHandler
 
 
 
-def get_config(header, key=None, filename='config.ini'):
+
+def get_config(header, key=None, filename='settings.cfg'):
 
 	cfg = ConfigObj(filename)
 	if not key:
@@ -32,7 +32,7 @@ def merchant_details(login_id, public_key, private_key):
 	checksum = str(login_id) + "|" + private_key
 	checksum_data = hash_data(checksum)
 
-	merchant_params = get_config('url')
+	merchant_params = get_config('SERVICES')
 	request_url = merchant_params['merchant']
 
 	payload = {'loginId': login_id, 'key': public_key, 
@@ -47,7 +47,7 @@ def merchant_details(login_id, public_key, private_key):
 def requery_transaction(login_id, public_key, service_id):
 	request_id = random.randrange(10000000, 99999999)
 
-	requery_transaction = get_config('url')
+	requery_transaction = get_config('SERVICES')
 	request_url = requery_transaction['requery']
 
 	payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 
@@ -61,4 +61,4 @@ def requery_transaction(login_id, public_key, service_id):
 
 
 if __name__ == '__main__':
-			main()
+	main()

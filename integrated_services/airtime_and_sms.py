@@ -3,8 +3,7 @@ import bcrypt
 import requests
 import json
 import random
-from api_test import get_config, hash_data
-from applib.api.resp_handler import Response, RequestHandler, FormHandler
+from services.api_test import get_config, hash_data
 
 
 
@@ -26,7 +25,7 @@ def airtime_vending(login_id, public_key, private_key, amount, recipient, provid
 
 	checksum_data = hash_data(checksum)
 
-	airtime_vending = get_config('url')
+	airtime_vending = get_config('SERVICES')
 	request_url = airtime_vending['airtime']
 
 	payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 
@@ -44,7 +43,7 @@ def send_sms(login_id, public_key, private_key, sender_id, msisdn, message_body)
 	checksum = str(login_id) + "|" + private_key + "|" + transaction_ref
 	checksum_data = hash_data(checksum)
 
-	send_sms = get_config('url')
+	send_sms = get_config('SERVICES')
 	request_url = send_sms['sms']
 
 	payload = {'loginId': login_id, 'key': public_key, 'senderId': sender_id, 

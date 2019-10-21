@@ -65,4 +65,70 @@ def currency_formatter(value):
 
 
 
+class SetUri:
+    """
+        # default uri 
+        # dialect+driver://username:password@host:port/database
+
+        # default uri 
+        # dialect+driver://username:password@host:port/database
+
+        # postgresql uri structure 
+        >>> postgresql://scott:tiger@localhost:5432/mydatabase 
+        # sqlite uri structure 
+        >>> sqlite:///foo.db
+
+    """
+
+    def __init__(self, db_cfg):
+        self.db_cfg = db_cfg
+
+
+    def set_credentials(self):
+        tmp = self.db_cfg
+        output = ''
+        
+        if tmp['username']:
+            output = tmp['username'] + ':' + tmp["password"]
+
+        return output
+
+
+    def set_connections(self):
+        
+        output = ''
+
+        if self.db_cfg['host']:
+            output = '@'+ self.db_cfg['host'] + ':' + self.db_cfg['port']
+
+        return output
+
+
+    def set_db(self):        
+        return  '/' + self.db_cfg['database']
+
+
+    def set_driver(self):
+        output = self.db_cfg['dialect'] 
+        if self.db_cfg.get('driver', None):
+            output += '+' + self.db_cfg['driver']
+
+        output += '://'
+
+        return output
+
+
+    def run(self):
+        
+        return (self.set_driver() + self.set_credentials() 
+                + self.set_connections() + self.set_db()
+                )
+
+
+
+def set_db_uri():
+
+    _db_cfg = get_config('DB')
+    uri = SetUri(_db_cfg)
+    return uri.run()
 

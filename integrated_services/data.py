@@ -3,8 +3,7 @@ import bcrypt
 import requests
 import json
 import random
-from api_test import get_config, hash_data
-from applib.api.resp_handler import Response, RequestHandler, FormHandler
+from services.api_test import get_config, hash_data
 
 
 
@@ -26,7 +25,7 @@ def data_vending(login_id, public_key, private_key, amount, recipient, provider)
 
 	checksum_data = hash_data(checksum)
 
-	data_vending = get_config('url')
+	data_vending = get_config('SERVICES')
 	request_url = data_vending['airtime']
 
 	payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 
@@ -38,7 +37,7 @@ def data_vending(login_id, public_key, private_key, amount, recipient, provider)
 
 
 def data_plan(login_id, public_key, service_id):
-	data_plan = get_config('url')
+	data_plan = get_config('SERVICES')
 	request_url = data_plan['data_plan']
 
 	payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}

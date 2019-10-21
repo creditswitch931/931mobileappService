@@ -3,15 +3,14 @@ import bcrypt
 import requests
 import json
 import random
-from api_test import get_config, hash_data
-from applib.api.resp_handler import Response, RequestHandler, FormHandler
+from services.api_test import get_config, hash_data
 
 
 def electricity_validate(login_id, public_key, private_key, customer_account_id, service_id):
 	checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id)
 	checksum_data = hash_data(checksum)
 
-	electricity_validate = get_config('url')
+	electricity_validate = get_config('SERVICES')
 	request_url = electricity_validate['electic_validate']
 
 	payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
@@ -28,7 +27,7 @@ def electricity_vending(login_id, public_key, private_key, customer_account_id, 
 	checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
 	checksum_data = hash_data(checksum)
 
-	electricity_vending = get_config('url')
+	electricity_vending = get_config('SERVICES')
 	request_url = electricity_vending['electic_recharge']
 
 	# providerRef: to be generated from the validation response
@@ -49,7 +48,7 @@ def ikeja_prepaid_E01E(login_id, public_key, private_key, customer_account_id, s
 	checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
 	checksum_data = hash_data(checksum)
 
-	electricity_vending = get_config('url')
+	electricity_vending = get_config('SERVICES')
 	request_url = electricity_vending['electic_recharge']
 
 	payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
@@ -71,13 +70,14 @@ def ikeja_prepaid_E01E(login_id, public_key, private_key, customer_account_id, s
 	return retv
 
 
+
 def eko_prepaid_E05E(login_id, public_key, private_key, customer_account_id, service_id, amount):
 	request_id = random.randrange(10000000, 99999999)
 
 	checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
 	checksum_data = hash_data(checksum)
 
-	electricity_vending = get_config('url')
+	electricity_vending = get_config('SERVICES')
 	request_url = electricity_vending['electic_recharge']
 
 	payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
@@ -106,7 +106,7 @@ def ibadan_prepaid_E08E(login_id, public_key, private_key, customer_account_id, 
 	checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
 	checksum_data = hash_data(checksum)
 
-	electricity_vending = get_config('url')
+	electricity_vending = get_config('SERVICES')
 	request_url = electricity_vending['electic_recharge']
 
 	payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
