@@ -4,6 +4,9 @@
 	.top{
 	margin-top: 7%;
 }
+.move_right{
+	text-align: right;
+}
 
 {% endblock %}
 
@@ -24,7 +27,8 @@
 		<thead>
 			<tr> 
 				<th> Name </th>
-				<th> Label </th>		
+				<th> Label </th>
+				<th class="move_right">&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -32,6 +36,13 @@
 			<tr>
 				<td> {{ item.name | title }} </td>
 				<td> {{ item.label }} </td>
+				<td class="move_right"><a 
+							href="{{url_for('admin.edit', 						service_id=item.id)}}" 
+							title="Edit" 
+							style="color: green">
+								<i class="fas fa-edit"></i>
+							</a>
+						</td>
 			</tr>			
 		{% else %}
 			<tr>
@@ -45,3 +56,5 @@
 
 {% endblock %}
  
+
+

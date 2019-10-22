@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block in_style %}
+img{
+	display:block;
+	height: auto;
+	width: 100px;
+}
+{% endblock %}
+{% block main %}
+
+	<div class="col-md-6 offset-md-3">
+		<h3 class="mb-5 header_text"><b> Edit </b></h3>
+		<form action="" method="post" enctype="multipart/form-data">
+
+			 <div class="form-group">
+				<label for="name">Name</label>
+				<input type="text" class="form-control" name="service_name" value="{{data.name}}">
+			 </div>
+
+			 <div class="form-group">
+			 	<label for="label">Label</label>
+			 	<input type="text" class="form-control" name="service_label" value="{{data.label}}">
+			 </div>
+
+			 <div class="form-group">
+			 	<label for="image">Add Image</label>
+			 	<img src="{{image}}" alt="Image" class="form-control">
+			 </div>
+
+			<div>
+				<hr style="margin-top: 65px">
+				<button type="submit" class="btn btn-success" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add </button>
+			</div>
+			
+		</form>
+
+	</div>
+
+{% endblock %}

@@ -6,6 +6,7 @@ tmp/
 logs/
 *.log
 __pycache__
+media/
 
 *.db
 alembic.ini
