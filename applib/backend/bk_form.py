@@ -29,10 +29,28 @@ class LoginForm(Form):
 		 
 class Service(Form):
 	
-	service_name = StringField("Name", [input_required()], 
+	name = StringField("Name", [input_required()], 
 							render_kw={"class_": "form-control"})
-	service_label = StringField("Label", [input_required()], 
+	label = StringField("Label", [input_required()], 
 							render_kw={"class_": "form-control"})
-	service_image = FileField('Image File', [input_required()], 
+	image = FileField('Service Icon', [input_required()], 
 							render_kw={"class_": "form-control"})
 	
+	category_name = StringField("Category Name", [input_required()], 
+								render_kw={'class_': "form-control"})
+
+
+
+class ServiceItem(Form):
+
+	name = StringField("Name", [input_required()], 
+					   render_kw={'class_': "form-control"})
+
+	label = StringField("Label", [input_required()], 
+						render_kw={"class_": "form-control"})
+
+	image = FileField('Menu Icon', [input_required()], 
+					  render_kw={"class_": "form-control"})
+	
+	service = SelectField("Service", [input_required()], 
+						  render_kw={"class_": "form-control"}, coerce=int)

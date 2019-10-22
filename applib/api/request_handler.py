@@ -18,10 +18,15 @@ def get_services():
     content = h.request_data(request)
     resp = Response()
 
+    """
+		service  object 
+    """
+
+
     if content.get('name'):
 
     	pass
 
     	# filter by given name 
 
-    
+

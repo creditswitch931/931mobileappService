@@ -62,7 +62,8 @@ def service_view():
     with m.sql_cursor() as db:
         data = db.query(m.ServicesMd.id,
                         m.ServicesMd.name,
-                        m.ServicesMd.label
+                        m.ServicesMd.label,
+                        m.ServicesMd.category_name
               ).order_by(m.ServicesMd.id.desc()).limit(10).all()
 
 

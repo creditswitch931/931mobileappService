@@ -39,15 +39,38 @@ class ServicesMd(Base):
     name = Column(String(80), nullable=False)
     label = Column(String(120),  nullable=False)
     image = Column(Text)
+    category_name = Column(String(50), nullable=False)
+
+
+class ServiceItems(Base):
+    
+    __tablename__  = 'service_items'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(80), nullable=False)
+    label = Column(String(120),  nullable=False)
+    image = Column(Text)
+    service_id = Column(Integer, ForeignKey("service_list.id"), 
+                        nullable=False)
+
+
+class MobileUser(Base):
+
+    __tablename__ = "registered_users"
+
+    id = Column(BigInteger, primary_key=True)
+    full_name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False)
+    phone = Column(String(30), nullable=False)
 
 
 
-class Users(Base):
-    __tablename__ = 'users'
+# class Users(Base):
+#     __tablename__ = 'users'
 
-    id = Column(BigInteger, primary_key=True)    
-    username = Column(String(150), nullable=True)
-    password = Column(String(150), nullable=True)     
+#     id = Column(BigInteger, primary_key=True)    
+#     username = Column(String(150), nullable=True)
+#     password = Column(String(150), nullable=True)     
 
 
 
