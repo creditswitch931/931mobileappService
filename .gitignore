@@ -8,6 +8,7 @@ logs/
 __pycache__
 media/
 
+
 *.db
 alembic.ini
 alembic/README
