@@ -9,13 +9,13 @@ from wtforms import form, validators, fields
 from wtforms.form import Form
 
 
-def input_required():
+# def input_required():
 
-	def check_required(form, field):
-		if not field.data:
-			raise ValidationError("field is required.")
+# 	def check_required(form, field):
+# 		if not field.data:
+# 			raise ValidationError("field is required.")
 
-	return check_required
+# 	return check_required
 
 
 
@@ -33,6 +33,6 @@ class Service(Form):
 							render_kw={"class_": "form-control"})
 	service_label = StringField("Label", [input_required()], 
 							render_kw={"class_": "form-control"})
-	service_image = FileField(u'Image File', [input_required()], 
+	service_image = FileField('Image File', [input_required()], 
 							render_kw={"class_": "form-control"})
 	

@@ -63,10 +63,9 @@ class LoginForm(Form):
 class ForgotForm(Form):
     email = StringField("Email or Phone", [validators.Email()]) # custom validaton 
     
-    def validate_email(form, field):
-        pass
-        # if the data has @ symbol in it validate for proper email address 
-        # elif the data is an integer field then validate for phone number 
+    # def validate_email(form, field):
+    #     pass
+
 
 class Airtime(Form):
     select_network = SelectField('Select network', [input_required()], coerce=int,
@@ -77,7 +76,7 @@ class Airtime(Form):
                                            (4, 'Airtel')])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
-    # email = StringField('Email Address', [input_required(), Email()])
+    
 
 
 class Electricity(Form):
@@ -89,7 +88,7 @@ class Electricity(Form):
     meter_number = StringField('Enter meter number', [input_required(), number_check()])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
-    # email = StringField('Email for receipt sending', [input_required(), Email()])
+    
 
 
 class Data(Form):
@@ -102,7 +101,6 @@ class Data(Form):
                                            (4, 'Airtel')])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
-    # email = StringField('Email for receipt sending', [input_required(), Email()])
 
 
 class Startimes(Form):
@@ -110,8 +108,7 @@ class Startimes(Form):
                                     [input_required(), number_check()])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
-    # email = StringField('Email for receipt sending', [input_required(), Email()])
-
+   
 
 class Gotv(Form):
     select_package = SelectField('Select a package', [input_required()],
@@ -124,7 +121,7 @@ class Gotv(Form):
     iuc_number = StringField('Enter IUC number', [input_required(), number_check()])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
-    # email = StringField('Email for receipt sending', [input_required(), Email()])
+    
 
 
 class Dstv(Form):
@@ -141,23 +138,8 @@ class Dstv(Form):
     smartcard_number = StringField('Enter smartcard number', [input_required(), number_check()])
     amount = StringField('Enter amount', [input_required(), check_zero_sign()])
     phone = StringField('Phone Number', [input_required()])
-    # email = StringField('Email for receipt sending', [input_required(), Email()])
     
-
-
-
-
-
-
-
-
-
-
-        
-
-
     
-
 
 
 

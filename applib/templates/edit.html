@@ -13,24 +13,22 @@ img{
 		<h3 class="mb-5 header_text"><b> Edit </b></h3>
 		<form action="" method="post" enctype="multipart/form-data">
 
-			 <div class="form-group">
-				<label for="name">Name</label>
-				<input type="text" class="form-control" name="service_name" value="{{data.name}}">
-			 </div>
+			 {% for field in form %}
+                <div>                    
+                    <b>{{ field.label }}</b>
+                    {{ field }} 
 
-			 <div class="form-group">
-			 	<label for="label">Label</label>
-			 	<input type="text" class="form-control" name="service_label" value="{{data.label}}">
-			 </div>
+                </div>
+            {% endfor %}
 
-			 <div class="form-group">
-			 	<label for="image">Add Image</label>
-			 	<img src="{{image}}" alt="Image" class="form-control">
-			 </div>
-
+			 <div class="form-group">			 	
+			 	<img src="{{image}}" alt="Image" class="img-rounded">
+			 </div> 
 			<div>
 				<hr style="margin-top: 65px">
 				<button type="submit" class="btn btn-success" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add </button>
+			
+				<a href="{{url_for('bk_cfg.service_view')}}" class="btn btn-default"> Cancel </a>
 			</div>
 			
 		</form>
