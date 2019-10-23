@@ -3,7 +3,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import (create_engine, Integer, String,
                         Text, DateTime, BigInteger, Date, 
-                        Column, ForeignKey, or_, Sequence, func, MetaData, Table)
+                        Column, ForeignKey, or_, Sequence, Boolean)
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -41,6 +41,9 @@ class ServicesMd(Base):
     image = Column(Text)
     category_name = Column(String(50), nullable=False)
 
+    # field to determine f a service is active or inactive 
+    active = Column(Boolean, default=True)
+
 
 class ServiceItems(Base):
     
@@ -53,6 +56,9 @@ class ServiceItems(Base):
     service_id = Column(Integer, ForeignKey("service_list.id"), 
                         nullable=False)
 
+    # field to determine f a serviceItem is active or inactive 
+    active = Column(Boolean, default=True)
+
 
 class MobileUser(Base):
 
@@ -62,6 +68,9 @@ class MobileUser(Base):
     full_name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     phone = Column(String(30), nullable=False)
+
+    # field to determine if a user is active or inactive 
+    active = Column(Boolean, default=True)
 
 
 

@@ -2,7 +2,7 @@
 
 from configobj import ConfigObj
 import json
-
+import os, base64
 
 def get_config(header, key=None, filename='settings.cfg'):
 
@@ -131,4 +131,33 @@ def set_db_uri():
     _db_cfg = get_config('DB')
     uri = SetUri(_db_cfg)
     return uri.run()
+
+
+def utf_encode(value):
+    return value.encode('utf-8')
+
+
+def utf_decode(value):
+    return value.decode('utf-8')
+
+
+def ba64_encode(ord_value):
+    output = base64.b64encode(ord_value)
+    return output
+
+
+def ba64_decode(encoded_value):
+    output = base64.b64decode(encoded_value)
+    return output 
+
+
+def save_file(img_obj, pathfolder):
+
+    path = ''
+    if img_obj:
+        path = os.path.join(pathfolder, img_obj.filename)
+
+        img_obj.save(path)
+
+    return path 
 

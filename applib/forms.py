@@ -30,7 +30,7 @@ def alphanum_check():
     return check_alphanumeric
 
 
-def input_required():
+def is_required():
 
     def check_required(form, field):
         if not field.data:
@@ -43,7 +43,7 @@ class RegistrationForm(Form):
     first_name = StringField("First Name")
     last_name = StringField("Last Name")
     email = StringField('Email Address', [Email("invalid email address")])
-    phone = IntegerField('Phone', [input_required()])
+    phone = IntegerField('Phone', [is_required()])
     mac_address = StringField('Mac Address', [])
     password = PasswordField('Password', [
                                             validators.EqualTo(
@@ -55,8 +55,8 @@ class RegistrationForm(Form):
     
 class LoginForm(Form):    
      
-    username = StringField('Username', [input_required()])
-    password = PasswordField('Password', [input_required()])
+    username = StringField('Username', [is_required()])
+    password = PasswordField('Password', [is_required()])
     mac_address = StringField("Mac Address")
 
     
@@ -68,64 +68,64 @@ class ForgotForm(Form):
 
 
 class Airtime(Form):
-    select_network = SelectField('Select network', [input_required()], coerce=int,
+    select_network = SelectField('Select network', [is_required()], coerce=int,
                                   choices=[(0, 'Select ...'),
                                            (1, 'MTN'),
                                            (2, 'Glo'),
                                            (3, '9mobile'),
                                            (4, 'Airtel')])
-    amount = StringField('Enter amount', [input_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [input_required()])
+    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required()])
     
 
 
 class Electricity(Form):
-    select_disco = SelectField('Select disco', [input_required()], coerce=int,
+    select_disco = SelectField('Select disco', [is_required()], coerce=int,
                                   choices=[(0, 'Select ...'),
                                            (1, 'Ikeja distribution company'),
                                            (2, 'Eko distribution company'),
                                            (3, 'Ibadan distribution company')])
-    meter_number = StringField('Enter meter number', [input_required(), number_check()])
-    amount = StringField('Enter amount', [input_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [input_required()])
+    meter_number = StringField('Enter meter number', [is_required(), number_check()])
+    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required()])
     
 
 
 class Data(Form):
-    select_network = SelectField('Select network', [input_required()], 
+    select_network = SelectField('Select network', [is_required()], 
                                   coerce=int, 
                                   choices=[(0, 'Select ...'),
                                            (1, 'MTN'),
                                            (2, 'Glo'),
                                            (3, '9mobile'),
                                            (4, 'Airtel')])
-    amount = StringField('Enter amount', [input_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [input_required()])
+    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required()])
 
 
 class Startimes(Form):
     smartcard_number = StringField('Enter smartcard number', 
-                                    [input_required(), number_check()])
-    amount = StringField('Enter amount', [input_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [input_required()])
+                                    [is_required(), number_check()])
+    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required()])
    
 
 class Gotv(Form):
-    select_package = SelectField('Select a package', [input_required()],
+    select_package = SelectField('Select a package', [is_required()],
                                   choices=[('select', 'Select ...'),
                                            ('gotv_value', 'GOtv Value'),
                                            ('gotv_pls', 'GOtv Plus'),
                                            ('gotv_max', 'GOtv Max'),
                                            ('goLite_month', 'GOtv Lite Monthly'),
                                            ('goLite_quarter', 'GOtv Lite Quarterly')])
-    iuc_number = StringField('Enter IUC number', [input_required(), number_check()])
-    amount = StringField('Enter amount', [input_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [input_required()])
+    iuc_number = StringField('Enter IUC number', [is_required(), number_check()])
+    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required()])
     
 
 
 class Dstv(Form):
-    select_package = SelectField('Select a package', [input_required()],
+    select_package = SelectField('Select a package', [is_required()],
                                   choices=[('select', 'Select ...'),
                                            ('dstv_access', 'DStv Access'),
                                            ('dstv_family', 'DStv Family'),
@@ -135,9 +135,9 @@ class Dstv(Form):
                                            ('dstv_premium_asia', 'DStv Premium Asia'),
                                            ('asian_bouqet', 'Asian Bouqet'),
                                            ('dstv_fta_plus', 'DStv FTA Plus')])
-    smartcard_number = StringField('Enter smartcard number', [input_required(), number_check()])
-    amount = StringField('Enter amount', [input_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [input_required()])
+    smartcard_number = StringField('Enter smartcard number', [is_required(), number_check()])
+    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required()])
     
     
 
