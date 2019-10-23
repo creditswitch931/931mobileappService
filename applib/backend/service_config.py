@@ -20,7 +20,7 @@ UPLOAD_FOLDER = 'applib/static/media'
 # +-------------------------+-------------------------+
 
 
-@app.route('/add', methods=['POST', 'GET'])
+@app.route('/service/add', methods=['POST', 'GET'])
 def add():
 
     form = fm.Service(**request.form)
@@ -68,7 +68,7 @@ def service_view():
 # +-------------------------+-------------------------+
 
 
-@app.route('/edit/<int:service_id>/', methods=['POST', 'GET'])
+@app.route('/service/edit/<int:service_id>/', methods=['POST', 'GET'])
 def edit(service_id): 
          
     form = fm.Service(**request.form)
