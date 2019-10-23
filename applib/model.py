@@ -74,12 +74,26 @@ class MobileUser(Base):
 
 
 
-# class Users(Base):
-#     __tablename__ = 'users'
 
-#     id = Column(BigInteger, primary_key=True)    
-#     username = Column(String(150), nullable=True)
-#     password = Column(String(150), nullable=True)     
+def form2model(formobj, model_ins):
+    counter = 0            
+    for key, obj in formobj._fields.items():
+        if hasattr(model_ins, key):
+            setattr(model_ins, key, obj.data)
+            counter += 1 
+
+    assert counter > 0 , "No model instance fields not found."
+     
+def model2form(model_ins, form_ins):
+
+    counter = 0
+    for key, obj in form_ins._fields.items():
+        if hasattr(model_ins, key):
+            obj.data = getattr(model_ins, key)
+            counter += 1
+
+    assert counter > 0 , "No model instance fields not found."
+
 
 
 
