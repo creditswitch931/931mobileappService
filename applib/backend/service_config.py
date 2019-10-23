@@ -77,9 +77,6 @@ def edit(service_id):
          
         _path = h.save_file(request.files[form.image.name], UPLOAD_FOLDER)
 
-        # _path = os.path.join(UPLOAD_FOLDER, image_file.filename)
-        # image_file.save(_path)
-
         with m.sql_cursor() as db:
             qry = db.query(m.ServicesMd).get(service_id)
             qry.name = form.name.data 
@@ -87,7 +84,6 @@ def edit(service_id):
             qry.image = _path or qry.image 
             qry.category_name = form.category_name.data
             qry.active = form.active.data 
-
             db.add(qry)
 
         return redirect(url_for("bk_cfg.service_view"))
@@ -111,6 +107,7 @@ def edit(service_id):
         form.category_name.data = data.category_name
 
         image = "/" + "/".join(data.image.split("/")[1:])
+       
 
     return render_template('edit.html', form=form, data=data, image=image)
 

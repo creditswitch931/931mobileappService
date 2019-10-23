@@ -28,6 +28,7 @@
 			<tr> 
 				<th> Name </th>
 				<th> Label </th>
+				<th> Category</th>
 				<th class="move_right">&nbsp;</th>
 			</tr>
 		</thead>
@@ -36,6 +37,7 @@
 			<tr>
 				<td> {{ item.name | title }} </td>
 				<td> {{ item.label }} </td>
+				<td> {{ item.category_name }} </td>
 				<td class="move_right"><a 
 							href="{{url_for('bk_cfg.edit', 						service_id=item.id)}}" 
 							title="Edit" 
