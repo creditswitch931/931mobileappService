@@ -29,22 +29,18 @@ def add():
 
         _path = h.save_file(request.files[form.image.name], UPLOAD_FOLDER)
  
-        params = {
-            'name': form.name.data,
-            'label': form.label.data,
-            'image': _path,
-            'category_name': form.category_name.data,
-            'active': form.active.data
-        }
-
         with m.sql_cursor() as db:
-            services = m.ServicesMd(**params)
-            db.add(services)
 
-        return redirect(url_for("bk_cfg.service_view"))
+            _mdl = m.ServicesMd()
+            m.form2model(form, _mdl)
+            _mdl.image = _path
+
+            db.add(_mdl)
+
+            return redirect(url_for("bk_cfg.service_view"))
         
 
-    return render_template('admin.html', form=form)
+    return render_template('service.html', form=form)
 
 
 # +-------------------------+-------------------------+
@@ -61,7 +57,7 @@ def service_view():
               ).order_by(m.ServicesMd.id.desc()).limit(10).all()
 
 
-    return render_template('list.html', data=data)
+    return render_template('service_list.html', data=data)
 
 
 # +-------------------------+-------------------------+
@@ -73,41 +69,22 @@ def edit(service_id):
          
     form = fm.Service(**request.form)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
          
         _path = h.save_file(request.files[form.image.name], UPLOAD_FOLDER)
 
         with m.sql_cursor() as db:
             qry = db.query(m.ServicesMd).get(service_id)
-            qry.name = form.name.data 
-            qry.label = form.label.data
-            qry.image = _path or qry.image 
-            qry.category_name = form.category_name.data
-            qry.active = form.active.data 
+            m.form2model(form, qry)
+            qry.image = _path or qry.image
+            
             db.add(qry)
-
         return redirect(url_for("bk_cfg.service_view"))
 
 
-    with m.sql_cursor() as db:
-        param = {'id': service_id}
+    data = m.ServicesMd.get_items(service_id)
+    m.model2form(data, form)
+    image = "/" + "/".join(data.image.split("/")[1:])
 
-        data = db.query(m.ServicesMd.name,
-                        m.ServicesMd.label,
-                        m.ServicesMd.image,
-                        m.ServicesMd.category_name,
-                        m.ServicesMd.active
-                        ).filter_by(**param).first()
-
-        # temporary fix, to be cleaned up later 
-
-        form.name.data = data.name 
-        form.label.data = data.label
-        form.active.data = data.active
-        form.category_name.data = data.category_name
-
-        image = "/" + "/".join(data.image.split("/")[1:])
-       
-
-    return render_template('edit.html', form=form, data=data, image=image)
+    return render_template('service_edit.html', form=form, data=data, image=image)
 

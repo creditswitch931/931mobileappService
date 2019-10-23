@@ -44,6 +44,14 @@ class ServicesMd(Base):
     # field to determine of a service is active or inactive 
     active = Column(Boolean)
 
+    @staticmethod
+    def get_service():
+        qry = []
+        with sql_cursor() as db:
+            qry = db.query(ServicesMd.id, ServicesMd.label).all()
+        
+        return qry 
+
 
 class ServiceItems(Base):
     
@@ -58,6 +66,17 @@ class ServiceItems(Base):
 
     # field to determine f a serviceItem is active or inactive 
     active = Column(Boolean)
+
+    @staticmethod
+    def get_items(id):
+        qry = ()
+        with sql_cursor() as db:
+            qry = db.query(ServiceItems.id, ServiceItems.name, 
+                           ServiceItems.name, ServiceItems.label, 
+                           ServiceItems.image, ServiceItems.service_id
+                           ).filter_by(id=id).first()
+        return qry 
+
 
 
 class MobileUser(Base):
