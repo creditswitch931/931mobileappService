@@ -74,6 +74,7 @@ def get_services():
             tmp_img = get_base64_image(x.image)
             retv.append({"name": x.name, 
                          "label": x.label, 
+                         "service_id": x.id,
                          "category_name":x.category_name, 
                          "image":tmp_img}
                         )
@@ -111,6 +112,8 @@ def get_service_items():
     content = h.request_data(request)
     resp = Response()
     retv = []
+
+    print('\n\n', content, '\n\n')
 
     with m.sql_cursor() as db:
         qry = db.query(m.ServiceItems.name,

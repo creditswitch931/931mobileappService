@@ -20,7 +20,7 @@
 		</h3>
 	</div> 
 	<div class="text-right space_between">
-		<a class="btn btn-success" href="{{url_for('bk_cfg.add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
+		<a class="btn btn-success" href="{{url_for('service_item.item_add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
 	</div>
 	
 	<table class="table table-condensed table-striped">
@@ -37,7 +37,7 @@
 			<tr>
 				<td> {{ item.name | title }} </td>
 				<td> {{ item.label }} </td>
-				<td> {{service_label['item.service']}} </td>
+				<td> {{item.service_name }} </td>
 				<td class="move_right"><a 
 							href="{{url_for('service_item.item_edit', 						item_id=item.id)}}" 
 							title="Edit" 

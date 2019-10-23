@@ -42,7 +42,7 @@ class ServiceItem(Form):
 	label = StringField("Label", [is_required()], 
 						render_kw={"class_": "form-control"})
 
-	image = FileField('Menu Icon', [is_required()], 
+	image = FileField('Menu Icon', [], 
 					  render_kw={"class_": "form-control"})
 	
 	service = SelectField("Service", [is_required()], 
