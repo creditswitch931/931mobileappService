@@ -41,8 +41,8 @@ class ServicesMd(Base):
     image = Column(Text)
     category_name = Column(String(50), nullable=False)
 
-    # field to determine f a service is active or inactive 
-    active = Column(Boolean, default=True)
+    # field to determine of a service is active or inactive 
+    active = Column(Boolean)
 
 
 class ServiceItems(Base):
@@ -57,7 +57,7 @@ class ServiceItems(Base):
                         nullable=False)
 
     # field to determine f a serviceItem is active or inactive 
-    active = Column(Boolean, default=True)
+    active = Column(Boolean)
 
 
 class MobileUser(Base):
@@ -70,7 +70,7 @@ class MobileUser(Base):
     phone = Column(String(30), nullable=False)
 
     # field to determine if a user is active or inactive 
-    active = Column(Boolean, default=True)
+    active = Column(Boolean)
 
 
 
