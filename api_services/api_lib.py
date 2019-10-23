@@ -59,6 +59,4 @@ def requery_transaction(login_id, public_key, service_id):
 
 
 
-
-if __name__ == '__main__':
-	main()
+ 

@@ -96,7 +96,6 @@ def model2form(model_ins, form_ins):
 
 
 
-
 def create_tbl():
     Base.metadata.create_all(ENGINE)
     

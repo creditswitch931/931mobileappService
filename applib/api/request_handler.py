@@ -129,9 +129,12 @@ def get_service_items():
                     ).all()
 
         for item in qry:
-            retv.append({"name": item.name, "label": item.label,
+            retv.append({"name": item.name, 
+                         "label": item.label,
                          "service_name": item.service_name,
-                         "image": get_base64_image(item.image)
+                         "image": get_base64_image(item.image),
+                         "forms": "",
+                         "view": 2
                         }
                 )
 
