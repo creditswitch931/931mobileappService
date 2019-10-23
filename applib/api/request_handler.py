@@ -123,23 +123,24 @@ def get_service_items():
                 m.ServicesMd.name.label("service_name")
             ).join(
                 m.ServicesMd,
-                m.ServicesMd.name == content['name']
-            ).filter(m.ServicesMd.active == True,
-                     m.ServiceItems.active == True
+                m.ServicesMd.id == m.ServiceItems.service_id
+            ).filter(m.ServiceItems.active == True,
+                     m.ServiceItems.service_id == content['id']
                     ).all()
 
         for item in qry:
             retv.append({"name": item.name, "label": item.label,
-                         "service_name": content['name'],
-                         "image": h.get_base64_image(item.image)
+                         "service_name": item.service_name,
+                         "image": get_base64_image(item.image)
                         }
                 )
+
+    resp.add_params('service_items', retv)
 
     if retv:
         resp.success()
         resp.add_message("data fetched successfully")
-        resp.add_params('service_items', retv)
-
+    
     else:
         resp.failed()
         resp.add_message("No matching data found...")
