@@ -9,7 +9,7 @@ from wtforms import form, validators, fields
 from wtforms.form import Form
 
 from applib.forms import is_required
-
+from applib import model as m 
 
 class LoginForm(Form):
 
@@ -45,7 +45,9 @@ class ServiceItem(Form):
 	image = FileField('Menu Icon', [], 
 					  render_kw={"class_": "form-control"})
 	
-	service = SelectField("Service", [is_required()], 
+	service_id = SelectField("Service", [is_required()], choices=m.ServicesMd.get_service(),
 						  render_kw={"class_": "form-control"}, coerce=int)
 
 	active = BooleanField("Active", default=True) 
+
+

@@ -14,10 +14,18 @@ img{
 		<form action="" method="post" enctype="multipart/form-data">
 
 			 {% for field in form %}
-                <div>                    
+                <div>  
+                                  
                     <b>{{ field.label }}</b>
-                    {{ field }} 
-
+                    {{ field }}
+                    <span>
+						{% if field.errors %}
+							{% for error in field.errors %}
+								{{error}}
+							{% endfor %}
+						{% endif%}
+					</span>
+ 
                 </div>
             {% endfor %}
 
