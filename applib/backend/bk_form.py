@@ -11,16 +11,6 @@ from wtforms.form import Form
 from applib.forms import is_required
 
 
-# def is_required():
-
-# 	def check_required(form, field):
-# 		if not field.data:
-# 			raise ValidationError("field is required.")
-
-# 	return check_required
-
-
-
 class LoginForm(Form):
 
 	usr_name = StringField("Username", [is_required()], 
