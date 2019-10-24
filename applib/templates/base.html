@@ -80,12 +80,12 @@
 
         .sidenav {
           height: 100%;
-          width: 0;
+          width: 250px;
           position: fixed;
           z-index: 1;
           top: 0;
           left: 0;
-          background-color: #F4F6F6;
+          background-color: #5d5b5b;
           overflow-x: hidden;
           transition: 0.5s;
           padding-top: 60px;
@@ -134,30 +134,33 @@
 
 <body>
     
-    {% block side_menu %} 
-    
-        <div id="mySidenav" class="sidenav">
-
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"          onmouseover="this.style.backgroundColor='transparent';">
-                &times;
-            </a>
-
-            <a href="{{url_for('bk_cfg.add')}}" class="btn tab"
-                style="">
-                <!-- <i class="fas angle-double-down fa-lg"></i> -->
-                &nbsp; Services
-            </a>
-
-        </div>
-    {% endblock %}
-
-
     <div class="container">
         <div class="row">
             {% block main %}
             {% endblock %}
         </div>
     </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/ --><!-- bootstrap.min.js"></script>
+  <script type="text/javascript">
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
+
+    {% block scripts %}
+    {% endblock %}
+
+  </script>
+  
+  {% block script_files %}
+  {% endblock %}
+
 </body>
 
 </html>

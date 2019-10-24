@@ -46,7 +46,12 @@ def login():
 				
 	return render_template('login.html', form=form)
 
+@app.route("/admin")
+def admin():
+	
+	# perform proper logout later on 
 
+	return render_template('admin.html')
 
 @app.route("/logout")
 def logout_app():
