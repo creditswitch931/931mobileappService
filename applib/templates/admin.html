@@ -2,78 +2,7 @@
 
 {% block in_style %}
 
-	ul {
-	  list-style-type: none;
-	  <!-- margin: 0; -->
-	  padding: 0;
-	  overflow: hidden;
-	  background-color: #5d5b5b;
-	}
-
-	.float-right {
-	  float: right;
-	}
-
-	.float-left {
-		float:left
-	}
-
-	.navlink {
-	  display: block;
-	  color: white;
-	  text-align: center;
-	  padding: 14px 16px;
-	  text-decoration: none;
-	}
-
-	li a:hover:not(.active) {
-	  color: #FBFCFC;
-      background-color: #28a745;
-	}
-
-	.active {
-	  background-color: #4CAF50;
-	}
-
 {% endblock%}
 
 {% block main %}
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12" style="padding: 0px;">
-				<ul>
-				  <li class="float-left">
-				  	<span class="navlink" href="#home">CREDITSWITCH</span>
-				  </li>
-				  <li class="float-right">
-				  	<a class="navlink" href="#user">
-				  		<i class="fas fa-user fa-lg"></i>User
-				  	</a>
-				  </li>
-				  <li class="float-right">
-				  	<a class="navlink" href="#news">News</a>
-				  </li>
-				</ul>
-			</div>
-		</div>
-
-    	<div class="row">
-    		
-	        <div id="mySidenav" class="sidenav" style="margin-top: 52px;">
-	            <a href="{{url_for('bk_cfg.service_view')}}" class="btn tab"
-	                style="">
-	                <!-- <i class="fas angle-double-down fa-lg"></i> -->
-	                &nbsp; Services
-	            </a>
-
-	            <a href="{{url_for('service_item.item_view')}}" 
-	            	class="btn tab"
-	                style="">
-	                <!-- <i class="fas angle-double-down fa-lg"></i> -->
-	                &nbsp; Items
-	            </a>
-	    	</div>
-        </div>
-	</div>
-  
 {% endblock %}

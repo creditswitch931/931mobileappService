@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
+
 {% block main %}
 
 	<div class="col-md-6 offset-md-3">
-		<h3 class="mb-5 header_text"><b> Item </b></h3>
+		<div class="top">
+			<h3 class="form_title">
+				<b> Item </b>
+			</h3>
+		</div>
 		<form action="" method="post" enctype="multipart/form-data">
 
             {% for field in form %}
@@ -18,16 +23,27 @@
 							{% endfor %}
 						{% endif%}
 					</span>
- 
+
                 </div>
             {% endfor %}
 
 			<div>
 				<hr style="margin-top: 65px">
-				<button type="submit" class="btn btn-success" style="width: 100%; margin-bottom: 7px; margin-top: 5px"> Add </button>
+				<div class="row">
+					<div class="col-md-6">
+						<button type="submit" 
+						class="btn btn-primary btn-block send_btn"> Add 
+						</button>
+						
+					</div>
 
-				<a href="{{url_for('service_item.item_view')}}" 
-					class="btn btn-default"> Cancel </a>
+					<div class="col-md-6">
+						<a href="{{url_for('service_item.item_view')}}" 
+						class="btn btn-block back_btn"> Cancel 
+						</a>
+					</div>
+				</div>
+
 			</div>
 			
 		</form>

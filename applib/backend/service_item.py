@@ -95,5 +95,13 @@ def item_edit(item_id):
     
     return render_template('item_edit.html', form=form, image=image)
         
+@app.route('/item/delete/<int:item_id>')
+def delete(item_id):
 
+    with m.sql_cursor() as db:
+        param = {'id': item_id}
+       
+        db.query(m.ServiceItems).filter_by(**param).delete()
+
+        return redirect(url_for('service_item.item_view')) 
           

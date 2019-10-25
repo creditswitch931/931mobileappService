@@ -81,10 +81,23 @@ def edit(service_id):
             db.add(qry)
         return redirect(url_for("bk_cfg.service_view"))
 
-
-    data = m.ServicesMd.get_items(service_id)
-    m.model2form(data, form)
-    image = "/" + "/".join(data.image.split("/")[1:])
+    with m.sql_cursor() as db:
+        data = db.query(m.ServicesMd).filter_by(id = service_id).first()
+        m.model2form(data, form)
+        image = "/" + "/".join(data.image.split("/")[1:])
 
     return render_template('service_edit.html', form=form, data=data, image=image)
 
+
+
+@app.route('/service/delete/<int:service_id>')
+def delete(service_id):
+
+    with m.sql_cursor() as db:
+        param = {'id': service_id}
+       
+        db.query(m.ServicesMd).filter_by(**param).delete()
+
+        return redirect(url_for('bk_cfg.service_view')) 
+
+    

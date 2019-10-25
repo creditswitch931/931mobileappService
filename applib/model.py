@@ -46,7 +46,7 @@ class ServicesMd(Base):
 
     @staticmethod
     def get_service():
-        qry = []
+        qry = ()
         with sql_cursor() as db:
             qry = db.query(ServicesMd.id, ServicesMd.label).all()
         

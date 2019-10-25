@@ -1,26 +1,21 @@
 {% extends 'base.html' %}
 
 {% block in_style %}
-	.top{
-	margin-top: 7%;
-}
-.move_right{
-	text-align: right;
-}
 
 {% endblock %}
 
-{% block main %}
 
+
+{% block main %}
 
 <div class="col-md-6 offset-md-3">
 	<div class="top">
 		<h3 class="form_title">
-			<b> List </b>
+			<b> Item List </b>
 		</h3>
 	</div> 
 	<div class="text-right space_between">
-		<a class="btn btn-success" href="{{url_for('service_item.item_add')}}"> <i class="fas fa-plus"></i> &nbsp; Add </a>
+		<a class="btn" href="{{url_for('service_item.item_add')}}"> <i class="fas fa-plus"></i> &nbsp; Add </a>
 	</div>
 	
 	<table class="table table-condensed table-striped">
@@ -38,13 +33,20 @@
 				<td> {{ item.name | title }} </td>
 				<td> {{ item.label }} </td>
 				<td> {{item.service_name }} </td>
-				<td class="move_right"><a 
-							href="{{url_for('service_item.item_edit', 						item_id=item.id)}}" 
-							title="Edit" 
-							style="color: green">
-								<i class="fas fa-edit"></i>
-							</a>
-						</td>
+				<td class="move_right">
+						<a 
+						href="{{url_for('service_item.item_edit', 						item_id=item.id)}}" 
+						title="Edit" style="color: #007bff">
+							<i class="fas fa-edit"></i>
+						</a>
+						&nbsp;
+						<a 	href="{{url_for('service_item.delete', 						item_id=item.id)}}" 
+							title="Delete"  
+							style="color: #007bff" 
+							class="delete_item">
+							<i class="fas fa-trash-alt"></i> 
+						</a>
+				</td>
 			</tr>			
 		{% else %}
 			<tr>
@@ -58,5 +60,21 @@
 
 {% endblock %}
  
+{% block scripts %}
+	var deltItem = document.getElementsByClassName("delete_item");
+	
+	for (var i=0; i < deltItem.length; i++) {
+		deltItem[i].addEventListener('click', ask_delete.bind(this));
+	}
 
+	function ask_delete(e){
+		e.preventDefault();
+
+		if (confirm("Do you want to Delete ?")) {
+			window.location = e.currentTarget.href;
+			return true;
+		} 
+		return false;	
+	}
+{% endblock %}
 
