@@ -32,7 +32,7 @@ def add():
         with m.sql_cursor() as db:
 
             _mdl = m.ServicesMd()
-            m.form2model(form, _mdl)
+            m.form2model(form, _mdl, exclude=['image'])
             _mdl.image = _path
 
             db.add(_mdl)
@@ -75,7 +75,7 @@ def edit(service_id):
 
         with m.sql_cursor() as db:
             qry = db.query(m.ServicesMd).get(service_id)
-            m.form2model(form, qry)
+            m.form2model(form, qry, exclude=['image'])
             qry.image = _path or qry.image
             
             db.add(qry)

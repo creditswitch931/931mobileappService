@@ -30,7 +30,7 @@ def item_add():
         with m.sql_cursor() as db:
  
             _mdl = m.ServiceItems()
-            m.form2model(form, _mdl)
+            m.form2model(form, _mdl, exclude=['image'])
             _mdl.image = _path
 
             db.add(_mdl)
@@ -79,7 +79,7 @@ def item_edit(item_id):
 
         with m.sql_cursor() as db:
             qry = db.query(m.ServiceItems).get(item_id)
-            m.form2model(form, qry)
+            m.form2model(form, qry, exclude=['image'])
             qry.image = _path or qry.image
             
             # save to db 

@@ -6,8 +6,6 @@ import random
 from configobj import ConfigObj
 
 
-
-
 def get_config(header, key=None, filename='settings.cfg'):
 
 	cfg = ConfigObj(filename)

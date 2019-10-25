@@ -106,23 +106,17 @@ def register():
     url = h.get_config("API", "register")
 
     form = fm.RegistrationForm(**content)
+    fh = FormHandler(form, 
+                     exclude_data=["password", "password_confirmation"],
+                     exclude_field=['mac_address'])
+
     if request.method == 'GET':
-
-        fh = FormHandler(form, 
-                         exclude_data=["password", "password_confirmation"],
-                         exclude_field=['mac_address'])
-
         resp.add_params("fields", fh.render())
-
         resp.success()
         return resp.get_body()
 
 
-    if not form.validate():
-        fh = FormHandler(form, 
-                        exclude_data=["password", "password_confirmation"],
-                        exclude_field=['mac_address'])
-
+    if not fh.is_validate():
 
         resp.add_params("fields", fh.render())
         resp.failed()
