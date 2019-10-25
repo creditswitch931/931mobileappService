@@ -6,8 +6,11 @@ from .resp_handler import Response, RequestHandler, FormHandler
 from applib.lib import helper  as h
 from applib import forms as fm 
 from applib import model as m
+from applib.api import service_handler as sh
 
-
+FORMS = {
+    'airtime': ''
+}
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -35,6 +38,16 @@ def get_base64_image(img_path):
 
     return schema + output
 
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
+
+def get_form_objects(entity):
+
+    entity_cls = getattr(sh, entity.title() +'Handler')        
+    form_cls = getattr(fm, entity_cls.__formCls__)
+    form_ins = FormHandler(form_cls())
+
+    return form_ins.render(), entity_cls.__url__ 
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -93,48 +106,43 @@ def get_services():
     return resp.get_body()
 
 
-
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
-
 
 @app.route("/get/service/items")
 def get_service_items():
     
     """
-        {
-            name : item_name,
-            label: item label,
-            img : display            
-        }
+        Set the form data required for the individual options
     """
 
     content = h.request_data(request)
     resp = Response()
     retv = []
 
-    print('\n\n', content, '\n\n')
-
     with m.sql_cursor() as db:
         qry = db.query(m.ServiceItems.name,
-                m.ServiceItems.label,
-                m.ServiceItems.image,
-                m.ServicesMd.label.label("service_label"),
-                m.ServicesMd.name.label("service_name")
-            ).join(
-                m.ServicesMd,
-                m.ServicesMd.id == m.ServiceItems.service_id
-            ).filter(m.ServiceItems.active == True,
-                     m.ServiceItems.service_id == content['id']
-                    ).all()
+                       m.ServiceItems.label,
+                       m.ServiceItems.image,
+                       m.ServicesMd.label.label("service_label"),
+                       m.ServicesMd.name.label("service_name")
+                       ).join(
+                        m.ServicesMd,
+                        m.ServicesMd.id == m.ServiceItems.service_id
+                       ).filter(m.ServiceItems.active == True,
+                                m.ServiceItems.service_id == content['id']
+                       ).all()
+
 
         for item in qry:
+            form_info = get_form_objects(item.service_name)
+
             retv.append({"name": item.name, 
                          "label": item.label,
                          "service_name": item.service_name,
                          "image": get_base64_image(item.image),
-                         "forms": "",
-                         "view": 2
+                         "forms": form_info[0],
+                         "url_path": form_info[1]
                         }
                 )
 
@@ -149,5 +157,18 @@ def get_service_items():
         resp.add_message("No matching data found...")
 
     return resp.get_body()
+
+
+
+@app.route("/service/vending", methods=['POST'])
+def process_service():
+    pass
+
+
+@app.route("/service/validate", methods=['POST'])
+def process_validation():
+    pass
+
+
 
 

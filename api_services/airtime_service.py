@@ -3,8 +3,7 @@ import bcrypt
 import requests
 import json
 import random
-from services.api_test import get_config, hash_data
-
+from .api_lib import get_config, hash_data
 
 
 def airtime_vending(login_id, public_key, private_key, amount, recipient, provider):
@@ -36,7 +35,7 @@ def airtime_vending(login_id, public_key, private_key, amount, recipient, provid
 	return retv
 
 
-
+# deprecated and will be removed 
 def send_sms(login_id, public_key, private_key, sender_id, msisdn, message_body):
 	transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
 
@@ -54,7 +53,3 @@ def send_sms(login_id, public_key, private_key, sender_id, msisdn, message_body)
 	retv = rh.send()
 	return retv
 
-
-
-if __name__ == '__main__':
-	main()

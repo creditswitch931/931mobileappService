@@ -122,7 +122,6 @@ class FormHandler:
             if field in self.exclude_field:
                 continue
 
-
             _f = {
                 "name" : obj.label.text,
                 "field": field,
@@ -147,12 +146,14 @@ class FormHandler:
         
         return 'default'
 
+
     def get_errormsg(self):       
 
         for fld, obj in self.form.errors.items():
             return "field {} {}".format(fld, obj[0])
 
 
-
+    def is_validate(self):        
+        return self.form.validate()
 
 

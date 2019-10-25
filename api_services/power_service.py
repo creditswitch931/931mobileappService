@@ -3,7 +3,7 @@ import bcrypt
 import requests
 import json
 import random
-from services.api_test import get_config, hash_data
+from .api_lib import get_config, hash_data
 
 
 def electricity_validate(login_id, public_key, private_key, customer_account_id, service_id):

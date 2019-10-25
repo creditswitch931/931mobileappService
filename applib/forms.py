@@ -63,17 +63,15 @@ class LoginForm(Form):
 class ForgotForm(Form):
     email = StringField("Email or Phone", [validators.Email()]) # custom validaton 
     
-    # def validate_email(form, field):
-    #     pass
 
 
 class Airtime(Form):
-    select_network = SelectField('Select network', [is_required()], coerce=int,
-                                  choices=[(0, 'Select ...'),
-                                           (1, 'MTN'),
-                                           (2, 'Glo'),
-                                           (3, '9mobile'),
-                                           (4, 'Airtel')])
+    # select_network = SelectField('Select network', [is_required()], coerce=int,
+    #                               choices=[(0, 'Select ...'),
+    #                                        (1, 'MTN'),
+    #                                        (2, 'Glo'),
+    #                                        (3, '9mobile'),
+    #                                        (4, 'Airtel')])
     amount = StringField('Enter amount', [is_required(), check_zero_sign()])
     phone = StringField('Phone Number', [is_required()])
     

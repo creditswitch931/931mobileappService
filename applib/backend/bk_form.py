@@ -31,7 +31,7 @@ class Service(Form):
 	category_name = StringField("Category Name", [is_required()], 
 								render_kw={'class_': "form-control"})
 
-	active = BooleanField("Active", default=True)
+	active = BooleanField("Active", [is_required()], default=True)
 
 
 class ServiceItem(Form):
@@ -45,9 +45,11 @@ class ServiceItem(Form):
 	image = FileField('Menu Icon', [], 
 					  render_kw={"class_": "form-control"})
 	
-	service_id = SelectField("Service", [is_required()], choices=m.ServicesMd.get_service(),
-						  render_kw={"class_": "form-control"}, coerce=int)
+	service_id = SelectField("Service", [is_required()], 
+							choices=m.ServicesMd.get_service(),
+						  	render_kw={"class_": "form-control"}, 
+						  	coerce=int)
 
-	active = BooleanField("Active", default=True) 
+	active = BooleanField("Active", [is_required()], default=True) 
 
 

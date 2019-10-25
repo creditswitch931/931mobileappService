@@ -3,7 +3,7 @@ import bcrypt
 import requests
 import json
 import random
-from services.api_test import get_config, hash_data
+from .api_lib import get_config, hash_data
 from applib.api.resp_handler import Response, RequestHandler, FormHandler
 
 

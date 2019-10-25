@@ -94,19 +94,25 @@ class MobileUser(Base):
 
 
 
-def form2model(formobj, model_ins):
+def form2model(formobj, model_ins, exclude=[]):
     counter = 0            
     for key, obj in formobj._fields.items():
+        if key in exclude:
+            continue
+
         if hasattr(model_ins, key):
             setattr(model_ins, key, obj.data)
             counter += 1 
 
     assert counter > 0 , "No model instance fields not found."
      
-def model2form(model_ins, form_ins):
+def model2form(model_ins, form_ins, exclude=[]):
 
     counter = 0
     for key, obj in form_ins._fields.items():
+        if key in exclude:
+            continue
+            
         if hasattr(model_ins, key):
             obj.data = getattr(model_ins, key)
             counter += 1
