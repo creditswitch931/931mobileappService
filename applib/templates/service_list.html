@@ -3,60 +3,68 @@
 
 {% block in_style %}
 {% endblock %}
+
 {% block main %}
 
 
-<div class="col-md-6 offset-md-3">
-	<div class="top">
-		<h3 class="form_title">
-			<b> Service List </b>
-		</h3>
-	</div> 
-	<div class="text-right space_between">
-		<a class="btn" href="{{url_for('bk_cfg.add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
-	</div>
-	
-	<table class="table table-condensed table-striped">
-		<thead>
-			<tr> 
-				<th> Name </th>
-				<th> Label </th>
-				<th> Category</th>
-				<th class="move_right">&nbsp;</th>
-			</tr>
-		</thead>
-		<tbody>
-		{% for item in data %}
-			<tr>
-				<td> {{ item.name | title }} </td>
-				<td> {{ item.label }} </td>
-				<td> {{ item.category_name }} </td>
-				<td class="move_right">
-					<a 
-						href="{{url_for('bk_cfg.edit', 						service_id=item.id)}}" 
-						title="Edit" style="color: #007bff">
-							<i class="fas fa-edit"></i>
-					</a>
-					&nbsp;
-					<a 	href="{{url_for('bk_cfg.delete', 						service_id=item.id)}}" 
-						title="Delete"  
-						style="color: #007bff" 
-						class="delete_service">
-						<i class="fas fa-trash-alt"></i> 
-					</a>
-				</td>
-			</tr>			
-		{% else %}
-			<tr>
-				<td colspan="4"> <i> no matching record found... </i></td>
-			</tr>
-		{% endfor %}
-		</tbody>
+<div class="col-md-10 offset-md-1">
+	<div class="item-box">
+		<div class="top">
+			<h3 class="form_title">
+				<b> Service List </b>
+			</h3>
+		</div> 
+		<div class="text-right space_between">
+			<a class="btn btn-info add_btn" href="{{url_for('bk_cfg.add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
+		</div>
+		
+		<table class="table table-condensed table-striped">
+			<thead>
+				<tr> 
+					<th> Name </th>
+					<th> Label </th>
+					<th> Category</th>
+					<th class="move_right">&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for item in data %}
+				<tr>
+					<td> {{ item.name | title }} </td>
+					<td> {{ item.label }} </td>
+					<td> {{ item.category_name }} </td>
+					<td class="move_right">
+						<a 
+							href="{{url_for('bk_cfg.edit', 						service_id=item.id)}}" 
+							title="Edit" style="color: #007bff">
+								<i class="fas fa-edit"></i>
+						</a>
+						&nbsp;
+						<a 	href="{{url_for('bk_cfg.delete', 						service_id=item.id)}}" 
+							title="Delete"  
+							style="color: #007bff" 
+							class="delete_service">
+							<i class="fas fa-trash-alt"></i> 
+						</a>
+					</td>
+				</tr>			
+			{% else %}
+				<tr>
+					<td colspan="4"> <i> no matching record found... </i></td>
+				</tr>
+			{% endfor %}
+			</tbody>
 
-	</table>
+		</table>
+	</div>
 </div>
 
 {% endblock %}
+
+
+{% block login %}
+{% endblock %}
+
 
 {% block scripts %}
 	var deltService = document.getElementsByClassName("delete_service");

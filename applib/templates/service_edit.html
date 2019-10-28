@@ -14,52 +14,47 @@
 
 {% block main %}
 
-	<div class="col-md-6 offset-md-3">
-		<div class="top">
-			<h3 class="form_title">
-				<b> Edit </b>
-			</h3>
-		</div>
-		<form action="" method="post" enctype="multipart/form-data">
+	<div class="col-md-8 offset-md-2">
+		<div class="item-box">
+			
+			<div class="top">
+				<h3 class="form_title">
+					<b> Edit </b>
+				</h3>
+			</div>
+			<br>
+			<form action="" method="post" enctype="multipart/form-data">
 
-			 {% for field in form %}
-                <div> 
+				{{ form_fields(form) }}
 
-                    <b>{{ field.label }}</b>
-                    {{ field }}
-                    <span>
-						{% if field.errors %}
-							{% for error in field.errors %}
-								{{error}}
-							{% endfor %}
-						{% endif %}
-					</span> 
+				 <div class="form-group">			 	
+				 	<img src="{{image}}" alt="Image" class="img-thumbnail">
+				 </div> 
+				<div>
+					<hr style="margin-top: 65px">
+					<div class="row">
+						<div class="col-md-6">
+							<button type="submit" 
+							class="btn btn-primary btn-block send_btn"> Add 
+							</button>
+						</div>
 
-                </div>
-            {% endfor %}
-
-			 <div class="form-group">			 	
-			 	<img src="{{image}}" alt="Image" class="img-rounded">
-			 </div> 
-			<div>
-				<hr style="margin-top: 65px">
-				<div class="row">
-					<div class="col-md-6">
-						<button type="submit" 
-						class="btn btn-primary btn-block send_btn"> Add 
-						</button>
-					</div>
-
-					<div class="col-md-6">
-						<a href="{{url_for('bk_cfg.service_view')}}" 
-						class="btn btn-block back_btn"> Cancel 
-						</a>
+						<div class="col-md-6">
+							<a href="{{url_for('bk_cfg.service_view')}}" 
+							class="btn btn-block back_btn"> Cancel 
+							</a>
+						</div>
 					</div>
 				</div>
-			</div>
-			
-		</form>
+				
+			</form>
+		</div>
 
 	</div>
 
 {% endblock %}
+
+{% block login %}
+{% endblock %}
+
+	

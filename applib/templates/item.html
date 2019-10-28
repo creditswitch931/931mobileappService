@@ -3,51 +3,43 @@
 
 {% block main %}
 
-	<div class="col-md-6 offset-md-3">
-		<div class="top">
-			<h3 class="form_title">
-				<b> Item </b>
-			</h3>
-		</div>
-		<form action="" method="post" enctype="multipart/form-data">
-
-            {% for field in form %}
-                <div>  
-
-                    <b>{{ field.label }}</b>
-                    {{ field }}
-                    <span>
-						{% if field.errors %}
-							{% for error in field.errors %}
-								{{error}}
-							{% endfor %}
-						{% endif%}
-					</span>
-
-                </div>
-            {% endfor %}
-
-			<div>
-				<hr style="margin-top: 65px">
-				<div class="row">
-					<div class="col-md-6">
-						<button type="submit" 
-						class="btn btn-primary btn-block send_btn"> Add 
-						</button>
-						
-					</div>
-
-					<div class="col-md-6">
-						<a href="{{url_for('service_item.item_view')}}" 
-						class="btn btn-block back_btn"> Cancel 
-						</a>
-					</div>
-				</div>
-
-			</div>
+	<div class="col-md-8 offset-md-2">
+		<div class="item-box">
 			
-		</form>
+			<div class="top">
+				<h3 class="form_title">
+					<b class="title"> Item </b>
+				</h3>
+			</div>
+			<br>
+			<form action="" method="post" enctype="multipart/form-data">
+
+	            {{form_fields(form)}}
+
+				<div>
+					<hr style="margin-top: 65px">
+					<div class="row">
+						<div class="col-md-6">
+							<button type="submit" 
+							class="btn btn-primary btn-block send_btn"> Add 
+							</button>
+						</div>
+
+						<div class="col-md-6">
+							<a href="{{url_for('service_item.item_view')}}" 
+							class="btn btn-block back_btn"> Cancel 
+							</a>
+						</div>
+					</div>
+
+				</div>
+				
+			</form>
+		</div>
 
 	</div>
 
+{% endblock %}
+
+{% block login %}
 {% endblock %}
