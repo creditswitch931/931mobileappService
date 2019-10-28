@@ -11,13 +11,85 @@
 
 
     <style>
+        /* cyrillic-ext */
+        @font-face {
+          font-family: 'Merriweather';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Merriweather Regular'), local('Merriweather-Regular'), url('/static/fonts/u-440qyriQwlOrhSvowK_l5-cSZMZ-Y.woff2') format('woff2');
+          unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+        }
+
+        /* cyrillic */
+        @font-face {
+          font-family: 'Merriweather';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Merriweather Regular'), local('Merriweather-Regular'), url('/static/fonts/u-440qyriQwlOrhSvowK_l5-eCZMZ-Y.woff2') format('woff2');
+          unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+
+        /* vietnamese */
+        @font-face {
+          font-family: 'Merriweather';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Merriweather Regular'), local('Merriweather-Regular'), url('/static/fonts/u-440qyriQwlOrhSvowK_l5-cyZMZ-Y.woff2') format('woff2');
+          unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+        }
+
+        /* latin-ext */
+        @font-face {
+          font-family: 'Merriweather';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Merriweather Regular'), local('Merriweather-Regular'), url('/static/fonts/u-440qyriQwlOrhSvowK_l5-ciZMZ-Y.woff2') format('woff2');
+          unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* latin */
+        @font-face {
+          font-family: 'Merriweather';
+          font-style: normal;
+          font-weight: 400;
+          src: local('Merriweather Regular'), local('Merriweather-Regular'), url('/static/fonts/u-440qyriQwlOrhSvowK_l5-fCZM.woff2') format('woff2');
+          unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        html {
+            position: relative;
+            min-height: 100%;
+        }
         
         body{
             background: #eee;
+            padding-top: 4.5rem;
+            margin-bottom: 4.5rem;
+        }
+
+        div{
+            font-family: 'Merriweather', serif;
         }
 
         .form_title{
             text-align: center;
+        }
+
+        .allsides
+        {
+            /*width:350px;height:355px;*/
+            /*height:400px;*/
+            border: solid 1px #ccc;
+            background-color: #eee;
+            box-shadow: 0 0 10px rgba(0,0,0,0.6);
+            -moz-box-shadow: 0 0 10px rgba(0,0,0,0.6);
+            -webkit-box-shadow: 0 0 15px rgba(0,0,0,0.6);
+            -o-box-shadow: 0 0 10px rgba(0,0,0,0.6);
+            padding: 30px;
+            margin-top: 8%;
+            background: #fff;
+            padding-bottom: 50px;
+            border-radius: 5px;
         }
 
         .forgot_password{
@@ -44,47 +116,6 @@
             margin-top: 15px;
         }
 
-        .sidenav {
-          height: 100%;
-          width: 185px;
-          position: absolute;
-          z-index: 1;
-          top: 0;
-          left: 0;
-          background-color: #5d5b5b;
-          overflow-x: hidden;
-          transition: 0.5s;
-          padding-top: 60px;
-        }
-
-        .sidenav a {
-          padding: 8px 8px 8px 32px;
-          text-decoration: none;
-          font-size: 15px;
-          color: #fff;
-          display: block;
-          transition: 0.3s;
-        }
-
-        .sidenav a:hover {
-          color: #FBFCFC;
-          background-color: #007bff
-        }
-        
-        .sidenav .closebtn {
-          position: absolute;
-          top: 0;
-          right: 25px;
-          font-size: 36px;
-          margin-left: 50px;
-          color: #17202A
-        }
-
-        @media screen and (max-height: 450px) {
-          .sidenav {padding-top: 15px;}
-          .sidenav a {font-size: 18px;}
-        } 
-
         .tab {
             display: block;     
             padding: 22px 16px;
@@ -93,39 +124,19 @@
         }
 
         ul {
-          list-style-type: none;
-          margin: 0;
-          padding: 0;
-          overflow: hidden;
-          background-color: #5d5b5b;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #5d5b5b;
         }
 
         .float-right {
-          float: right;
+            float: right;
         }
 
         .float-left {
             float:left
-        }
-
-        .navlink {
-          display: block;
-          color: white;
-          text-align: center;
-          padding: 14px 16px;
-          text-decoration: none;
-        }
-
-        li a:hover:not(.active) {
-          color: #FBFCFC;
-          background-color: #007bff;
-        }
-
-        .active {
-          background-color: #007bff;
-        }
-        .navborder{
-            border-radius: .25rem;
         }
         
         .top{
@@ -137,7 +148,8 @@
             /* box-shadow: 0px 2px 0px #ccc; */
             color: #444;
             text-shadow: 1px 1px 3px #fff;
-            font-family: monospace;
+            /*font-family: monospace;*/
+            margin-bottom: 20px;
         }
         
         .move_right{
@@ -154,89 +166,197 @@
             position: relative; 
             z-index: 0;
         }
-        .back_btn {border: solid 1px #ddd;
-                background-color: #F6F9FA; 
-                margin-bottom: 7px; margin-top: 5px
+        
+        .space_between {
+            margin-bottom: 10px;
+        }
+        .back_btn {
+            border: solid 1px #ddd;
+            background-color: #F6F9FA; 
+            margin-bottom: 7px; margin-top: 0px
         }
         
         .item-box{
-          border: solid 1px #ddd;
-          background-color: #fff;
-          margin-top: 5%;
-          padding: 20px 25px;
-          border-radius: 5px;
-          margin-bottom: 10%;
+            border: solid 1px #ddd;
+            background-color: #fff;
+            margin-top: 5%;
+            padding: 20px 25px;
+            border-radius: 5px;
+            margin-bottom: 10%;
         }
 
-        {%block in_style%}
-        {%endblock%}
+        form div{
+            margin-bottom: 15px;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 3.5rem;
+            line-height: 3.5rem;
+            background-color: #ccc;
+        }
+
+        .nav-link:hover {
+            background-color: #007bff;
+            transition: all 0.4s
+        }
+
+        .nav-link-collapse:after {
+            float: right;
+            content: '\f067';
+            font-family: 'FontAwesome';
+        }
+
+        .nav-link-show:after {
+            float: right;
+            content: '\f068';
+            font-family: 'FontAwesome';
+        }
+
+        .nav-item ul.nav-second-level {
+            padding-left: 0;
+        }
+
+        .nav-item ul.nav-second-level > .nav-item {
+            padding-left: 20px;
+        }
+
+        @media (min-width: 992px) {
+          .sidenav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 230px;
+            height: calc(100vh - 3.5rem);
+            margin-top: 3.5rem;
+            background: #343a40;
+            box-sizing: border-box;
+            border-top: 1px solid rgba(0, 0, 0, 0.3);
+          }
+
+          .navbar-expand-lg .sidenav {
+            flex-direction: column;
+          }
+
+          .content-wrapper {
+            margin-top: 50px;
+            margin-left: 230px;
+          }
+
+          .footer {
+            width: calc(100% - 230px);
+            margin-left: 230px;
+          }
+          .add_btn{
+            padding: 3px 10px;
+            font-size: 14px;
+          }
+        }
+
+        {% block in_style %}
+        {% endblock %}
 
     </style>
 </head>
 
 <body>
+    
+    {% macro form_fields(form) %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="exampleInputEmail1">{{ field.label }} </label>
+                {{field}}                
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <small id="emailHelp" class="form-text text-muted"> {{error}} </small>
+                    {% endfor %}
+                {% endif%}  
+            </div> 
+ 
+        {% endfor %}
+        
+
+    {% endmacro %}
 
     {% block admin %}
-        <div class="">
-            
-        <div class="top_menu">
-            <ul>
-              <li class="float-left">
-                <span class="navlink navborder" href="#home">CREDITSWITCH</span>
-              </li>
-              <li class="float-right">
+
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+            <span class="navbar-brand" href="#">Creditswitch</span>
+
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto sidenav" id="navAccordion">
+
+                <br />
+
+                <li class="nav-item">
+                    <a class="nav-link btn tab" 
+                        href="{{url_for('backend.admin')}}">
+                        <i class="fas fa-home fa-lg"></i>
+                        &nbsp; Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link btn tab" 
+                        href="{{url_for('bk_cfg.service_view')}}">
+                        <i class="fas fa-bars fa-lg"></i>
+                        &nbsp; Services
+                    </a>
+                </li>
+              
+                <li class="nav-item">
+                    <a class="nav-link btn tab" 
+                        href="{{url_for('service_item.item_view')}}">
+                        <i class="fas fa-sitemap fa-lg"></i>
+                        &nbsp; Items
+                    </a>
+                </li>
+              
+                <li class="nav-item">
+                    <a class="nav-link btn tab" href="#">
+                        <i class="fas fa-table fa-lg"></i>
+                        &nbsp; Transactions
+                    </a>
+                </li>
+
+            </ul>
+            <!--   <p class="form-inline ml-auto mt-2 mt-md-0">
                 <a class="navlink navborder" href="#user">
                     <i class="fas fa-user fa-lg"></i>User
                 </a>
-              </li>
-              <li class="float-right">
-                <a class="navlink navborder" href="#news" style="width: 84.45px;">News</a>
-              </li>
-            </ul>
-        </div>
-            
-       
-        
-        <div id="mySidenav" class="sidenav" style="margin-top: 0px;">
-            <a href="{{url_for('backend.admin')}}" class="btn tab"
-                style="">
-                <i class="fas fa-home fa-lg"></i>
-                &nbsp; Dashboard
-            </a>
+            </p> -->
+            </div>
+        </nav>
 
-            <a href="{{url_for('bk_cfg.service_view')}}" class="btn tab"
-                style="">
-                <i class="fas fa-bars fa-lg"></i>
-                &nbsp; Services
-            </a>
+        <main class="content-wrapper">
+          <div class="container-fluid">
+                {% block main %}
+                {% endblock %}
+          </div>
+        </main>
 
-            <a href="{{url_for('service_item.item_view')}}" 
-                class="btn tab"
-                style="">
-                <i class="fas fa-sitemap fa-lg"></i>
-                &nbsp; Items
-            </a>
-
-            <a href="#" 
-                class="btn tab"
-                style="">
-                <i class="fas fa-table fa-lg"></i>
-                &nbsp; Transactions
-            </a>
-        </div>
-        </div>
+        <footer class="footer">
+          <div class="container">
+              <div class="text-center">
+                  <span>©2019 Creditswitch Limited</span>
+              </div>
+          </div>
+        </footer>
     {% endblock %}
     
     <div class="container main">
-        <!-- <div class="row"> -->
-            {% block main %}
+        <div class="row">
+            {% block login %}
             {% endblock %}
-        <!-- </div> -->
+        </div>
     </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/ --><!-- bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script type="text/javascript">
     function openNav() {
       document.getElementById("mySidenav").style.width = "250px";
@@ -245,6 +365,13 @@
     function closeNav() {
       document.getElementById("mySidenav").style.width = "0";
     }
+
+    // $(document).ready(function() {
+    //     $('.nav-link-collapse').on('click', function() {
+    //         $('.nav-link-collapse').not(this).removeClass('nav-link-show');
+    //         $(this).toggleClass('nav-link-show');
+    //     });
+    // });
 
     {% block scripts %}
     {% endblock %}
