@@ -72,17 +72,18 @@ class Airtime(Form):
     #                                        (2, 'Glo'),
     #                                        (3, '9mobile'),
     #                                        (4, 'Airtel')])
-    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required()])
+    amount = IntegerField('Enter amount', [is_required(), check_zero_sign()])
+    phone = IntegerField('Phone Number', [is_required()])
     
 
 
 class Electricity(Form):
-    select_disco = SelectField('Select disco', [is_required()], coerce=int,
-                                  choices=[(0, 'Select ...'),
-                                           (1, 'Ikeja distribution company'),
-                                           (2, 'Eko distribution company'),
-                                           (3, 'Ibadan distribution company')])
+    # select_disco = SelectField('Select disco', [is_required()], coerce=int,
+    #                               choices=[(0, 'Select ...'),
+    #                                        (1, 'Ikeja distribution company'),
+    #                                        (2, 'Eko distribution company'),
+    #                                        (3, 'Ibadan distribution company')])
+
     meter_number = StringField('Enter meter number', [is_required(), number_check()])
     amount = StringField('Enter amount', [is_required(), check_zero_sign()])
     phone = StringField('Phone Number', [is_required()])

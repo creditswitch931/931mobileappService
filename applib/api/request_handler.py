@@ -46,8 +46,10 @@ def get_form_objects(entity):
     entity_cls = getattr(sh, entity.title() +'Handler')        
     form_cls = getattr(fm, entity_cls.__formCls__)
     form_ins = FormHandler(form_cls())
+    
 
-    return form_ins.render(), entity_cls.__url__ 
+
+    return form_ins.render(), entity_cls.__url__, entity_cls.__form_label__
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -121,9 +123,12 @@ def get_service_items():
     retv = []
 
     with m.sql_cursor() as db:
-        qry = db.query(m.ServiceItems.name,
+        qry = db.query(
+                       m.ServiceItems.id,
+                       m.ServiceItems.name,
                        m.ServiceItems.label,
                        m.ServiceItems.image,
+                       m.ServiceItems.label_desc,
                        m.ServicesMd.label.label("service_label"),
                        m.ServicesMd.name.label("service_name")
                        ).join(
@@ -139,10 +144,13 @@ def get_service_items():
 
             retv.append({"name": item.name, 
                          "label": item.label,
+                         "item_id": item.id,
+                         "label_desc": item.label_desc,
                          "service_name": item.service_name,
                          "image": get_base64_image(item.image),
                          "forms": form_info[0],
-                         "url_path": form_info[1]
+                         "url_path": form_info[1],
+                         "btn_label": form_info[2]
                         }
                 )
 
@@ -162,12 +170,44 @@ def get_service_items():
 
 @app.route("/service/vending", methods=['POST'])
 def process_service():
-    pass
+    
+    content = h.request_data(request)
+    resp = Response()
+
+    print("\n", content, '\n')
+    # {'service_id': 1, 'name': 'mtn', 'item_id': 1, 
+    # 'service_name': 'airtime', 'amount': '897889', 'phone': '58247'}
+
+
+    resp.success()
+    resp.add_message("Transaction successfull")
+    resp.add_params("transaction_id", 10)
+    return resp.get_body()
+
+
 
 
 @app.route("/service/validate", methods=['POST'])
 def process_validation():
-    pass
+    
+    content = h.request_data(request)
+
+    # form_object
+    # {'meter_number': '09900', 'amount': '9890-0-', 'phone': 'Eefj', 
+    # 'service_id': 2, 'name': 'ibadan_distro', 'item_id': 6, 
+    # 'service_name': 'Electricity'} 
+
+    print("\n", content, '\n')
+
+    resp = Response()
+
+    resp.success()
+    resp.add_message("Validation successfull")
+    resp.add_params("transaction_id", 10)
+
+    return resp.get_body()
+
+
 
 
 

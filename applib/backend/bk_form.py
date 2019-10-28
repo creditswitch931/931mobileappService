@@ -41,6 +41,9 @@ class ServiceItem(Form):
 
 	label = StringField("Label", [is_required()], 
 						render_kw={"class_": "form-control"})
+	label_desc = StringField("Label Description", [is_required()],
+							  render_kw={'class_': "form-control"}
+							 )
 
 	image = FileField('Menu Icon', [], 
 					  render_kw={"class_": "form-control"})
@@ -48,7 +51,9 @@ class ServiceItem(Form):
 	service_id = SelectField("Service", [is_required()], 
 							choices=m.ServicesMd.get_service(),
 						  	render_kw={"class_": "form-control"}, 
-						  	coerce=int) 
+						  	coerce=int)
+
+
 
 	active = BooleanField("Active", [is_required()], default=True) 
 

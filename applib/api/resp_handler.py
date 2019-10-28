@@ -144,6 +144,9 @@ class FormHandler:
         if _type =='IntegerField':
             return 'numeric'
         
+        if _type == "BooleanField":
+            return "checkbox"
+        
         return 'default'
 
 

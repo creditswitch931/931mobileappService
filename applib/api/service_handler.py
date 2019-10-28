@@ -8,8 +8,7 @@ from .resp_handler import FormHandler
 import importlib
 
 
-__all__ = ['ServiceHandler', 'AirtimeHandler']
-
+__all__ = ['ServiceHandler', 'AirtimeHandler', "ElectricityHandler"]
 
 
 class ServiceHandler:
@@ -53,12 +52,17 @@ class ServiceHandler:
 class AirtimeHandler(ServiceHandler):
 
     __name__ = 'airtime'
-    __url__ = '/api/process'
+    __url__ = "/api/service/vending"
     __formCls__ = 'Airtime'
+    __form_label__ = "Send"
     
 
 
-  
+class ElectricityHandler(ServiceHandler):
+    __name__ = "electricity"
+    __url__ = "/api/service/validate"
+    __formCls__ = "Electricity"
+    __form_label__ = "Validate"
 
 
 

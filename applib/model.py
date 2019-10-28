@@ -59,7 +59,8 @@ class ServiceItems(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
-    label = Column(String(120),  nullable=False)
+    label = Column(String(100),  nullable=False)
+    label_desc = Column(String(100), nullable=False)
     image = Column(Text)
     service_id = Column(Integer, ForeignKey("service_list.id"), 
                         nullable=False)
@@ -73,7 +74,8 @@ class ServiceItems(Base):
         with sql_cursor() as db:
             qry = db.query(ServiceItems.id, ServiceItems.name, 
                            ServiceItems.name, ServiceItems.label, 
-                           ServiceItems.image, ServiceItems.service_id
+                           ServiceItems.image, ServiceItems.service_id,
+                           ServiceItems.label_desc
                            ).filter_by(id=id).first()
         return qry 
 
