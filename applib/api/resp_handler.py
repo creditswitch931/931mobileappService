@@ -52,11 +52,16 @@ class Response:
             if key == "statusDescription":
                 self.add_message(value)
                 continue
+            elif key == 'statusMessage':
+                self.add_message(value)
+                continue
 
 
             self.add_params(key, value)
 
 
+    def status(self):
+        return self.params['responseCode'] == "0"
 
 
 
@@ -88,6 +93,7 @@ class RequestHandler:
             resp = output.status_code, {} 
             # log this exception 
         
+        print("=== Response Data ===", resp)
         return resp 
 
     def format_get_params(self):
@@ -130,7 +136,8 @@ class FormHandler:
                 "error" : obj.errors[0] if obj.errors else None,
                 "nextfield" : field_names[count] if count < total else None,
                 "type": self.set_type(obj.type),
-                "encrypt": True  if obj.type == 'PasswordField' else False
+                "encrypt": True  if obj.type == 'PasswordField' else False,
+                "is_editable": True # write code to determine invalid fields
             }
 
             self.fields.append(_f)
@@ -160,3 +167,11 @@ class FormHandler:
         return self.form.validate()
 
 
+    def get_fields(self):
+        
+        retv = {}
+
+        for key, obj in self.form._fields.items():
+            retv[key] = obj.data
+
+        return retv

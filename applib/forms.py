@@ -9,6 +9,8 @@ from wtforms.validators import Email, Length, ValidationError
 def check_zero_sign():
 
     def negative(form, field):
+        if not field.data:
+            raise ValidationError('field is required')
         if float(field.data) < 1:
             raise ValidationError("less than or eq 0 not allowed.")
     return negative
@@ -21,10 +23,26 @@ def number_check():
             raise ValidationError("numeric values only.")
     return check_numeric
 
+def validate_phone():
+
+    def check_format(form, field):
+        
+        if not field.data:
+            raise ValidationError('field is required')
+
+        if len(field.data) < 11 or len(field.data) > 11:
+            raise ValidationError("should be 11 digits only.")
+    
+    return check_format
+
+
 
 def alphanum_check():
 
     def check_alphanumeric(form, field):
+        if not field.data:
+            raise ValidationError('field is required')
+            
         if not str(field.data).isalnum():
             raise ValidationError("valid input required.")
     return check_alphanumeric
@@ -66,14 +84,9 @@ class ForgotForm(Form):
 
 
 class Airtime(Form):
-    # select_network = SelectField('Select network', [is_required()], coerce=int,
-    #                               choices=[(0, 'Select ...'),
-    #                                        (1, 'MTN'),
-    #                                        (2, 'Glo'),
-    #                                        (3, '9mobile'),
-    #                                        (4, 'Airtel')])
+
     amount = IntegerField('Enter amount', [is_required(), check_zero_sign()])
-    phone = IntegerField('Phone Number', [is_required()])
+    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
     
 
 

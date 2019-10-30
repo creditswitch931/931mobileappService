@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 from applib.lib import helper as h 
+import datetime 
 
 Base = declarative_base()
 ENGINE = create_engine(h.set_db_uri(), echo=True)
@@ -34,7 +35,7 @@ def sql_cursor():
 class ServicesMd(Base):
     __tablename__  = 'service_list'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
     name = Column(String(80), nullable=False)
     label = Column(String(120),  nullable=False)
     image = Column(Text)
@@ -56,12 +57,12 @@ class ServiceItems(Base):
     
     __tablename__  = 'service_items'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
     name = Column(String(80), nullable=False)
     label = Column(String(100),  nullable=False)
     label_desc = Column(String(100), nullable=False)
     image = Column(Text)
-    service_id = Column(Integer, ForeignKey("service_list.id"), 
+    service_id = Column(BigInteger, ForeignKey("service_list.id"), 
                         nullable=False)
 
     # field to determine f a serviceItem is active or inactive 
@@ -84,7 +85,7 @@ class MobileUser(Base):
 
     __tablename__ = "registered_users"
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
     full_name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     phone = Column(String(30), nullable=False)
@@ -94,6 +95,35 @@ class MobileUser(Base):
 
 
 
+class Transactions(Base):
+
+    __tablename__ = "transactions_table"
+
+    # remove the method with_variant 
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
+
+    trans_ref = Column(String(100), nullable=False)    
+    trans_desc = Column(String(100), nullable=False)
+    trans_code = Column(String(30), nullable=False)
+    trans_params = Column(Text, nullable=False)
+    trans_resp = Column(Text, nullable=False)
+    user_mac_address = Column(String(100), nullable=False)
+    user_id = Column(Integer, ForeignKey("registered_users.id"), nullable=False)
+    trans_type_id = Column(Integer, ForeignKey("service_items.id"), nullable=False)
+    date_created = Column(DateTime, nullable=False)
+
+    
+    @staticmethod
+    def save(**kwargs):
+        trans_ins = Transactions(**kwargs)
+        trans_ins.date_created = datetime.datetime.now()
+
+        with sql_cursor() as db:
+            db.add(trans_ins)
+
+
+    
+    
 
 def form2model(formobj, model_ins, exclude=[]):
     counter = 0            

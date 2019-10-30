@@ -90,6 +90,7 @@ def access_login():
     resp.add_params("menu", [])
     resp.add_params('programs', [])
     resp.add_params("name", "Jerrey Uzodinma Alpha")
+    resp.add_params('user_id', 3) # get this from the mobile_usertable 
 
     return resp.get_body()
 

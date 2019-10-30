@@ -11,6 +11,8 @@ from wtforms.form import Form
 from applib.forms import is_required
 from applib import model as m 
 
+
+
 class LoginForm(Form):
 
 	usr_name = StringField("Username", [is_required()], 
@@ -19,6 +21,8 @@ class LoginForm(Form):
 	psd_wrd = PasswordField("Password", [is_required()],
 							render_kw={"class_": "form-control"})
 		 
+
+
 class Service(Form):
 	
 	name = StringField("Name", [is_required()], 

@@ -4,6 +4,10 @@ from configobj import ConfigObj
 import json
 import os, base64
 
+import string
+from random import randint, choice
+
+
 def get_config(header, key=None, filename='settings.cfg'):
 
     cfg = ConfigObj(filename)
@@ -35,28 +39,31 @@ def request_data(request):
 
 def switch_loggers(log_msg=' '):
 
-	from sentry_sdk import capture_message
-	
-	cfg = get_config("SENTRY")
-	if cfg.get("enabled") == '0':
-		capture_message(log_msg)
+    from sentry_sdk import capture_message
+    
+    cfg = get_config("SENTRY")
+    if cfg.get("enabled") == '0':
+        capture_message(log_msg)
 
-	else:
-		log_handler(log_msg) # call the log handler 
+    else:
+        log_handler(log_msg) # call the log handler 
 
 
 
 def log_handler(log_msg=''):
-	
-	# application logger function 
-	# :return logger_obj:  this returns an object that will trap exceptions to a file.
-	# if the log_msg contains data, it will log to the logger_objs file specified. 
-	pass
+    
+    # application logger function 
+    # :return logger_obj:  this returns an object that will trap exceptions to a file.
+    # if the log_msg contains data, it will log to the logger_objs file specified. 
+    pass
 
 
 def unloadJson(value):
     return json.loads(value.decode('utf-8'))
 
+
+def dump2json(value):
+    return json.dumps(value)
 
 
 def currency_formatter(value):
@@ -160,4 +167,19 @@ def save_file(img_obj, pathfolder):
         img_obj.save(path)
 
     return path 
+
+
+
+def random_num(n):
+    range_start = 10**(n-1)
+    range_end = (10**n)-1
+    out = randint(range_start, range_end)
+    return str(out)
+
+
+def random_alphanum(size=6):
+    #ascii_uppercase
+    chars=string.ascii_lowercase + string.digits    
+    return ''.join(choice(chars) for _ in range(size))
+
 
