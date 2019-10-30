@@ -8,7 +8,8 @@ from applib.api.resp_handler import RequestHandler
  
 
 def airtime_vending(login_id, amount, recipient, provider, 
-                    request_id, public_key='j6kHi1NXAOjrHFk0', private_key="XY1t9Y159hWJaETD"):
+                    request_id, public_key='j6kHi1NXAOjrHFk0', 
+                    private_key="XY1t9Y159hWJaETD"):
 
     # request_id = random.randrange(10000000, 99999999)
     # request_id = str(request_id)

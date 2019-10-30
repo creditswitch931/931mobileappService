@@ -89,6 +89,10 @@ class Airtime(Form):
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
     
 
+class ElectricityValidate(Form):
+    
+    meter_number = StringField("Meter Number", [is_required(), number_check()])
+    
 
 class Electricity(Form):
     # select_disco = SelectField('Select disco', [is_required()], coerce=int,
@@ -97,8 +101,8 @@ class Electricity(Form):
     #                                        (2, 'Eko distribution company'),
     #                                        (3, 'Ibadan distribution company')])
 
-    meter_number = StringField('Enter meter number', [is_required(), number_check()])
-    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
+    meter_number = StringField('Meter Number', [is_required(), number_check()])
+    amount = StringField('Amount', [is_required(), check_zero_sign()])
     phone = StringField('Phone Number', [is_required()])
     
 

@@ -79,10 +79,15 @@ class ServiceHandler:
 
     def printout_header(self):        
         return [
-                ("center", "LOGO"),                
-                ('center', self.__ServiceName__),
-                ("underline", "_-" * 20 ),
-                ("left", "Date: {}".format( self.get_date() ) )
+                ("cmd", "center"), 
+                ("image", h.get_logo()),
+                ("out", "\r"),
+                ("cmd", 'center'),
+                ('out', self.__ServiceName__),
+                ("cmd", "left"), 
+                ('out', "Date: {}".format( self.get_date() ) ),
+                ("out", "_+" * 15 ),
+
             ]
 
 
@@ -91,10 +96,11 @@ class ServiceHandler:
         # may be the mac_address is also sufficient
 
         return [
-                ("space", "\n\r"),
-                ("center", "***Thanks For your patronage***"),
-                ("center", "POWERED BY CREDIT SWITCH"),
-                ("space", "\n\r\n\r")
+                ("cmd", "center"),
+                ("out", "***Thanks For your patronage***"),
+                ("cmd", "center"), 
+                ("out", "POWERED BY CREDIT SWITCH"),
+                ("out", "\n\r\n\r\n\r\n\r")                
             ]
 
 
@@ -163,16 +169,29 @@ class AirtimeHandler(ServiceHandler):
 
 
     def printout(self):
+        cmd = "cmd"
+        out = "out"
+
         body = [
-            ("center", "NETWORK: " + self.req_data['network']),
-            ("center", "RECEIPIENT: " + self.req_data['phone']),
-            ("center", "AMOUNT: " + h.currency_formatter(float(self.req_data['amount'])) + " NGN"),
-            ("space", "\n\r"),
-            ("center",  "Trans Ref: {}".format(self.data['tranxReference']) ),
-            ("center", "Confirmation Code: " + self.data['confirmCode'] ),
-            ("center", "mReference: " + self.data['mReference']),            
-            ("left", "Transaction Response: " + self.resp_obj.params['responseDesc'].upper()),
-            ("underline", "_+" * 20 )
+            (cmd, "center"),
+            (out, "\n\r"),
+            (out, "NETWORK: {}".format(self.req_data['network'])),
+            (cmd, "center"),
+            (out, "RECEIPIENT: " + self.req_data['phone'] + ""),
+            (cmd, "center"),
+            (out, "AMOUNT: " + h.currency_formatter(float(self.req_data['amount'])) + " NGN"),
+            (out, "\n\r"),
+            (cmd, "center"),  
+            (out, "Trans Ref: {}".format(self.data['tranxReference'])),
+            (cmd, "center"), 
+            (out, "Confirmation Code: " + self.data['confirmCode']),
+            (cmd, "center"), 
+            (out, "mReference: " + self.data['mReference']),            
+            (cmd, "left"), 
+            (out, "Transaction Response: " + self.resp_obj.params['responseDesc'].upper()),
+            (cmd, "center"),
+            (out, "_+" * 15 ),
+            (out, "\n")
         ]
 
         return body
@@ -210,10 +229,13 @@ class AirtimeHandler(ServiceHandler):
 class ElectricityHandler(ServiceHandler):
     __name__ = "electricity"
     __url__ = "/api/service/validate"
-    __formCls__ = "Electricity"
+    __formCls__ = "ElectricityValidate"
     __form_label__ = "Validate"
-    __ServiceName__ = "PREPAID ELECTRICITY RECHARGE"
+    __ServiceName__ = "ELECTRIC BILL PAYMENT"
 
 
+    def get_service_form(self):
+        pass
+    
 
 

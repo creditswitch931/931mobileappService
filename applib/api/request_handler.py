@@ -260,6 +260,7 @@ def process_validation():
     if not resp.status():
         forms = fm_handler.render()
 
+    resp.success()
 
     resp.add_params('forms', forms)  
     return resp.get_body()

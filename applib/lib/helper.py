@@ -8,6 +8,19 @@ import string
 from random import randint, choice
 
 
+def get_logo():
+    location = get_config("COMPANY", "path")
+    
+    out = ''
+    with open(location, 'rb') as fl:
+        out = fl.read()
+
+    return utf_decode(ba64_encode(out))
+
+
+
+ 
+
 def get_config(header, key=None, filename='settings.cfg'):
 
     cfg = ConfigObj(filename)
