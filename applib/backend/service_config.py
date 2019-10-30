@@ -2,6 +2,8 @@
 from flask import (Blueprint, url_for, request, 
                     render_template, redirect)
 
+from flask_sqlalchemy import Pagination, BaseQuery
+from sqlalchemy_pagination import paginate
 from applib.lib import helper  as h
 from applib.backend import bk_form as fm 
 from applib import model as m 
@@ -50,14 +52,20 @@ def add():
 @app.route('/service/list', methods=['POST', 'GET'])
 def service_view():
     with m.sql_cursor() as db:
+        page = request.args.get('page', 1, type=int)
+        per_page=10
         data = db.query(m.ServicesMd.id,
                         m.ServicesMd.name,
                         m.ServicesMd.label,
                         m.ServicesMd.category_name
-              ).order_by(m.ServicesMd.id.desc()).limit(10).all()
+              ).order_by(m.ServicesMd.id.desc())
+        users, page_row = set_pagination(data, page, per_page)
+        
 
+      
 
-    return render_template('service_list.html', data=data)
+    return render_template('service_list.html', data=data, users=users, 
+                            page_row=page_row, cur_page=page)
 
 
 # +-------------------------+-------------------------+
@@ -101,3 +109,28 @@ def delete(service_id):
         return redirect(url_for('bk_cfg.service_view')) 
 
     
+
+
+
+
+def set_pagination(obj, cur_page, page_size):
+    
+    pager = paginate(obj, cur_page, page_size)
+ 
+    start_no = cur_page - 1 
+    if start_no < 1:
+        start_no = cur_page
+
+    counter = 0
+    page_lists = []
+
+    for x in range(start_no, pager.pages + 1 ):
+        page_lists.append(x)
+        counter += 1 
+        if counter > 7:
+            break
+
+
+    return  pager, page_lists
+
+

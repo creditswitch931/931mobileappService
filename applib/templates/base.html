@@ -123,13 +123,13 @@
             text-align: left;
         }
 
-        ul {
+       /* ul {
             list-style-type: none;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background-color: #5d5b5b;
-        }
+/*            background-color: #5d5b5b;
+        }*/
 
         .float-right {
             float: right;
@@ -267,11 +267,11 @@
         
         {% for field in form %}
             <div class="form-group">
-                <label for="exampleInputEmail1">{{ field.label }} </label>
+                <label for="form_field">{{ field.label }} </label>
                 {{field}}                
                 {% if field.errors %}
                     {% for error in field.errors %}
-                        <small id="emailHelp" class="form-text text-muted"> {{error}} </small>
+                        <small id="form_error" class="form-text text-muted"> {{error}} </small>
                     {% endfor %}
                 {% endif%}  
             </div> 
@@ -279,6 +279,45 @@
         {% endfor %}
         
 
+    {% endmacro %}
+
+    
+    {% macro pagination(obj, url) %}
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-8" style="padding: 0px;">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination pagination-sm" style="margin-bottom: 0px;">
+                            <li class="page-item">
+                                <a class="page-link" href="{{url_for(url, page=obj.previous_page)}}" tabindex="-1" aria-disabled="true">Previous</a>
+                            </li>
+                            {% for page in page_row %}
+                            {% if cur_page == page %}
+                            <li class="page-item active">
+                                <a class="page-link" href="{{url_for('bk_cfg.service_view', page=page)}}">{{page}} </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{url_for('bk_cfg.service_view', page=page)}}">{{page}} </a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                             <li class="page-item">
+                                <a class="page-link" href="#"> ... </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="{{url_for(url, page=obj.next_page)}}"> Next</a>
+                            </li>
+                        </ul>
+                        
+                    </nav>
+                </div>
+                <div class="col-4" style="padding: 0px; text-align: right;">
+                    Total Records : {{ obj.total }}
+                </div>
+            </div>
+        </div>
+        
     {% endmacro %}
 
     {% block admin %}
@@ -293,7 +332,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link btn tab" 
-                        href="{{url_for('backend.admin')}}">
+                        href="{{url_for('backend.dashboard')}}">
                         <i class="fas fa-home fa-lg"></i>
                         &nbsp; Dashboard
                     </a>
@@ -323,19 +362,21 @@
                 </li>
 
             </ul>
-            <!--   <p class="form-inline ml-auto mt-2 mt-md-0">
-                <a class="navlink navborder" href="#user">
-                    <i class="fas fa-user fa-lg"></i>User
+              <span class="form-inline ml-auto mt-2 mt-md-0">
+                <a class="nav-link" href="#user" style="color: rgba(255,255,255,.5);">
+                    <i class="fas fa-power-off"></i>Logout
                 </a>
-            </p> -->
+            </span>
             </div>
         </nav>
 
         <main class="content-wrapper">
-          <div class="container-fluid">
+            <div class="container-fluid">
+
                 {% block main %}
                 {% endblock %}
-          </div>
+
+            </div>
         </main>
 
         <footer class="footer">

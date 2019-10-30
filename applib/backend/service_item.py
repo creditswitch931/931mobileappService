@@ -1,13 +1,12 @@
 
 from flask import (Blueprint, url_for, request, 
                     render_template, redirect)
-
 from applib.lib import helper  as h
 from applib.backend import bk_form as fm 
 from applib import model as m 
 import os
 
-from .service_config import UPLOAD_FOLDER 
+from .service_config import UPLOAD_FOLDER, set_pagination
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -49,6 +48,8 @@ def item_view():
     form = fm.ServiceItem(**request.form)
 
     with m.sql_cursor() as db:
+        page = request.args.get('page', 1, type=int)
+        per_page=10
         
         data = db.query(m.ServiceItems.id,
                         m.ServiceItems.name,
@@ -57,12 +58,13 @@ def item_view():
                 ).join(
                     m.ServicesMd,
                     m.ServicesMd.id == m.ServiceItems.service_id
-                ).order_by(
-                    m.ServiceItems.id.desc()
-                ).limit(10).all()
+                ).order_by(m.ServiceItems.id.desc())
+
+        users, page_row = set_pagination(data, page, per_page)
 
 
-    return render_template('item_list.html', data=data)
+    return render_template('item_list.html', data=data, users=users, 
+                                    page_row=page_row, cur_page=page)
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+

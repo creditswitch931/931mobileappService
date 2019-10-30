@@ -9,33 +9,29 @@
     <div class="col-md-6 offset-md-3">
         <div class="allsides">
             
-            <div class="panel-heading">
+           <!--  <div class="panel-heading">
                 <h2 class="form_title"> Login </h2>
+            </div> -->
+            <div class="top">
+                <h3 class="form_title">
+                    <b> Login </b>
+                </h3>
             </div>
 
             <form action="" method="post" class="form" id="form">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <span class="text-danger" role="alert" style="font-size: 14px"> 
+                                <ul><li>{{ message }}</li></ul> 
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <div class="panel-body">
                     
-                    {% for field in form %}
-                        <div>
-                            
-                            <b>{{ field.label }}</b>
-                            {{ field }} 
-
-                        </div>
-                    {% endfor %}
+                    {{form_fields(form)}}
             
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                <span class="text-danger" role="alert" style="font-size: 14px"> 
-                                    <ul><li>{{ message }}</li></ul> 
-                                </span>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-
-
                     <div class="button">
                         <button class="btn btn-primary btn-block">Login
                         </button>

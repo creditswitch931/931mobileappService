@@ -43,15 +43,15 @@ def login():
 					flash(error)
 					return redirect(url_for('.login'))
 
-				
+
 	return render_template('login.html', form=form)
 
-@app.route("/admin")
-def admin():
+@app.route("/dashboard")
+def dashboard():
 	
 	# perform proper logout later on 
 
-	return render_template('admin.html')
+	return render_template('dashboard.html')
 
 @app.route("/logout")
 def logout_app():

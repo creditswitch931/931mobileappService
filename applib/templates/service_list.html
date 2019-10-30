@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
 
-
-{% block in_style %}
-{% endblock %}
-
 {% block main %}
 
 
@@ -28,7 +24,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for item in data %}
+			{% for item in users.items %}
 				<tr>
 					<td> {{ item.name | title }} </td>
 					<td> {{ item.label }} </td>
@@ -53,9 +49,13 @@
 					<td colspan="4"> <i> no matching record found... </i></td>
 				</tr>
 			{% endfor %}
+		
 			</tbody>
 
 		</table>
+
+		{{ pagination(users, "bk_cfg.service_view") }}
+		
 	</div>
 </div>
 
