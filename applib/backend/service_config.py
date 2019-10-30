@@ -2,7 +2,6 @@
 from flask import (Blueprint, url_for, request, 
                     render_template, redirect)
 
-from flask_sqlalchemy import Pagination, BaseQuery
 from sqlalchemy_pagination import paginate
 from applib.lib import helper  as h
 from applib.backend import bk_form as fm 
