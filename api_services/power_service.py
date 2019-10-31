@@ -15,8 +15,7 @@ def electricity_validate(login_id, customer_account_id, service_id):
     checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id)
     checksum_data = hash_data(checksum)
 
-    electricity_validate = get_config('SERVICES')
-    request_url = electricity_validate['electic_validate']
+    url = get_config('SERVICES', 'electic_validate')
 
     payload = {'loginId': login_id, 'key': public_key, 
                'customerAccountId': customer_account_id, 
@@ -28,7 +27,8 @@ def electricity_validate(login_id, customer_account_id, service_id):
 
 
 
-def electricity_vending(login_id, customer_account_id, service_id, amount, request_id):
+def electricity_vending(login_id, customer_account_id, service_id, 
+							amount, request_id):
     # request_id = random.randrange(10000000, 99999999)
     checksum = (str(login_id) + "|" + service_id + "|" + 
                 private_key + "|" + str(customer_account_id) + "|" 
@@ -37,8 +37,7 @@ def electricity_vending(login_id, customer_account_id, service_id, amount, reque
 
     checksum_data = hash_data(checksum)
 
-    electricity_vending = get_config('SERVICES')
-    request_url = electricity_vending['electic_recharge']
+    url = get_config('SERVICES', 'electic_recharge')
 
     # providerRef: to be generated from the validation response
 
@@ -54,29 +53,21 @@ def electricity_vending(login_id, customer_account_id, service_id, amount, reque
 
 
 
-def ikeja_prepaid_E01E(login_id, customer_account_id, service_id, amount, request_id):
+
+def ikeja_prepaid(login_id, customer_account_id, service_id, 
+						amount, request_id, customerDtNumber):
 
     # request_id = random.randrange(10000000, 99999999)
 
     checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
     checksum_data = hash_data(checksum)
 
-    electricity_vending = get_config('SERVICES')
-    request_url = electricity_vending['electic_recharge']
+    url = get_config('SERVICES', 'electic_recharge')
 
     payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
                 'serviceId': service_id, 'amount': amount, 'requestId': request_id, 
-                'checksum': checksum_data, 'providerRef':'150144078049',}
-
-    # providerRef: to be generated from the validation response
-
-    electricity = electricity_validate(login_id, public_key, private_key, customer_account_id, service_id)
-
-    for key, value in electricity.items():
-        if key == 'details':
-            for key, items in value.items():
-                if key == 'details':
-                    payload['customerDtNumber'] = items['customerDtNumber']
+                'checksum': checksum_data, 'providerRef':'150144078049', 
+                'customerDtNumber':customerDtNumber}
             
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -84,36 +75,30 @@ def ikeja_prepaid_E01E(login_id, customer_account_id, service_id, amount, reques
 
 
 
-def eko_prepaid_E05E(login_id, customer_account_id, service_id, amount, request_id):
+def eko_prepaid(login_id, customer_account_id, service_id, 
+					amount, request_id, customerDtNumber):
     # request_id = random.randrange(10000000, 99999999)
 
     checksum = str(login_id) + "|" + service_id + "|" + private_key + "|" + str(customer_account_id) + "|" + str(request_id) + "|" + str(amount)
     checksum_data = hash_data(checksum)
 
-    electricity_vending = get_config('SERVICES')
-    request_url = electricity_vending['electic_recharge']
+    electricity_vending = get_config('SERVICES', 'electic_recharge')
 
     payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
                 'serviceId': service_id, 'amount': amount, 'requestId': request_id, 
-                'checksum': checksum_data, 'providerRef':'150144078049',}
+                'checksum': checksum_data, 'providerRef':'150144078049',
+                'customerDtNumber': customerDtNumber}
 
     # providerRef: to be generated from the validation response
-
-    electricity = electricity_validate(login_id, public_key, private_key, customer_account_id, service_id)
-
-    for key, value in electricity.items():
-        if key == 'details':
-            for key, items in value.items():
-                if key == 'details':
-                    payload['customerDtNumber'] = items['customerDtNumber']
-            
+     
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
     return retv
 
 
  
-def ibadan_prepaid_E08E(login_id, customer_account_id, service_id, amount, request_id):
+def ibadan_prepaid(login_id, customer_account_id, service_id, 
+						amount, request_id, customerDtNumber):
     
     # request_id = random.randrange(10000000, 99999999)
 
@@ -124,26 +109,17 @@ def ibadan_prepaid_E08E(login_id, customer_account_id, service_id, amount, reque
 
     checksum_data = hash_data(checksum)
 
-    electricity_vending = get_config('SERVICES')
-    request_url = electricity_vending['electic_recharge']
+    url = get_config('SERVICES', 'electic_recharge')
 
     payload = {'loginId': login_id, 'key': public_key, 
                 'customerAccountId': customer_account_id, 
                 'serviceId': service_id, 'amount': amount, 
                 'requestId': request_id, 
                 'checksum': checksum_data, 
-                'providerRef':'150144078049', 'thirdPartyCode': 'AKRN'}
+                'providerRef':'150144078049', 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber}
 
     # thirdPartyCode and providerRef: to be generated from the validation response
-
-    electricity = electricity_validate(login_id, public_key, private_key, 
-                                       customer_account_id, service_id)
-
-    for key, value in electricity.items():
-        if key == 'details':
-            for key, items in value.items():
-                if key == 'details':
-                    payload['customerDtNumber'] = items['customerDtNumber']
             
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()

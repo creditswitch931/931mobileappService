@@ -5,9 +5,11 @@ import json
 import random
 from .api_lib import get_config, hash_data
 
+public_key='j6kHi1NXAOjrHFk0'
+private_key="XY1t9Y159hWJaETD"
 
 
-def data_vending(login_id, public_key, private_key, amount, recipient, provider):
+def data_vending(login_id, amount, recipient, provider):
     request_id = random.randrange(10000000, 99999999)
     request_id = str(request_id)
 
@@ -25,8 +27,7 @@ def data_vending(login_id, public_key, private_key, amount, recipient, provider)
 
     checksum_data = hash_data(checksum)
 
-    data_vending = get_config('SERVICES')
-    request_url = data_vending['airtime']
+    url = get_config('SERVICES', 'airtime')
 
     payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 
                 'amount': amount, 'recipient' : recipient , 'checksum': checksum_data} 
@@ -36,9 +37,8 @@ def data_vending(login_id, public_key, private_key, amount, recipient, provider)
     return retv
 
 
-def data_plan(login_id, public_key, service_id):
-    data_plan = get_config('SERVICES')
-    request_url = data_plan['data_plan']
+def data_plan(login_id, service_id):
+    url = get_config('SERVICES', 'data_plan')
 
     payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
 
