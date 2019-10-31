@@ -104,11 +104,12 @@ class RequestHandler:
 
 class FormHandler:
 
-    def __init__(self, form, exclude_data=[], exclude_field=[]):
+    def __init__(self, form, exclude_data=[], exclude_field=[], readonly_field=[]):
         self.form = form
         self.fields = []
         self.exclude_data = exclude_data
         self.exclude_field = exclude_field
+        self.readonly_field = readonly_field
 
     def render(self):
 
@@ -137,7 +138,7 @@ class FormHandler:
                 "nextfield" : field_names[count] if count < total else None,
                 "type": self.set_type(obj.type),
                 "encrypt": True  if obj.type == 'PasswordField' else False,
-                "is_editable": True # write code to determine invalid fields
+                "is_editable": False if field in self.readonly_field else True 
             }
 
             self.fields.append(_f)
@@ -154,6 +155,9 @@ class FormHandler:
         if _type == "BooleanField":
             return "checkbox"
         
+        if _type == 'HiddenField':
+            return 'hidden'
+            
         return 'default'
 
 

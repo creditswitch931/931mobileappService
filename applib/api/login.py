@@ -86,11 +86,17 @@ def access_login():
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
 
-    resp.api_response_format(retv[1])        
-    resp.add_params("menu", [])
-    resp.add_params('programs', [])
-    resp.add_params("name", "Jerrey Uzodinma Alpha")
-    resp.add_params('user_id', 3) # get this from the mobile_usertable 
+    resp.api_response_format(retv[1])
+
+    if resp.status():
+
+        resp.add_params("name", "Jerrey Uzodinma Alpha")
+        resp.add_params('user_id', 3) # get this from the mobile_usertable 
+
+    else:
+        resp.add_params('fields', fh.render())
+        # resp.add_message("username or password is incorrect")
+    
 
     return resp.get_body()
 
