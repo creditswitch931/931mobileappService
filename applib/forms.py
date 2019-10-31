@@ -70,6 +70,7 @@ class RegistrationForm(Form):
 
     password_confirmation = PasswordField("Confirm Password")
 
+
     
 class LoginForm(Form):    
      
@@ -78,6 +79,7 @@ class LoginForm(Form):
     mac_address = StringField("Mac Address")
 
     
+
 class ForgotForm(Form):
     email = StringField("Email or Phone", [validators.Email()]) # custom validaton 
     
@@ -89,12 +91,14 @@ class Airtime(Form):
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
     
 
+
 class ElectricityValidate(Form):
     
     meter_number = StringField("Meter Number", [is_required(), number_check()])
-    
 
-class Electricity(Form):
+
+
+class ElectricityVending(Form):
     # select_disco = SelectField('Select disco', [is_required()], coerce=int,
     #                               choices=[(0, 'Select ...'),
     #                                        (1, 'Ikeja distribution company'),
@@ -102,9 +106,50 @@ class Electricity(Form):
     #                                        (3, 'Ibadan distribution company')])
 
     meter_number = StringField('Meter Number', [is_required(), number_check()])
+    name = StringField('Name', [is_required()])
     amount = StringField('Amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required()])
-    
+    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
+
+
+
+class IkejaPrepaid(Form):
+    meter_number = StringField('Meter Number', [is_required(), number_check()])
+    name = StringField('Name', [is_required()])
+    amount = StringField('Amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
+    address = StringField('Address')
+    customerDtNumber = StringField('CustomerDtNumber')
+
+
+
+class EkoPrepaid(Form):
+    meter_number = StringField('Meter Number', [is_required(), number_check()])
+    name = StringField('Name', [is_required()])
+    amount = StringField('Amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
+    address = StringField('Address')
+    customerDtNumber = StringField('CustomerDtNumber')
+
+
+
+class IbadanPrepaid_E08E(Form):
+    meter_number = StringField('Meter Number', [is_required(), number_check()])
+    name = StringField('Name', [is_required()])
+    amount = StringField('Amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
+    address = StringField('Address')
+    customerDtNumber = StringField('CustomerDtNumber')
+
+
+
+class AbujaPrepaid(Form):
+    meter_number = StringField('Meter Number', [is_required(), number_check()])
+    name = StringField('Name', [is_required()])
+    amount = StringField('Amount', [is_required(), check_zero_sign()])
+    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
+    address = StringField('Address')
+    customerDtNumber = StringField('CustomerDtNumber')
+
 
 
 class Data(Form):
@@ -126,6 +171,7 @@ class Startimes(Form):
     phone = StringField('Phone Number', [is_required()])
    
 
+
 class Gotv(Form):
     select_package = SelectField('Select a package', [is_required()],
                                   choices=[('select', 'Select ...'),
@@ -137,6 +183,7 @@ class Gotv(Form):
     iuc_number = StringField('Enter IUC number', [is_required(), number_check()])
     amount = StringField('Enter amount', [is_required(), check_zero_sign()])
     phone = StringField('Phone Number', [is_required()])
+    productCodes = StringField('Product Code')
     
 
 
@@ -154,6 +201,7 @@ class Dstv(Form):
     smartcard_number = StringField('Enter smartcard number', [is_required(), number_check()])
     amount = StringField('Enter amount', [is_required(), check_zero_sign()])
     phone = StringField('Phone Number', [is_required()])
+    productCodes = StringField('Product Code')
     
     
 
