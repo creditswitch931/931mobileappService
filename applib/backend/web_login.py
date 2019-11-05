@@ -6,6 +6,7 @@ from .bk_form import LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
 
+from applib.lib import helper  as h
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -25,29 +26,30 @@ def login():
 		username = form.usr_name.data
 		password = form.psd_wrd.data
 
-		url = h.get_config("API", "login")
-		login_content = {"username": username, "password": password, 
-							"mac_address":"00:24:D7:2B:55:64"}
-		req = RequestHandler(url, method=1, data=login_content)
-		resp = req.send()
+		user_name = h.get_config('LOGIN', 'username')
+		pass_word = h.get_config('LOGIN', 'password')
 
-		for key, value in resp[1].items():
-			if key == "statusCode":
-				if value == "00":
-					continue
-			if key == "is_admin":
-				if value == "1":
-					return redirect(url_for('bk_cfg.service_view'))
-				else:
-					error = 'Incorrect Username/Password'
-					flash(error)
-					return redirect(url_for('.login'))
+		if username == user_name and password == pass_word:
+			return redirect(url_for('bk_cfg.service_view'))
+		else:
+			url = h.get_config("API", "login")
+			login_content = {"username": username, "password": password}
+			req = RequestHandler(url, method=1, data=login_content)
+			resp = req.send()
 
+			if resp[1]['statusCode'] == "00" and resp[1]['is_admin'] == "1":
+				return redirect(url_for('bk_cfg.service_view'))
+			else:
+				error = 'Incorrect Username/Password'
+				flash(error)
 
 	return render_template('login.html', form=form)
 
+
 @app.route("/dashboard")
 def dashboard():
+	with m.sql_cursor() as db:
+		data_count=db.query(func.count(m.Transactions.id)).scalar()
 	
 	# perform proper logout later on 
 

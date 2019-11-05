@@ -123,14 +123,6 @@
             text-align: left;
         }
 
-       /* ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-/*            background-color: #5d5b5b;
-        }*/
-
         .float-right {
             float: right;
         }
@@ -355,9 +347,23 @@
                 </li>
               
                 <li class="nav-item">
-                    <a class="nav-link btn tab" href="#">
+                    <a class="nav-link btn tab" href="{{url_for('transaction.transaction_view')}}">
                         <i class="fas fa-table fa-lg"></i>
                         &nbsp; Transactions
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link btn tab" href="{{url_for('mobile.users')}}">
+                        <i class="fas fa-mobile-alt fa-lg"></i>
+                        &nbsp; Mobile
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link btn tab" href="#">
+                        <i class="fas fa-money-bill-wave-alt fa-lg"></i>
+                        &nbsp; Payments
                     </a>
                 </li>
 

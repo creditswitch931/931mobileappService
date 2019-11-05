@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block in_style %}
+{% endblock%}
+
+{% block main %}
+<div class="col-md-10 offset-md-1">
+	<div class="item-box">
+		<div class="top">
+			<h3 class="form_title">
+				<b> Mobile </b>
+			</h3>
+		</div> 
+
+		<table class="table table-condensed table-striped">
+			<thead>
+				<tr> 
+					<th> Name </th>
+					<th> Email </th>
+					<th> phone </th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for item in data %}
+				<tr>
+					<td> {{ item.full_name | title }} </td>
+					<td> {{ item.email }} </td>
+					<td> {{ item.phone }} </td>
+					
+				</tr>			
+			{% else %}
+				<tr>
+					<td colspan="4"> <i> no matching record found... </i></td>
+				</tr>
+			{% endfor %}
+		
+			</tbody>
+
+		</table>
+
+		
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block login %}
+{% endblock %}

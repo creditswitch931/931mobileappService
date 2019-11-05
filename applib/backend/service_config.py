@@ -48,7 +48,7 @@ def add():
 # +-------------------------+-------------------------+
 
 
-@app.route('/service/list', methods=['POST', 'GET'])
+@app.route('/service/view', methods=['POST', 'GET'])
 def service_view():
     with m.sql_cursor() as db:
         page = request.args.get('page', 1, type=int)
