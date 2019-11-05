@@ -15,24 +15,32 @@
 		<div class="text-right space_between">
 			<a class="btn btn-info add_btn" href="{{url_for('transaction.add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
 		</div>
-		
+
 		<table class="table table-condensed table-striped">
 			<thead>
 				<tr> 
+					<th> Date </th>
 					<th> Name </th>
-					<th> Reference No </th>
-					<th> Description</th>
+					<th> Service </th>
+					<th> Status </th>
+					<th> Recepient </th>
 					<th class="move_right">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 			{% for item in data %}
 				<tr>
-					<td> {{ item.full_name | title }} </td>
-					<td> {{ item.trans_ref }} </td>
+					<td> {{ item.date_created.strftime(
+									"%Y-%m-%d %H:%M"
+									)}} </td>
+					<td> {{ item.item_name | title }} </td>
+					<td> {{ item.service_name }} </td>
 					<td> {{ item.trans_desc }} </td>
+					<td> {% set parameter = item.trans_params %}
+						{{parameter}} </td>
 					<td class="move_right">
-						<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target-id="1" data-target="#myModal">View All Details</button>
+						<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target-id="1" data-target="#myModal">View All Details
+						</button>
 					</td>
 					
 				</tr>			

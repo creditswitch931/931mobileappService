@@ -89,6 +89,7 @@ class MobileUser(Base):
     full_name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     phone = Column(String(30), nullable=False)
+    mac_address = Column(String(15), nullable=False)
 
     # field to determine if a user is active or inactive 
     active = Column(Boolean)

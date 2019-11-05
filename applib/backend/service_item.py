@@ -43,7 +43,7 @@ def item_add():
 # +-------------------------+-------------------------+
 
 
-@app.route('/item/list', methods=['POST', 'GET'])
+@app.route('/item/view', methods=['POST', 'GET'])
 def item_view():
     form = fm.ServiceItem(**request.form)
 

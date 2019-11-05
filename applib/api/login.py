@@ -4,6 +4,7 @@ from flask import (Blueprint, url_for, request, render_template)
 from .resp_handler import Response, RequestHandler, FormHandler
 from applib.lib import helper  as h
 from applib import forms as fm 
+from applib import model as m
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -131,7 +132,18 @@ def register():
 
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
+
+    if retv[1]['statusCode'] == "00":
+        
+        with m.sql_cursor() as db:
+            _mdl = m.MobileUser()
+            m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation'])
+            _mdl.full_name = content['full_name']
+            _mdl.active = True
+            db.add(_mdl)
+
     resp.api_response_format(retv[1])
+ 
     return resp.get_body()
 
 
