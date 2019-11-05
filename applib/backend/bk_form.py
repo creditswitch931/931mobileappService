@@ -35,7 +35,7 @@ class Service(Form):
 	category_name = StringField("Category Name", [is_required()], 
 								render_kw={'class_': "form-control"})
 
-	active = BooleanField("Active", [is_required()], default=True)
+	active = BooleanField("Active", [], default=False)
 
 
 class ServiceItem(Form):
@@ -57,8 +57,6 @@ class ServiceItem(Form):
 						  	render_kw={"class_": "form-control"}, 
 						  	coerce=int)
 
-
-
-	active = BooleanField("Active", [is_required()], default=True) 
+	active = BooleanField("Active") 
 
 

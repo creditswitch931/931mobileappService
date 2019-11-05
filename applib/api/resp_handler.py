@@ -18,6 +18,8 @@ class Response:
     def add_params(self, key, value):
         self.params['data'].append({key: value})
 
+    def mode(self, indicator):
+        self.params['validation'] = indicator
 
     def add_message(self, message):
         self.params["responseDesc"] =  message
@@ -129,16 +131,22 @@ class FormHandler:
             if field in self.exclude_field:
                 continue
 
+            if field == 'customerDtNumber':
+                print('\n\n',obj.type, '\n\n')
+
             _f = {
                 "name" : obj.label.text,
                 "field": field,
-                "value": obj.data if field not in self.exclude_data else None,
+                "value": self.get_data(field, obj.data),
                 "retkey" : "next" if count < total else "done" ,
                 "error" : obj.errors[0] if obj.errors else None,
                 "nextfield" : field_names[count] if count < total else None,
-                "type": self.set_type(obj.type),
+                "keytype": self.set_keytype(obj.type),
                 "encrypt": True  if obj.type == 'PasswordField' else False,
-                "is_editable": False if field in self.readonly_field else True 
+                "is_editable": False if field in self.readonly_field else True,
+                "is_hidden": True  if obj.type == 'HiddenField' else False,
+                "type": self.get_type(obj.type),
+                "choices": self.get_field_choices(obj)
             }
 
             self.fields.append(_f)
@@ -146,8 +154,42 @@ class FormHandler:
 
         return self.fields
 
+    def get_field_choices(self, obj):
 
-    def set_type(self, _type):
+        if not hasattr(obj, "choices"):
+            return []
+
+        return obj.choices 
+
+    def get_type(self, _type):
+
+        if _type == 'SelectField':
+            return "Picker"
+
+        elif _type == 'HiddenField':
+            return 'Hidden'
+
+        elif _type == 'BooleanField':
+            return 'Checkbox'
+
+        elif _type == 'ButtonField':
+            return "Button"
+
+
+        return "TextInput"
+
+
+    def get_data(self, name, value):
+
+        if name not in self.exclude_data:
+            if value:
+                return str(value)
+
+        return None
+
+
+
+    def set_keytype(self, _type):
 
         if _type =='IntegerField':
             return 'numeric'
@@ -155,10 +197,16 @@ class FormHandler:
         if _type == "BooleanField":
             return "checkbox"
         
-        if _type == 'HiddenField':
-            return 'hidden'
+        # if _type == 'HiddenField':
+        #     return 'hidden'
             
         return 'default'
+
+
+    def check_ishidden(self, _type):
+
+        if _type == 'HiddenField':
+            return {"display": None}
 
 
     def get_errormsg(self):       

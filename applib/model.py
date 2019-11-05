@@ -75,7 +75,7 @@ class ServiceItems(Base):
             qry = db.query(ServiceItems.id, ServiceItems.name, 
                            ServiceItems.name, ServiceItems.label, 
                            ServiceItems.image, ServiceItems.service_id,
-                           ServiceItems.label_desc
+                           ServiceItems.label_desc, ServiceItems.active
                            ).filter_by(id=id).first()
         return qry 
 

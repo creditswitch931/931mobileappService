@@ -89,8 +89,10 @@ def edit(service_id):
         return redirect(url_for("bk_cfg.service_view"))
 
     with m.sql_cursor() as db:
-        data = db.query(m.ServicesMd).filter_by(id = service_id).first()
+        data = db.query(m.ServicesMd).filter_by(id=service_id).first()
         m.model2form(data, form)
+        form.active.data = data.active == 1
+        
         image = "/" + "/".join(data.image.split("/")[1:])
 
     return render_template('service_edit.html', form=form, data=data, image=image)

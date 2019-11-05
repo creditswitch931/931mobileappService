@@ -25,15 +25,19 @@ def startimes_validate(login_id, smart_card_code):
     return retv
 
 
-def startimes_vending(login_id, smart_card_code, amount):
-    transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
-    checksum = str(login_id) + "|" + private_key + "|" + str(smart_card_code) + "|" + str(fee)
+def startimes_vending(login_id, smart_card_code, amount, transaction_ref):
+    
+    # transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
+
+    checksum = str(login_id) + "|" + private_key + "|" + str(smart_card_code) + "|" + str(amount)
     checksum_data = hash_data(checksum)
 
-    url = get_config('SERVICES', 'star_vending')
+    url = get_config('SERVICES', 'star_recharge')
 
-    payload = {'loginId': login_id, 'key': public_key, 'smartCardCode': smart_card_code, 
-                'fee': amount, 'transactionRef': transaction_ref, 'checksum': checksum_data}
+    payload = {'loginId': login_id, 'key': public_key, 
+                'smartCardCode': smart_card_code, 
+                'fee': amount, 'transactionRef': transaction_ref, 
+                'checksum': checksum_data}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -77,10 +81,15 @@ def multichoice_fetch_product_addons(login_id, service_id):
 
 
 
-def multichoice_vending(login_id, public_key, private_key, customer_no, customer_name, service_id, amount, invoice_period, productCodes):
-    transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
+def multichoice_vending(login_id, customer_no, customer_name, 
+                        service_id, amount, invoice_period, 
+                        productCodes, transaction_ref):
+
+    # transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
     
-    checksum = str(login_id) + "|" + private_key + "|" + customer_no + "|" + transaction_ref + "|" + str(amount);
+    checksum = (str(login_id) + "|" + private_key + "|" 
+                + customer_no + "|" + transaction_ref + "|" + str(amount))
+    
     checksum_data = hash_data(checksum)
 
     url = get_config('SERVICES', 'multi_recharge')
@@ -95,11 +104,5 @@ def multichoice_vending(login_id, public_key, private_key, customer_no, customer
     retv = rh.send()
     return retv
 
-
-
-
-
-# if __name__ == '__main__':
-#     startimes_validate(38457, "j6kHi1NXAOjrHFk0", "XY1t9Y159hWJaETD", "92000002866")
 
 

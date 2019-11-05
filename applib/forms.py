@@ -1,7 +1,7 @@
 
 from wtforms import (Form, Field, BooleanField, StringField, 
                      validators, PasswordField, SelectField,
-                     IntegerField, ValidationError)
+                     IntegerField, ValidationError, HiddenField)
 
 from wtforms.validators import Email, Length, ValidationError
 
@@ -32,7 +32,9 @@ def validate_phone():
 
         if len(field.data) < 11 or len(field.data) > 11:
             raise ValidationError("should be 11 digits only.")
-    
+        
+        # revisit this function to ensure that the phone number is properly validated 
+
     return check_format
 
 
@@ -72,8 +74,7 @@ class RegistrationForm(Form):
 
 
     
-class LoginForm(Form):    
-     
+class LoginForm(Form):     
     username = StringField('Username', [is_required()])
     password = PasswordField('Password', [is_required()])
     mac_address = StringField("Mac Address")
@@ -86,122 +87,160 @@ class ForgotForm(Form):
 
 
 class Airtime(Form):
-
     amount = IntegerField('Enter amount', [is_required(), check_zero_sign()])
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
     
 
 
 class ElectricityValidate(Form):
-    
-    meter_number = StringField("Meter Number", [is_required(), number_check()])
+    meterNumber = IntegerField("Meter Number", [is_required(), number_check()])    
 
 
-
-class ElectricityVending(Form):
-    # select_disco = SelectField('Select disco', [is_required()], coerce=int,
-    #                               choices=[(0, 'Select ...'),
-    #                                        (1, 'Ikeja distribution company'),
-    #                                        (2, 'Eko distribution company'),
-    #                                        (3, 'Ibadan distribution company')])
-
-    meter_number = StringField('Meter Number', [is_required(), number_check()])
+class IkejaPrePaid(Form):
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    customerAccountType = HiddenField("customerAccountType")
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [is_required(), number_check()])
     name = StringField('Name', [is_required()])
-    amount = StringField('Amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
-
-
-
-class IkejaPrepaid(Form):
-    meter_number = StringField('Meter Number', [is_required(), number_check()])
-    name = StringField('Name', [is_required()])
-    amount = StringField('Amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
     address = StringField('Address')
-    customerDtNumber = StringField('CustomerDtNumber')
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
-
-class EkoPrepaid(Form):
-    meter_number = StringField('Meter Number', [is_required(), number_check()])
+class EkoPrePaid(Form):
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [is_required(), number_check()])
     name = StringField('Name', [is_required()])
-    amount = StringField('Amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
     address = StringField('Address')
-    customerDtNumber = StringField('CustomerDtNumber')
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
-
-class IbadanPrepaid_E08E(Form):
-    meter_number = StringField('Meter Number', [is_required(), number_check()])
+class IbadanPrePaid(Form):
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
     name = StringField('Name', [is_required()])
-    amount = StringField('Amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
+    meterNumber = StringField('Meter Number', [is_required(), number_check()])
     address = StringField('Address')
-    customerDtNumber = StringField('CustomerDtNumber')
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
-
-class AbujaPrepaid(Form):
-    meter_number = StringField('Meter Number', [is_required(), number_check()])
+class AbujaPrePaid(Form):
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [is_required(), number_check()])
     name = StringField('Name', [is_required()])
-    amount = StringField('Amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required(), number_check(), validate_phone()])
     address = StringField('Address')
-    customerDtNumber = StringField('CustomerDtNumber')
-
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
 class Data(Form):
-    select_network = SelectField('Select network', [is_required()], 
-                                  coerce=int, 
-                                  choices=[(0, 'Select ...'),
-                                           (1, 'MTN'),
-                                           (2, 'Glo'),
-                                           (3, '9mobile'),
-                                           (4, 'Airtel')])
-    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required()])
+    amount = SelectField('Select Plans', [is_required()],                                   
+                                  choices=[(None, 'Select Plan'),
+                                           ("100", "40MB, 1day"),
+                                           ("200", "150MB, 7days"),
+                                           ("1000", "1GB, 30days"),
+                                           ("4000", "5.5GB, 30days")
+                                           ]
+                                )
+    phone = IntegerField('Phone No', [is_required()])
+
+
+
+class ValidateIUC(Form):
+    customerNo = IntegerField("Smartcard No", [is_required(), number_check()])
 
 
 class Startimes(Form):
-    smartcard_number = StringField('Enter smartcard number', 
-                                    [is_required(), number_check()])
-    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required()])
-   
+
+    customerName = StringField("Customer Name")
+    smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
+    balance = StringField("Balance")
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])    
+    phone = IntegerField('Phone', [is_required(), validate_phone()])
 
 
-class Gotv(Form):
-    select_package = SelectField('Select a package', [is_required()],
-                                  choices=[('select', 'Select ...'),
+class GotvValidation(Form):
+
+    service_plans = SelectField("Select Plan", 
+                                [is_required()], 
+                                 choices=[(None, 'Select Package'),
                                            ('gotv_value', 'GOtv Value'),
                                            ('gotv_pls', 'GOtv Plus'),
                                            ('gotv_max', 'GOtv Max'),
                                            ('goLite_month', 'GOtv Lite Monthly'),
-                                           ('goLite_quarter', 'GOtv Lite Quarterly')])
-    iuc_number = StringField('Enter IUC number', [is_required(), number_check()])
-    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required()])
-    productCodes = StringField('Product Code')
+                                           ('goLite_quarter', 'GOtv Lite Quarterly')
+                                    ]
+                                )
+
+    smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
+
+
+
+class Gotv(Form):
     
+    productCodes = HiddenField('Product Code')
+
+    customerNo = IntegerField('Smartcard No', [is_required(), number_check()])  
+    customerName = StringField("Customer Name")
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+
+    invoicePeriod = SelectField("Invoice Period", 
+                                [is_required()], coerce=int,
+                                choices=[(0, 'Subscription Period'),
+                                         (1, 'One Month'), (2, 'Two Months'), 
+                                         (3, 'Three Months'), (4, 'Four Months'), 
+                                         (5, 'Five Months'), (6, 'Six Months'), 
+                                         (7, 'Seven Months'), (8, 'Eight Months'), 
+                                         (9, 'Nine Months'), (10, 'Ten Months'), 
+                                         (11, 'Eleven Months'), (12, 'Twelve Months'), 
+                                        ]
+                                )
+
+    phone = IntegerField('Phone No', [is_required()])
+    
+    
+
+class DstvValidation(Form):
+
+    service_plans = SelectField("Select Plan", 
+                                [is_required()], 
+                                 choices=[(None, 'Select Package'),
+                                    ("PRWE36", "DStv Premium"),
+                                    ("PRWASIE36", "DStv Premium Asia"),
+                                    ("ASIAE36", "Asian Bouqet"),
+                                    ("FTAE36", "DStv FTA Plus")
+                                    ]
+                                )
+
+    smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
 
 
 class Dstv(Form):
-    select_package = SelectField('Select a package', [is_required()],
-                                  choices=[('select', 'Select ...'),
-                                           ('dstv_access', 'DStv Access'),
-                                           ('dstv_family', 'DStv Family'),
-                                           ('dstv_compact', 'DStv Compact'),
-                                           ('dstv_compact_plus', 'DStv Compact Plus'),
-                                           ('dstv_premium', 'DStv Premium'),
-                                           ('dstv_premium_asia', 'DStv Premium Asia'),
-                                           ('asian_bouqet', 'Asian Bouqet'),
-                                           ('dstv_fta_plus', 'DStv FTA Plus')])
-    smartcard_number = StringField('Enter smartcard number', [is_required(), number_check()])
-    amount = StringField('Enter amount', [is_required(), check_zero_sign()])
-    phone = StringField('Phone Number', [is_required()])
-    productCodes = StringField('Product Code')
+    
+    productCodes = HiddenField('Product Code')
+    
+    customerName = StringField("Customer Name")
+    customerNo = IntegerField('Smartcard No', [is_required(), number_check()])
+    amount = IntegerField('Amount', [is_required(), check_zero_sign()])    
+    invoicePeriod = SelectField("Invoice Period", 
+                                [is_required()],
+                                choices=[(0, 'Subscription Period'),
+                                         (1, 'One Month'), (2, 'Two Months'), 
+                                         (3, 'Three Months'), (4, 'Four Months'), 
+                                         (5, 'Five Months'), (6, 'Six Months'), 
+                                         (7, 'Seven Months'), (8, 'Eight Months'), 
+                                         (9, 'Nine Months'), (10, 'Ten Months'), 
+                                         (11, 'Eleven Months'), (12, 'Twelve Months'), 
+                                        ]
+                                )
+
+    phone = IntegerField('Phone No', [is_required()])
+
+    
     
     
 

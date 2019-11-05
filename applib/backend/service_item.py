@@ -93,6 +93,7 @@ def item_edit(item_id):
     form.service_id.choices = [(0, 'Select Service')] + form.service_id.choices 
     data = m.ServiceItems.get_items(item_id)
     m.model2form(data, form)
+    form.active.data = data.active == 1 
     image = "/" + "/".join(data.image.split("/")[1:])
     
     return render_template('item_edit.html', form=form, image=image)

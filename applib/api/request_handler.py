@@ -8,10 +8,6 @@ from applib import forms as fm
 from applib import model as m
 from applib.api import service_handler as sh
 
-FORMS = {
-    'airtime': ''
-}
-
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -31,7 +27,7 @@ def get_base64_image(img_path):
     if _type.lower() == 'jpg':
         schema = "data:image/jpg;base64,"
 
-    
+    print ( img_path , '\nife')
     with open(img_path, 'rb') as fl:
         output = h.utf_decode(h.ba64_encode(fl.read()))
         
@@ -43,7 +39,7 @@ def get_base64_image(img_path):
 
 
 def get_handler_cls(entity):
-    _cls = getattr(sh, entity.title() +'Handler')
+    _cls = getattr(sh, entity + 'Handler')
     return _cls
 
 
@@ -51,6 +47,19 @@ def get_form(entity, fields):
     entity_cls = get_handler_cls(entity)        
     form_cls = getattr(fm, entity_cls.__formCls__)    
     return FormHandler(form_cls(**fields)) 
+
+
+def get_validate_form(entity, fields):
+
+    entity_cls = get_handler_cls(entity)
+    form_cls = getattr(fm, entity_cls.__formClsValidate__)
+    return FormHandler(form_cls(**fields))
+
+
+def get_form_by_name(formname, fields):
+    
+    form_cls = getattr(fm, formname)
+    return FormHandler(form_cls(**fields))
 
 
 def get_form_objects(entity, fields={}):
@@ -61,7 +70,8 @@ def get_form_objects(entity, fields={}):
     
     return (form_ins.render(), 
             entity_cls.__url__, 
-            entity_cls.__form_label__)
+            entity_cls.__form_label__,
+            entity_cls.__formCls__)
 
 
 # +-------------------------+-------------------------+
@@ -82,7 +92,7 @@ def get_services():
             m.ServicesMd.label,
             m.ServicesMd.image,
             m.ServicesMd.category_name
-        ).filter(m.ServicesMd.active == True)
+        ).filter(m.ServicesMd.active==1)
  
         
         if content.get('name'):
@@ -139,13 +149,13 @@ def get_service_items():
                        ).join(
                         m.ServicesMd,
                         m.ServicesMd.id == m.ServiceItems.service_id
-                       ).filter(m.ServiceItems.active == True,
+                       ).filter(m.ServiceItems.active==1,
                                 m.ServiceItems.service_id == content['id']
                        ).all()
 
 
         for item in qry:
-            form_info = get_form_objects(item.service_name)
+            form_info = get_form_objects(item.name)
 
             retv.append({"name": item.name, 
                          "label": item.label,
@@ -155,7 +165,8 @@ def get_service_items():
                          "image": get_base64_image(item.image),
                          "forms": form_info[0],
                          "url_path": form_info[1],
-                         "btn_label": form_info[2]
+                         "btn_label": form_info[2],
+                         "formCls": form_info[3]
                         }
                 )
 
@@ -184,18 +195,10 @@ def process_service():
     # 'service_name': 'airtime', 'amount': '897889', 'phone': '58247'}
 
     # form handler instance
-    fm_handler = get_form(content['service_name'], 
+    fm_handler = get_form_by_name(content['form_cls'], 
                           content['fields'])
     
-    if not fm_handler.is_validate():
-        
-        resp.failed()
-        resp.add_message(fm_handler.get_errormsg())
-        resp.add_params("forms", fm_handler.render())
-
-        return resp.get_body()
-    
-    HandlerCls = get_handler_cls(content['service_name'])
+    HandlerCls = get_handler_cls(content['name'])
     handler_cls = HandlerCls(fm_handler.get_fields(), resp, 
                              login_id=content['user_name'],
                              name=content['name'],
@@ -204,17 +207,30 @@ def process_service():
                              user_id=content['user_id']
                             )
 
+
+
+    fm_handler.readonly_field = handler_cls.__readonlyFields__
+    
+    if not fm_handler.is_validate():
+        resp.failed()
+        resp.add_message(fm_handler.get_errormsg())
+        resp.add_params("API_forms", fm_handler.render())
+
+        return resp.get_body()
+    
+    
     handler_cls.vend_service()
 
-    
-    if not resp.status():
-        resp.add_params("forms", fm_handler.render())
+    resp.mode(False)
 
-    elif resp.status():
-        resp.add_params('forms', handler_cls.init_form())
-        resp.add_params('printout', handler_cls.get_printout())
-        resp.add_params("details", handler_cls.get_response())
-       
+    if not resp.status():
+        resp.add_params("API_forms", fm_handler.render())
+        resp.add_params("API_formCls", content['form_cls'])
+
+    elif resp.status(): 
+        resp.add_params('API_printout', handler_cls.get_printout())
+        resp.add_params("API_details", handler_cls.get_response())
+        
 
     return resp.get_body()
 
@@ -230,38 +246,45 @@ def process_validation():
     # {'fields': {'meter_number': '9090909', 
     # 'amount': '7867678989', 'phone': '7878989090'},
     # 'service_id': 2, 'name': 'ibadan_distro', 
-    # 'item_id': 6, 'service_name': 'Electricity'}
+    # 'item_id': 6, 'service_name': 'Electricity', form_cls: ""}
 
-    print("\n", content, '\n')
-
+    
     resp = Response()
 
-    fm_handler = get_form(content['service_name'], 
-                          content['fields'])
-     
+    fm_handler = get_form_by_name(content['form_cls'], 
+                                  content['fields'])
+    
+    HandlerCls = get_handler_cls(content['name'])    
+    handler_cls = HandlerCls(fm_handler.get_fields(), resp, 
+                             login_id=content['user_name'],
+                             name=content['name'],
+                             ref_id=content['item_id'],
+                             mac_address=content['mac_address'],
+                             user_id=content['user_id'])
+
+    fm_handler.readonly_field = handler_cls.__readonlyFields__
     if not fm_handler.is_validate():
-        
         resp.failed()
         resp.add_message(fm_handler.get_errormsg())
-        resp.add_params("forms", fm_handler.render())
+        resp.add_params("API_forms", fm_handler.render())
+        resp.add_params('API_formCls', handler_cls.__formCls__)
 
         return resp.get_body()
 
 
-    HandlerCls = get_handler_cls(content['service_name'])    
-    handler_cls = HandlerCls(fm_handler.get_fields())
+    
 
-    service_resp = handler_cls.validate_service()
-    resp.api_response_format(service_resp) 
+
+    handler_cls.validate_service()    
 
     # lets see if this will suffice, might
-    forms = handler_cls.get_service_form()
 
-    if not resp.status():
-        forms = fm_handler.render()
+    resp.mode(True)
 
-    resp.success()
+    if not resp.status():        
+        resp.add_params('API_forms', fm_handler.render())
+        resp.add_params('API_formCls', handler_cls.__formCls__)
 
-    resp.add_params('forms', forms)  
+    
     return resp.get_body()
 
