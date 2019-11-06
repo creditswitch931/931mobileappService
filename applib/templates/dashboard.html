@@ -1,13 +1,30 @@
 {% extends 'base.html' %}
 
 {% block in_style %}
+.top_up{
+	margin-top: 0px;
+	padding: 20px;
+}
+
+.style_card{
+	margin: 0px;
+	position: relative;
+}
+
+.bar_body{
+	padding-top:20px;
+	padding-right:0px;
+	padding-bottom:0px;
+	padding-left:0px;
+
+}
 
 {% endblock%}
 
 {% block main %}
 <div class="row">
   <div class="col-md-4">
-    <div class="card bg-white text-center">
+    <div class="card bg-white text-center border-secondary allsides top_up">
       <h5 class="card-header">Mobile Users</h5>
       <div class="card-body">
         <p class="card-text"></p>
@@ -16,7 +33,7 @@
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card bg-white text-center">
+    <div class="card bg-white text-center border-secondary allsides top_up">
       <h5 class="card-header">Payments</h5>
       <div class="card-body">
         <p class="card-text"></p>
@@ -25,7 +42,7 @@
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card bg-white text-center">
+    <div class="card bg-white text-center border-secondary allsides top_up">
       <h5 class="card-header">Transactions</h5>
       <div class="card-body">
         <p class="card-text"></p>
@@ -35,8 +52,139 @@
   </div>
 </div>
 
+<div class="row">
+	<div class="col-md-12">
+		<div class="card bg-white text-center border-secondary allsides"
+				style="padding-bottom: 0px;">
+			<div class="card-header-tab card-header">
+				<div class="card-header-title font-size-lg text-capitalize font-weight-normal col-auto mr-auto">Transactions Bar</div>
+			</div>
+		    
+		    <div class="card-body bar_body">
+		    	<div style="">
+		    		<div id="chart" style="min-height: 0px;"></div>
+		    	</div>
+		    </div>
+    	</div>
+
+		
+	</div>
+</div>
+
 {% endblock %}
 
 
 {% block login %}
+{% endblock %}
+
+
+{% block scripts %}
+var options = {
+            chart: {
+                height: 320,
+                width: '100%',
+                type: 'line',
+                shadow: {
+                    enabled: true,
+                    color: '#000',
+                    top: 18,
+                    left: 7,
+                    blur: 10,
+                    opacity: 0.5
+                },
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#77B6EA', '#545454', '#00cc44', '#b10cf2'],
+            dataLabels: {
+                enabled: true,
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            series: [{
+                    name: "Airtime",
+                    data: [0, 29, 33, 36, 32, 0, 33, 21, 14, 15, 33]
+	                },
+	                {
+	                    name: "Cable",
+	                    data: [0, 31, 24, 28, 19, 27, 34, 19, 0, 29, 23]
+	                }, 
+	                {
+	                    name: "Electricity",
+	                    data: [0, 11, 14, 18, 0, 13, 13, 11, 34, 25, 13]
+	                },
+	                {
+	                    name: "Data",
+	                    data: [0, 400, 40, 39, 27, 22, 0, 13, 24, 15, 12]
+	                }
+            ],
+            title: {
+                text: 'Monthly Service Amount',
+                align: 'left',
+                style: {
+			              color: undefined,
+			              fontSize: '18px',
+			              fontFamily: 'Helvetica, Arial, sans-serif',
+			              cssClass: 'apexcharts-yaxis-title',
+			        },
+            },
+            grid: {
+                borderColor: '#e7e7e7',
+                row: {
+                    colors: ['#edfaf4', 'transparent'], // takes an array which will be repeated on columns
+                    opacity: 0.5
+                },
+                padding: {
+			        top: 15,
+			        right: 0,
+			        bottom: 0,
+			        left: 0
+			    },
+            },
+            markers: {
+                
+                size: 6
+            },
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul' ,'Sep', 'Oct', 'Nov', 'Dec'],
+                title: {
+                    text: 'Month',
+                    style: {
+			              color: undefined,
+			              fontSize: '15px',
+			              fontFamily: 'Helvetica, Arial, sans-serif',
+			              cssClass: 'apexcharts-yaxis-title',
+			        },
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'Amount',
+                    style: {
+			              color: undefined,
+			              fontSize: '15px',
+			              fontFamily: 'Helvetica, Arial, sans-serif',
+			              cssClass: 'apexcharts-yaxis-title',
+			        },
+                },
+                min: 50000,
+                max: 1000000
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'right',
+                floating: true,
+                offsetY: -25,
+                offsetX: -5
+            }
+        }
+
+        var chart = new ApexCharts(
+            document.querySelector("#chart"),
+            options
+        );
+
+        chart.render();
 {% endblock %}
