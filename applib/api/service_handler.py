@@ -463,6 +463,18 @@ class AirtielDataHandler(DataHandler):
     __ServiceName__ = "Airtel Data Sub"
 
 
+class GloDataHandler(DataHandler):
+    __name__ = "Globacom Data"
+    __ServiceCode__ = "globacom"
+    __ServiceName__ = "Glo Data Sub"
+
+class NineMobDataHandler(DataHandler):
+    __name__ = "Globacom Data"
+    __ServiceCode__ = "9mobile"
+    __ServiceName__ = "Glo Data Sub"
+
+ 
+
 
 
 

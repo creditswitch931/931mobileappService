@@ -77,7 +77,20 @@ class ServiceItems(Base):
                            ServiceItems.image, ServiceItems.service_id,
                            ServiceItems.label_desc, ServiceItems.active
                            ).filter_by(id=id).first()
-        return qry 
+        return qry
+
+    @staticmethod
+    def get_all():
+
+        qry = []
+        with sql_cursor() as db:
+            qry = db.query(ServiceItems.id, ServiceItems.name, 
+                           ServiceItems.name, ServiceItems.label, 
+                           ServiceItems.image, ServiceItems.service_id,
+                           ServiceItems.label_desc, ServiceItems.active).all()
+
+        return qry
+
 
 
 
@@ -123,8 +136,34 @@ class Transactions(Base):
             db.add(trans_ins)
 
 
+
+class ServicePlan(Base):
     
-    
+    __tablename__  = 'service_plans'
+
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'),
+                primary_key=True, autoincrement=True)
+    code = Column(String(80), nullable=False)
+    label = Column(String(200), nullable=False)
+    group_name = Column(String(100), nullable=False)
+    service_id = Column(BigInteger, ForeignKey("service_items.id"), 
+                        nullable=False)
+    date_created = Column(DateTime, nullable=False)
+
+    extra_field = Column(String(200))
+
+    @staticmethod
+    def get_items(id):
+        qry = ()
+
+        with sql_cursor() as db:
+            qry = db.query(ServicePlan.id, ServicePlan.code,
+                    ServicePlan.label, ServicePlan.group_name,
+                    ServicePlan.service_id, ServicePlan.extra_field 
+                ).filter_by(id=id).first()
+
+        return qry 
+
 
 def form2model(formobj, model_ins, exclude=[]):
     counter = 0            
@@ -137,6 +176,7 @@ def form2model(formobj, model_ins, exclude=[]):
             counter += 1 
 
     assert counter > 0 , "No model instance fields not found."
+
      
 def model2form(model_ins, form_ins, exclude=[]):
 

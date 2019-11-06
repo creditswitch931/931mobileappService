@@ -139,13 +139,9 @@ class AbujaPrePaid(Form):
 
 class Data(Form):
     amount = SelectField('Select Plans', [is_required()],                                   
-                                  choices=[(None, 'Select Plan'),
-                                           ("100", "40MB, 1day"),
-                                           ("200", "150MB, 7days"),
-                                           ("1000", "1GB, 30days"),
-                                           ("4000", "5.5GB, 30days")
-                                           ]
-                                )
+                         choices=[(None, 'Select Plan')]
+                        )
+
     phone = IntegerField('Phone No', [is_required()])
 
 
@@ -167,13 +163,7 @@ class GotvValidation(Form):
 
     service_plans = SelectField("Select Plan", 
                                 [is_required()], 
-                                 choices=[(None, 'Select Package'),
-                                           ('gotv_value', 'GOtv Value'),
-                                           ('gotv_pls', 'GOtv Plus'),
-                                           ('gotv_max', 'GOtv Max'),
-                                           ('goLite_month', 'GOtv Lite Monthly'),
-                                           ('goLite_quarter', 'GOtv Lite Quarterly')
-                                    ]
+                                 choices=[(None, 'Select Package')]
                                 )
 
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
@@ -209,10 +199,10 @@ class DstvValidation(Form):
     service_plans = SelectField("Select Plan", 
                                 [is_required()], 
                                  choices=[(None, 'Select Package'),
-                                    ("PRWE36", "DStv Premium"),
-                                    ("PRWASIE36", "DStv Premium Asia"),
-                                    ("ASIAE36", "Asian Bouqet"),
-                                    ("FTAE36", "DStv FTA Plus")
+                                    # ("PRWE36", "DStv Premium"),
+                                    # ("PRWASIE36", "DStv Premium Asia"),
+                                    # ("ASIAE36", "Asian Bouqet"),
+                                    # ("FTAE36", "DStv FTA Plus")
                                     ]
                                 )
 

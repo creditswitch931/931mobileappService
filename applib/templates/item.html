@@ -8,13 +8,21 @@
 			
 			<div class="top">
 				<h3 class="form_title">
-					<b> Item </b>
+					<b> {{_title | title}} </b>
 				</h3>
 			</div>
 			<br>
 			<form action="" method="post" enctype="multipart/form-data">
 
-	            {{form_fields(form)}}
+	            {{ form_fields(form) }}
+				
+				{% block extra_item %}
+				{% if 'edit' in _title.lower() %}
+				<div class="form-group">			 	
+				 	<img src="{{image}}" alt="Image" class="img-thumbnail">
+				</div> 
+				{% endif %}
+				{% endblock %}
 
 				<div>
 					<hr style="margin-top: 65px">
@@ -26,7 +34,7 @@
 						</div>
 
 						<div class="col-md-6">
-							<a href="{{url_for('service_item.item_view')}}" 
+							<a href="{{url_for(back_url)}}" 
 							class="btn btn-block back_btn"> Cancel 
 							</a>
 						</div>

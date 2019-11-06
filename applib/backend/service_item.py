@@ -36,8 +36,10 @@ def item_add():
             
         return redirect(url_for('service_item.item_view'))
 
-    form.service_id.choices = [(0, 'Select Service')] + form.service_id.choices
-    return render_template('item.html', form=form)
+    form.service_id.choices = [(0, 'Select Service')] + form.service_id.choices 
+
+    return render_template('item.html', form=form, 
+                            _title='Add Item', back_url="service_item.item_view")
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -58,7 +60,7 @@ def item_view():
                 ).join(
                     m.ServicesMd,
                     m.ServicesMd.id == m.ServiceItems.service_id
-                ).order_by(m.ServiceItems.id.desc())
+                ).order_by(m.ServiceItems.service_id.desc())
 
         users, page_row = set_pagination(data, page, per_page)
 
@@ -96,8 +98,11 @@ def item_edit(item_id):
     form.active.data = data.active == 1 
     image = "/" + "/".join(data.image.split("/")[1:])
     
-    return render_template('item_edit.html', form=form, image=image)
+    return render_template('item.html', form=form, image=image,  
+                            _title='Edit Item', back_url="service_item.item_view")
         
+
+
 @app.route('/item/delete/<int:item_id>')
 def delete(item_id):
 

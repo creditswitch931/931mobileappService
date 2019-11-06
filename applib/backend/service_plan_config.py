@@ -6,6 +6,8 @@ from applib.backend import bk_form as fm
 from applib import model as m 
 
 from .service_config import set_pagination
+import datetime
+
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -22,22 +24,69 @@ def index():
         page = request.args.get('page', 1, type=int)
         per_page=10
         
-        data = db.query(m.ServiceItems.id,
-                        m.ServiceItems.name,
-                        m.ServiceItems.label,
-                        m.ServicesMd.label.label('service_name')
+        data = db.query(m.ServicePlan.id,
+                        m.ServicePlan.code,
+                        m.ServicePlan.label,
+                        m.ServicePlan.group_name,
+                        m.ServiceItems.label.label('service_name')
                 ).join(
-                    m.ServicesMd,
-                    m.ServicesMd.id == m.ServiceItems.service_id
-                ).order_by(m.ServiceItems.id.desc())
+                    m.ServiceItems,
+                    m.ServiceItems.id == m.ServicePlan.service_id
+                ).order_by(m.ServicePlan.id.desc())
 
         pager, _rows = set_pagination(data, page, per_page)
+ 
+    return render_template("service_plan_list.html", pager=pager, 
+                            page_row=_rows, cur_page=page)
 
-    return render_template("service_plan_list.html", pager=[], page_row=_rows)
 
 
-
-@app.route("/add")
+@app.route("/add", methods=['POST', 'GET'])
 def add():
 
-    return "WIP"
+    content = h.request_data(request)
+    form = fm.ServicePlan(**content)    
+    form.service_id.choices =form.service_id.choices + [(x.id, x.label) for x in m.ServiceItems.get_all()]
+   
+
+    if request.method == 'POST' and form.validate():
+
+        mdl = m.ServicePlan()
+        m.form2model(form, mdl)
+        mdl.date_created = datetime.datetime.now()
+
+        with m.sql_cursor() as db:
+            db.add(mdl)
+
+        return redirect(url_for('service_plan.index'))
+
+
+    return render_template("service_plan_form.html", form=form, _title='Add Plan', 
+                           back_url='service_plan.index')
+
+
+@app.route('/edit/<int:id>', methods=['POST', 'GET'])
+def edit(id):
+
+    content = h.request_data(request)
+    form = fm.ServicePlan(**content)    
+    form.service_id.choices = form.service_id.choices + [(x.id, x.label) for x in m.ServiceItems.get_all()]
+
+    if request.method == 'POST':
+
+        with m.sql_cursor() as db:
+            obj = db.query(m.ServicePlan).get(id)
+            m.form2model(form, obj)
+            db.add(obj)
+
+        return redirect(url_for('service_plan.index'))
+
+    data = m.ServicePlan.get_items(id)
+    m.model2form(data, form, exclude=['date_created'])
+
+
+    return render_template('service_plan_form.html', form=form, 
+                           _title='Edit Plan', back_url='service_plan.index')
+
+
+
