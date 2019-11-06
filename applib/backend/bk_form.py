@@ -60,3 +60,14 @@ class ServiceItem(Form):
 	active = BooleanField("Active") 
 
 
+
+class ServicePlan(Form):
+
+	code =StringField("Code", [is_required()], 
+					  render_kw={'class_': "form-control"})
+	label = StringField("Label", [is_required()], render_kw={'class_': "form-control"})
+	group_name = StringField("Group Name", [is_required()], render_kw={'class_': "form-control"})
+	service_id = SelectField("Service", [is_required()], 
+							 coerce=int, render_kw={"class_": "form-control"})
+
+

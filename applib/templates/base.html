@@ -286,11 +286,11 @@
                             {% for page in page_row %}
                             {% if cur_page == page %}
                             <li class="page-item active">
-                                <a class="page-link" href="{{url_for('bk_cfg.service_view', page=page)}}">{{page}} </a>
+                                <a class="page-link" href="{{url_for(url, page=page)}}">{{page}} </a>
                             </li>
                             {% else %}
                             <li class="page-item">
-                                <a class="page-link" href="{{url_for('bk_cfg.service_view', page=page)}}">{{page}} </a>
+                                <a class="page-link" href="{{url_for(url, page=page)}}">{{page}} </a>
                             </li>
                             {% endif %}
                             {% endfor %}
@@ -311,7 +311,8 @@
         </div>
         
     {% endmacro %}
-
+    
+    
     {% block admin %}
 
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
@@ -342,7 +343,15 @@
                     <a class="nav-link btn tab" 
                         href="{{url_for('service_item.item_view')}}">
                         <i class="fas fa-sitemap fa-lg"></i>
-                        &nbsp; Items
+                        &nbsp; Service Items
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link btn tab" 
+                        href="{{url_for('service_plan.index')}}">
+                        <i class="fas fa-cogs fa-lg"></i>
+                        &nbsp; Service Plans
                     </a>
                 </li>
               
@@ -404,6 +413,9 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  {% block script_files %}
+  {% endblock %}
+
   <script type="text/javascript">
     function openNav() {
       document.getElementById("mySidenav").style.width = "250px";
@@ -412,21 +424,14 @@
     function closeNav() {
       document.getElementById("mySidenav").style.width = "0";
     }
-
-    // $(document).ready(function() {
-    //     $('.nav-link-collapse').on('click', function() {
-    //         $('.nav-link-collapse').not(this).removeClass('nav-link-show');
-    //         $(this).toggleClass('nav-link-show');
-    //     });
-    // });
+ 
 
     {% block scripts %}
     {% endblock %}
 
   </script>
   
-  {% block script_files %}
-  {% endblock %}
+
 
 </body>
 

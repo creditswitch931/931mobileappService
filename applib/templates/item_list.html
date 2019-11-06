@@ -12,14 +12,21 @@
 	<div class="item-box">
 		<div class="top">
 			<h3 class="form_title">
-				<b> Item List </b>
+				<b> {% block _title %} Item List {% endblock %} </b>
 			</h3>
 		</div> 
 		<div class="text-right space_between">
-			<a class="btn btn-info add_btn" href="{{url_for('service_item.item_add')}}"> <i class="fas fa-plus"></i> &nbsp; Add </a>
+			{% block add_btn %}
+			<a class="btn btn-info add_btn" href="{{url_for('service_item.item_add')}}"> 	<i class="fas fa-plus"></i> &nbsp; Add 
+			</a>
+			{% endblock %}
+
 		</div>
 		
+		{% block table_sec %}
+
 		<table class="table table-condensed table-striped">
+
 			<thead>
 				<tr> 
 					<th> ObjectName </th>
@@ -57,8 +64,10 @@
 			</tbody>
 
 		</table>
-
+		
 		{{ pagination(users, "service_item.item_view") }}
+		
+		{% endblock %}
 
 	</div>
 </div>

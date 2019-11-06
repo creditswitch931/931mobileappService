@@ -210,7 +210,7 @@ def process_service():
 
 
     fm_handler.readonly_field = handler_cls.__readonlyFields__
-    
+
     if not fm_handler.is_validate():
         resp.failed()
         resp.add_message(fm_handler.get_errormsg())
@@ -270,11 +270,8 @@ def process_validation():
         resp.add_params('API_formCls', handler_cls.__formCls__)
 
         return resp.get_body()
-
-
     
-
-
+    
     handler_cls.validate_service()    
 
     # lets see if this will suffice, might

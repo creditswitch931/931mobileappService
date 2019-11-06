@@ -1,64 +1,58 @@
-{% extends 'base.html' %}
 
-{% block in_style %}
+{% extends 'item_list.html' %}
 
-{% endblock%}
+{% block _title %}
+Transactions
+{% endblock %}
 
-{% block main %}
-<div class="col-md-10 offset-md-1">
-	<div class="item-box">
-		<div class="top">
-			<h3 class="form_title">
-				<b> Transaction </b>
-			</h3>
-		</div> 
-		<div class="text-right space_between">
-			<a class="btn btn-info add_btn" href="{{url_for('transaction.add')}}"> <i class="fa fa-plus"></i> &nbsp; Add </a>
-		</div>
+{% block add_btn %}
+ 
+{% endblock %}
 
-		<table class="table table-condensed table-striped">
-			<thead>
-				<tr> 
-					<th> Date </th>
-					<th> Name </th>
-					<th> Service </th>
-					<th> Status </th>
-					<th> Recepient </th>
-					<th class="move_right">Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-			{% for item in data %}
-				<tr>
-					<td> {{ item.date_created.strftime(
-									"%Y-%m-%d %H:%M"
-									)}} </td>
-					<td> {{ item.item_name | title }} </td>
-					<td> {{ item.service_name }} </td>
-					<td> {{ item.trans_desc }} </td>
-					<td> {% set parameter = item.trans_params %}
-						{{parameter}} </td>
-					<td class="move_right">
-						<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target-id="1" data-target="#myModal">View All Details
-						</button>
-					</td>
-					
-				</tr>			
-			{% else %}
-				<tr>
-					<td colspan="4"> <i> no matching record found... </i></td>
-				</tr>
-			{% endfor %}
-		
-			</tbody>
 
-		</table>
+{% block table_sec %}
+ 
+<table class="table table-condensed table-striped">
+	<thead>
+		<tr> 
+			<th> Date </th>
+			<th> Name </th>
+			<th> Service </th>
+			<th> Status </th>
+			<th> Recipient </th>
+			<th class="move_right">Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for item in page_data.items %}
+		<tr>
+			<td> {{ date_fmt(item.date_created) }} </td>
+			<td> {{ item.item_name | title }} </td>
+			<td> {{ item.service_name }} </td>
+			<td> {{ item.trans_desc }} </td>
+			<td>  
+				{{ get_field('recipient', item.trans_params)}} 
+			</td>
+			<td class="move_right">
+				<button type="button" class="btn btn-link btn-sm" data-toggle="modal" data-target-id="1" data-target="#transDisplay" data-req_obj='{{item.trans_params| safe}}' data-res_obj='{{item.trans_resp | safe }}'>Expand
+				</button>
+			</td>
+			
+		</tr>			
+	{% else %}
+		<tr>
+			<td colspan="4"> <i> no matching record found... </i></td>
+		</tr>
+	{% endfor %}
 
-		
-	</div>
-</div>
+	</tbody>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+</table>
+
+{{ pagination(page_data, "transaction.transaction_view") }}
+
+
+<div class="modal fade" id="transDisplay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -68,17 +62,16 @@
 		        </button>
 	      	</div>
 
-            <div class="modal-body">
-            	<table class="table table-striped">
-		            <tr>
-		            	<td>f</td>
-		            	<td>d</td>
-		            </tr>
-		            <tr>
-		            	<td>d</td>
-		            	<td>d</td>
-		            </tr> 
+            <div class="modal-body" style="max-height: 500px;overflow-y: auto;">
+				<h4> Request Body </h4>
+				<table class="table table-condensed table-striped" id="table_req">           
             	</table>
+				<br>
+            	<h4> Response Body </h4>
+            	<table class="table table-condensed table-striped" id="table_rsp">
+		            	
+            	</table>
+
             </div>
 
 
@@ -89,5 +82,70 @@
 {% endblock %}
 
 
-{% block login %}
+{% block scripts %}
+	
+
+	$('#transDisplay').on('show.bs.modal', function (event) {
+	  	
+	  	var button = $(event.relatedTarget);
+
+  		var req = button.data('req_obj');		 
+	  	var resp = button.data('res_obj');
+		 
+		$("#table_req").html("<tbody>" + get_trans_info(req) + "</tbody>");
+		$("#table_rsp").html("<tbody>" + get_trans_info(resp) + "</tbody>"); 	
+
+	})
+
+
+	function trow(key, value){
+		return "<tr> <td>" + key + "</td><td>" + value + "</td></tr>"
+	}
+	
+
+	function get_trans_info(trans_obj){
+		
+		var table_row = ''; 
+		var value;
+
+		for (var x in trans_obj){ 
+
+			if (x == 'data') {
+
+				for ( var y in trans_obj[x] ) {								
+					
+					var inn_loop = trans_obj[x][y];
+					for (var z in inn_loop){ 
+						
+						if (typeof inn_loop[z] == 'object'){
+							
+							for (i in inn_loop[z]){
+								table_row += trow(i, inn_loop[z][i])
+							} 
+ 						}
+
+						else{	
+
+ 							value = inn_loop[z];
+						}
+
+						table_row += trow(z, value)
+					}	
+				}				
+			}
+
+			else{ 
+				table_row += trow(x, trans_obj[x]);
+
+			}
+
+		}
+
+
+		return table_row 
+	}
+
 {% endblock %}
+ 
+
+ 

@@ -64,7 +64,7 @@ def item_view():
 
 
     return render_template('item_list.html', data=data, users=users, 
-                                    page_row=page_row, cur_page=page)
+                            page_row=page_row, cur_page=page)
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+

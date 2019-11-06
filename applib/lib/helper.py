@@ -1,8 +1,7 @@
 
-
 from configobj import ConfigObj
 import json
-import os, base64
+import os, base64, datetime
 
 import string
 from random import randint, choice
@@ -17,9 +16,6 @@ def get_logo():
 
     return utf_decode(ba64_encode(out))
 
-
-
- 
 
 def get_config(header, key=None, filename='settings.cfg'):
 
@@ -74,6 +70,8 @@ def log_handler(log_msg=''):
 def unloadJson(value):
     return json.loads(value.decode('utf-8'))
 
+def json_str2_dic(value):
+    return json.loads(value)
 
 def dump2json(value):
     return json.dumps(value)
@@ -196,3 +194,23 @@ def random_alphanum(size=6):
     return ''.join(choice(chars) for _ in range(size))
 
 
+
+def date_format(date_obj, strft='%H: %M: %S'):
+    
+    now = datetime.datetime.now()
+    diff = now - date_obj
+
+    if diff.days == 0:
+        retv = date_obj.strftime(strft)
+
+    elif diff.days == 1:
+        retv = 'Yesterday'
+
+    elif diff.days > 1 and diff.days < 10:
+        retv = date_obj.strftime('%d, %B')
+
+    else:
+        retv = date_obj.strftime("%d-%m-%Y")
+    
+
+    return retv

@@ -182,7 +182,8 @@ class AirtimeHandler(ServiceHandler):
         self.req_data = {"login_id": self.kwargs['login_id'], 
                          'amount': self.form_data['amount'],
                          "phone": self.form_data['phone'], 
-                         "network": self.__ServiceCode__
+                         "network": self.__ServiceCode__,
+                         'recipient': self.form_data['phone']
                         }
         # {'statusCode': '00', 'statusDescription': 'successful', 
         #  'mReference': '933306100502', 'tranxReference': '150069864',
@@ -317,7 +318,8 @@ class IkejaPrePaidHandler(ServiceHandler):
                          "service_id": self.__ServiceCode__,
                          'amount': self.form_data['amount'],
                          "reference_id": self.request_ref,
-                         "customerDtNumber": self.form_data['customerDtNumber']
+                         "customerDtNumber": self.form_data['customerDtNumber'],
+                         'recipient': self.form_data['meterNumber']
                         } 
          
         self.data = api_resp[1]
@@ -490,23 +492,22 @@ class StartimesTvHandler(ServiceHandler):
             self.resp_obj.add_params('btn_label', "Send")
              
     
-    def call_service(self):
-
-        return cable_service.startimes_vending(self.kwargs['login_id'], 
-                                               self.form_data['smartCardCode'], 
-                                               self.form_data['amount'],
-                                               self.request_ref) 
+  
 
     def vend_service(self):
 
         self.request_ref = h.random_alphanum(16)
          
-        api_resp = self.call_service()
+        api_resp = cable_service.startimes_vending(self.kwargs['login_id'], 
+                                               self.form_data['smartCardCode'], 
+                                               self.form_data['amount'],
+                                               self.request_ref)
 
         self.req_data = {"login_id": self.kwargs['login_id'], 
                          "smartCardCode": self.form_data['smartCardCode'],
                          'amount': self.form_data['amount'],
-                         "reference_id": self.request_ref                         
+                         "reference_id": self.request_ref,
+                         'recipient': self.form_data['smartCardCode']
                         } 
         
         self.data = api_resp[1]
@@ -639,7 +640,8 @@ class DsTvHandler(ServiceHandler):
                          "amount": self.form_data['amount'], 
                          'Invoice Period': self.form_data['invoicePeriod'], 
                          'productcode' : self.form_data['productCodes'], 
-                         "request_ref": self.request_ref
+                         "request_ref": self.request_ref,
+                         'recipient': self.form_data['customerNo']
                         } 
          
         if self.data['statusCode'] == '00':
