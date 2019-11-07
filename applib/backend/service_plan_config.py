@@ -7,7 +7,7 @@ from applib import model as m
 
 from .service_config import set_pagination
 import datetime
-
+from .web_login import is_active_session
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -18,6 +18,7 @@ app = Blueprint('service_plan', __name__, url_prefix='/backend/plan')
 # +-------------------------+-------------------------+
 
 @app.route("/")
+@is_active_session
 def index():
 
     with m.sql_cursor() as db:
@@ -40,13 +41,13 @@ def index():
                             page_row=_rows, cur_page=page)
 
 
-
 @app.route("/add", methods=['POST', 'GET'])
+@is_active_session
 def add():
 
     content = h.request_data(request)
     form = fm.ServicePlan(**content)    
-    form.service_id.choices =form.service_id.choices + [(x.id, x.label) for x in m.ServiceItems.get_all()]
+    form.service_id.choices = form.service_id.choices + [(x.id, x.label) for x in m.ServiceItems.get_all()]
    
 
     if request.method == 'POST' and form.validate():
@@ -66,6 +67,7 @@ def add():
 
 
 @app.route('/edit/<int:id>', methods=['POST', 'GET'])
+@is_active_session
 def edit(id):
 
     content = h.request_data(request)

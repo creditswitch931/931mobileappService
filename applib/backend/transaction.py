@@ -8,8 +8,9 @@ import os
 import datetime
 from sqlalchemy import func
 
-
 from .service_config import UPLOAD_FOLDER, set_pagination
+from .web_login import is_active_session 
+
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -20,8 +21,8 @@ app = Blueprint('transaction', __name__, url_prefix='/backend')
 # +-------------------------+-------------------------+
 
 
-
 @app.route('/transaction/view')
+@is_active_session
 def transaction_view():
 
     page = request.args.get('page', 1, type=int)

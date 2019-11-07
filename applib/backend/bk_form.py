@@ -52,8 +52,8 @@ class ServiceItem(Form):
     image = FileField('Menu Icon', [], 
                       render_kw={"class_": "form-control"})
 
-    service_id = SelectField("Service ", [is_required()], 
-                            choices=m.ServicesMd.get_service(),
+    service_id = SelectField("Service", [is_required()], 
+                            choices=[(0, 'Select Service')],
                             render_kw={"class_": "form-control"}, 
                             coerce=int)
 
@@ -73,4 +73,3 @@ class ServicePlan(Form):
     extra_field = StringField('Extra Field', [is_required()],
                     render_kw={'class_':'form-control'}
                   )
-    

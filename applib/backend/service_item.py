@@ -7,6 +7,7 @@ from applib import model as m
 import os
 
 from .service_config import UPLOAD_FOLDER, set_pagination
+from .web_login import is_active_session
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -18,10 +19,12 @@ app = Blueprint('service_item', __name__, url_prefix='/backend')
 
 
 @app.route('/item/add', methods=['POST', 'GET'])
+@is_active_session
 def item_add():
 
     form = fm.ServiceItem(**request.form)
-    
+    form.service_id.choices = form.service_id.choices + m.ServicesMd.get_service()
+
     if request.method == 'POST' and form.validate():
 
         _path = h.save_file(request.files[form.image.name], UPLOAD_FOLDER)
@@ -36,7 +39,7 @@ def item_add():
             
         return redirect(url_for('service_item.item_view'))
 
-    form.service_id.choices = [(0, 'Select Service')] + form.service_id.choices 
+    
 
     return render_template('item.html', form=form, 
                             _title='Add Item', back_url="service_item.item_view")
@@ -45,9 +48,9 @@ def item_add():
 # +-------------------------+-------------------------+
 
 
-@app.route('/item/view', methods=['POST', 'GET'])
+@app.route('/item/view')
+@is_active_session
 def item_view():
-    form = fm.ServiceItem(**request.form)
 
     with m.sql_cursor() as db:
         page = request.args.get('page', 1, type=int)
@@ -73,9 +76,11 @@ def item_view():
 
 
 @app.route('/item/edit/<int:item_id>/', methods=['POST', 'GET'])
+@is_active_session
 def item_edit(item_id):
     
     form = fm.ServiceItem(**request.form)
+    form.service_id.choices = form.service_id.choices + m.ServicesMd.get_service()
 
     if request.method == 'POST' and form.validate():
 
@@ -92,7 +97,6 @@ def item_edit(item_id):
         return redirect(url_for('service_item.item_view'))
 
     
-    form.service_id.choices = [(0, 'Select Service')] + form.service_id.choices 
     data = m.ServiceItems.get_items(item_id)
     m.model2form(data, form)
     form.active.data = data.active == 1 
@@ -104,6 +108,7 @@ def item_edit(item_id):
 
 
 @app.route('/item/delete/<int:item_id>')
+@is_active_session
 def delete(item_id):
 
     with m.sql_cursor() as db:

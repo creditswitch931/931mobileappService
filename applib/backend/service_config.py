@@ -7,7 +7,7 @@ from applib.lib import helper  as h
 from applib.backend import bk_form as fm 
 from applib import model as m 
 import os
-
+from .web_login import is_active_session
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -22,10 +22,11 @@ UPLOAD_FOLDER = 'applib/static/media'
 
 
 @app.route('/service/add', methods=['POST', 'GET'])
+@is_active_session
 def add():
 
     form = fm.Service(**request.form)
-
+    
     if request.method == 'POST' and form.validate():
 
         _path = h.save_file(request.files[form.image.name], UPLOAD_FOLDER)
@@ -49,6 +50,7 @@ def add():
 
 
 @app.route('/service/view', methods=['POST', 'GET'])
+@is_active_session
 def service_view():
     with m.sql_cursor() as db:
         page = request.args.get('page', 1, type=int)
@@ -72,6 +74,7 @@ def service_view():
 
 
 @app.route('/service/edit/<int:service_id>/', methods=['POST', 'GET'])
+@is_active_session
 def edit(service_id): 
          
     form = fm.Service(**request.form)
@@ -100,6 +103,7 @@ def edit(service_id):
 
 
 @app.route('/service/delete/<int:service_id>')
+@is_active_session
 def delete(service_id):
 
     with m.sql_cursor() as db:
@@ -108,10 +112,7 @@ def delete(service_id):
         db.query(m.ServicesMd).filter_by(**param).delete()
 
         return redirect(url_for('bk_cfg.service_view')) 
-
-    
-
-
+ 
 
 
 def set_pagination(obj, cur_page, page_size):
