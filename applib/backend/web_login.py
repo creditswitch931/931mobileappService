@@ -8,6 +8,9 @@ from applib.lib import helper  as h
 from .bk_form import LoginForm
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
+from applib import model as m 
+
+from sqlalchemy import func
 
 from applib.lib import helper as h
 from applib import model as m 
@@ -54,7 +57,8 @@ def login():
             return redirect(url_for('backend.dashboard'))
         else:
             url = h.get_config("API", "login")
-            login_content = {"username": username, "password": password}
+            login_content = {"username": username, "password": password, 
+                                "mac_address": "1292999277"}
             req = RequestHandler(url, method=1, data=login_content)
             resp = req.send()
 

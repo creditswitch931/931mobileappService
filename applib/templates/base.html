@@ -88,7 +88,7 @@
             padding: 30px;
             margin-top: 8%;
             background: #fff;
-            padding-bottom: 50px;
+            /*padding-bottom: 50px;*/
             border-radius: 5px;
         }
 
@@ -263,7 +263,7 @@
                 {{field}}                
                 {% if field.errors %}
                     {% for error in field.errors %}
-                        <small id="form_error" class="form-text text-muted"> {{error}} </small>
+                        <small id="form_error" class="form-text text-danger"> {{error}} </small>
                     {% endfor %}
                 {% endif%}  
             </div> 
@@ -413,6 +413,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   {% block script_files %}
   {% endblock %}
 
