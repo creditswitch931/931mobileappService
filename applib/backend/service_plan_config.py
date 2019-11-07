@@ -9,6 +9,7 @@ from .service_config import set_pagination
 import datetime
 from .web_login import is_active_session
 
+from sqlalchemy import or_
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -34,6 +35,17 @@ def index():
                     m.ServiceItems,
                     m.ServiceItems.id == m.ServicePlan.service_id
                 ).order_by(m.ServicePlan.id.desc())
+
+        content = h.request_data(request)
+        if content.get('q') is not None:
+            data = data.filter(or_(
+                                   m.ServicePlan.code.like('%' + content['q'] + '%'), 
+                                   m.ServicePlan.label.like('%' + content['q'] + '%'),
+                                   m.ServicePlan.group_name.like('%' + content['q'] + '%'),
+                                   m.ServiceItems.label.like('%' + content['q'] + '%')
+                                  )
+                               )
+        data = data.order_by(m.ServicePlan.id.desc())
 
         pager, _rows = set_pagination(data, page, per_page)
  

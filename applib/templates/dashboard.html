@@ -4,6 +4,7 @@
 .top_up{
 	margin-top: 0px;
 	padding: 20px;
+	padding-bottom: 10px;
 }
 
 .style_card{
@@ -19,37 +20,118 @@
 
 }
 
+.widget-numbers {
+    font-weight: bold;
+    font-size: 2.5rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+}
+
+.widget-chart{
+    font-weight: bold;
+    font-size: 2.5rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+    position: relative;
+    z-index: 5;
+}
+
+.widget-chart .widget-chart-content {
+    position: relative;
+    z-index: 5;
+}
+
+.widget-chart .widget-numbers+.widget-chart-flex, .widget-chart .widget-numbers+.widget-description, .widget-chart .widget-numbers+.widget-subheading {
+    margin-top: -.5rem;
+}
+
+.widget-chart .widget-subheading {
+    margin: -0.5rem 0 0;
+    display: block;
+    opacity: .6;
+}
+
+.fsize-1 {
+    font-size: .95rem !important;
+}
+
+.opacity-10 {
+    opacity: 1 !important;
+}
+
+.opacity-8 {
+    opacity: .8 !important;
+}
+
+.widget-description {
+    margin: 1rem 0 0;
+}
+
 {% endblock%}
 
 {% block main %}
 <div class="row">
-  <div class="col-md-4">
-    <div class="card bg-white text-center border-secondary allsides top_up">
-      <h5 class="card-header">Mobile Users</h5>
-      <div class="card-body">
-        <p class="card-text"></p>
-        <a href="{{url_for('mobile.users')}}" class="btn btn-link">click to view list</a>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card bg-white text-center border-secondary allsides top_up">
-      <h5 class="card-header">Payments</h5>
-      <div class="card-body">
-        <p class="card-text"></p>
-        <a href="#" class="btn btn-link">click to view list</a>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card bg-white text-center border-secondary allsides top_up">
-      <h5 class="card-header">Transactions</h5>
-      <div class="card-body">
-        <p class="card-text"></p>
-        <a href="{{url_for('transaction.transaction_view')}}" class="btn btn-link">click to view list</a>
-      </div>
-    </div>
-  </div>
+	<div class="col-md-4">
+	   <div class="card bg-white text-center border-secondary allsides top_up">
+	    	<div class="widget-chart-content">
+		    	<div class="card-header">Mobile Users</div>
+		    	
+		    	<div class="widget-numbers">
+		    		<span>35</span>
+		      	</div>
+
+		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 8px;">
+		        	Montly: <span>70</span>
+		      	</div>
+		      	<div class="widget-description opacity-8">
+		      		<a href="{{url_for('mobile.users')}}" class="btn btn-link btn-sm" style="padding-bottom: 0px;">click to view list</a>
+		      	</div>
+	    	</div>
+	    </div>
+	</div>
+
+
+	<div class="col-md-4">
+	   <div class="card bg-white text-center border-secondary allsides top_up">
+	    	<div class="widget-chart-content">
+		    	<div class="card-header">Payments</div>
+		    	
+		    	<div class="widget-numbers">
+		    		<span>35</span>
+		      	</div>
+
+		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 8px;">
+		        	Montly: <span>70</span>
+		      	</div>
+		      	<div class="widget-description opacity-8">
+		      		<a href="#" class="btn btn-link btn-sm" style="padding-bottom: 0px;">click to view list</a>
+		      	</div>
+	    	</div>
+	    </div>
+	</div>
+
+
+	<div class="col-md-4">
+	   <div class="card bg-white text-center border-secondary allsides top_up">
+	    	<div class="widget-chart-content">
+		    	<div class="card-header">Transactions</div>
+		    	
+		    	<div class="widget-numbers">
+		    		<span>35</span>
+		      	</div>
+
+		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 8px;">
+		        	Montly: <span>70</span>
+		      	</div>
+		      	<div class="widget-description opacity-8">
+		      		<a href="{{url_for('transaction.transaction_view')}}" class="btn btn-link btn-sm" style="padding-bottom: 0px;">click to view list</a>
+		      	</div>
+	    	</div>
+	    </div>
+	</div>
+
 </div>
 
 <div class="row">
@@ -66,8 +148,6 @@
 		    	</div>
 		    </div>
     	</div>
-
-		
 	</div>
 </div>
 
