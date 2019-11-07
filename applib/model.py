@@ -164,6 +164,28 @@ class ServicePlan(Base):
 
         return qry 
 
+    @staticmethod
+    def get_choices(grp_name):
+        qry = []
+        with sql_cursor() as db:
+
+            qry = db.query(ServicePlan.code, ServicePlan.label
+                          ).filter_by(group_name=grp_name).all()
+
+        return qry
+
+    @staticmethod
+    def get_extrafield(**kwargs):        
+
+        with sql_cursor() as db:
+            data = db.query(ServicePlan.extra_field).filter_by(**kwargs).first()
+
+        # raise an error if the field is not found. left delibrately. 
+
+        return data 
+
+
+
 
 def form2model(formobj, model_ins, exclude=[]):
     counter = 0            

@@ -42,31 +42,44 @@ def get_handler_cls(entity):
     _cls = getattr(sh, entity + 'Handler')
     return _cls
 
+def initialize_form(formname, fields={}):
+    _Form = getattr(fm, formname)
+    _form = _Form(**fields)
+    _form.init_func()
+    return FormHandler(_form)
+
 
 def get_form(entity, fields):
-    entity_cls = get_handler_cls(entity)        
-    form_cls = getattr(fm, entity_cls.__formCls__)    
-    return FormHandler(form_cls(**fields)) 
+    entity_cls = get_handler_cls(entity)     
+    return initialize_form(entity_cls.__formCls__, fields)  
 
+    # form_cls = getattr(fm, entity_cls.__formCls__)    
+    # return FormHandler(form_cls(**fields)) 
 
 def get_validate_form(entity, fields):
 
     entity_cls = get_handler_cls(entity)
-    form_cls = getattr(fm, entity_cls.__formClsValidate__)
-    return FormHandler(form_cls(**fields))
+    return initialize_form(entity_cls.__formClsValidate__, fields)
+
+    # form_cls = getattr(fm, entity_cls.__formClsValidate__)
+    # return FormHandler(form_cls(**fields))
 
 
 def get_form_by_name(formname, fields):
     
-    form_cls = getattr(fm, formname)
-    return FormHandler(form_cls(**fields))
+    return initialize_form(formname, fields)
+
+    # form_cls = getattr(fm, formname)
+    # return FormHandler(form_cls(**fields))
 
 
 def get_form_objects(entity, fields={}):
 
     entity_cls = get_handler_cls(entity)
-    form_cls = getattr(fm, entity_cls.__formCls__)
-    form_ins = FormHandler(form_cls(**fields))
+    form_ins = initialize_form(entity_cls.__formCls__, fields)
+    
+    # form_cls = getattr(fm, entity_cls.__formCls__)
+    # form_ins = FormHandler(form_cls(**fields))
     
     return (form_ins.render(), 
             entity_cls.__url__, 

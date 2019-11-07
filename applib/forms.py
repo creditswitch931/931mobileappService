@@ -5,6 +5,8 @@ from wtforms import (Form, Field, BooleanField, StringField,
 
 from wtforms.validators import Email, Length, ValidationError
 
+from applib import model as m
+
 
 def check_zero_sign():
 
@@ -59,7 +61,13 @@ def is_required():
     return check_required
 
 
-class RegistrationForm(Form):    
+class BaseForm(Form):
+
+    def init_func(self):
+        pass
+
+
+class RegistrationForm(BaseForm):    
     first_name = StringField("First Name")
     last_name = StringField("Last Name")
     email = StringField('Email Address', [Email("invalid email address")])
@@ -74,29 +82,29 @@ class RegistrationForm(Form):
 
 
     
-class LoginForm(Form):     
+class LoginForm(BaseForm):     
     username = StringField('Username', [is_required()])
     password = PasswordField('Password', [is_required()])
     mac_address = StringField("Mac Address")
 
     
 
-class ForgotForm(Form):
+class ForgotForm(BaseForm):
     email = StringField("Email or Phone", [validators.Email()]) # custom validaton 
     
 
 
-class Airtime(Form):
+class Airtime(BaseForm):
     amount = IntegerField('Enter amount', [is_required(), check_zero_sign()])
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
     
 
 
-class ElectricityValidate(Form):
+class ElectricityValidate(BaseForm):
     meterNumber = IntegerField("Meter Number", [is_required(), number_check()])    
 
 
-class IkejaPrePaid(Form):
+class IkejaPrePaid(BaseForm):
     customerDtNumber = HiddenField('CustomerDtNumber')
     customerAccountType = HiddenField("customerAccountType")
     providerRef = HiddenField('ProviderRef No')
@@ -107,7 +115,7 @@ class IkejaPrePaid(Form):
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
-class EkoPrePaid(Form):
+class EkoPrePaid(BaseForm):
     customerDtNumber = HiddenField('CustomerDtNumber')
     providerRef = HiddenField('ProviderRef No')
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
@@ -117,7 +125,7 @@ class EkoPrePaid(Form):
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
-class IbadanPrePaid(Form):
+class IbadanPrePaid(BaseForm):
     customerDtNumber = HiddenField('CustomerDtNumber')
     providerRef = HiddenField('ProviderRef No')
     name = StringField('Name', [is_required()])
@@ -127,7 +135,7 @@ class IbadanPrePaid(Form):
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
-class AbujaPrePaid(Form):
+class AbujaPrePaid(BaseForm):
     customerDtNumber = HiddenField('CustomerDtNumber')
     providerRef = HiddenField('ProviderRef No')
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
@@ -137,7 +145,7 @@ class AbujaPrePaid(Form):
     phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
-class Data(Form):
+class Data(BaseForm):
     amount = SelectField('Select Plans', [is_required()],                                   
                          choices=[(None, 'Select Plan')]
                         )
@@ -145,12 +153,28 @@ class Data(Form):
     phone = IntegerField('Phone No', [is_required()])
 
 
+class MtnData(Data):
+    def init_func(self):
+        self.amount.choices = self.amount.choices + m.ServicePlan.get_choices("mtnplan")
 
-class ValidateIUC(Form):
+class AirtelData(Data):
+    def init_func(self):
+        self.amount.choices = self.amount.choices + m.ServicePlan.get_choices("airtelplan")
+
+class GloData(Data):
+    def init_func(self):
+        self.amount.choices = self.amount.choices + m.ServicePlan.get_choices("gloplan")
+
+class NMobileData(Data):
+    def init_func(self):
+        self.amount.choices = self.amount.choices + m.ServicePlan.get_choices("ninemobileplan")
+
+
+class ValidateIUC(BaseForm):
     customerNo = IntegerField("Smartcard No", [is_required(), number_check()])
 
 
-class Startimes(Form):
+class Startimes(BaseForm):
 
     customerName = StringField("Customer Name")
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
@@ -159,7 +183,7 @@ class Startimes(Form):
     phone = IntegerField('Phone', [is_required(), validate_phone()])
 
 
-class GotvValidation(Form):
+class GotvValidation(BaseForm):
 
     service_plans = SelectField("Select Plan", 
                                 [is_required()], 
@@ -168,9 +192,12 @@ class GotvValidation(Form):
 
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
 
+    def init_func(self):        
+        self.service_plans.choices = self.service_plans.choices + m.ServicePlan.get_choices("gotvplan")
+ 
 
 
-class Gotv(Form):
+class Gotv(BaseForm):
     
     productCodes = HiddenField('Product Code')
 
@@ -186,7 +213,7 @@ class Gotv(Form):
                                          (5, 'Five Months'), (6, 'Six Months'), 
                                          (7, 'Seven Months'), (8, 'Eight Months'), 
                                          (9, 'Nine Months'), (10, 'Ten Months'), 
-                                         (11, 'Eleven Months'), (12, 'Twelve Months'), 
+                                         (11, 'Twelve Months'), 
                                         ]
                                 )
 
@@ -194,22 +221,22 @@ class Gotv(Form):
     
     
 
-class DstvValidation(Form):
+class DstvValidation(BaseForm):
 
     service_plans = SelectField("Select Plan", 
                                 [is_required()], 
-                                 choices=[(None, 'Select Package'),
-                                    # ("PRWE36", "DStv Premium"),
-                                    # ("PRWASIE36", "DStv Premium Asia"),
-                                    # ("ASIAE36", "Asian Bouqet"),
-                                    # ("FTAE36", "DStv FTA Plus")
-                                    ]
+                                 choices=[(None, 'Select Package')]
                                 )
 
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
 
+    def init_func(self):        
+        self.service_plans.choices = self.service_plans.choices + m.ServicePlan.get_choices("dstvpackage")
+ 
 
-class Dstv(Form):
+    
+
+class Dstv(BaseForm):
     
     productCodes = HiddenField('Product Code')
     
@@ -217,14 +244,14 @@ class Dstv(Form):
     customerNo = IntegerField('Smartcard No', [is_required(), number_check()])
     amount = IntegerField('Amount', [is_required(), check_zero_sign()])    
     invoicePeriod = SelectField("Invoice Period", 
-                                [is_required()],
+                                [is_required()], coerce=int,
                                 choices=[(0, 'Subscription Period'),
                                          (1, 'One Month'), (2, 'Two Months'), 
                                          (3, 'Three Months'), (4, 'Four Months'), 
                                          (5, 'Five Months'), (6, 'Six Months'), 
                                          (7, 'Seven Months'), (8, 'Eight Months'), 
                                          (9, 'Nine Months'), (10, 'Ten Months'), 
-                                         (11, 'Eleven Months'), (12, 'Twelve Months'), 
+                                         (11, 'Twelve Months'), 
                                         ]
                                 )
 

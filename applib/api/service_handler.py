@@ -120,8 +120,11 @@ class ServiceHandler:
 
 
     def init_form(self):
-        form = getattr(f, self.__formCls__)
-        fh = FormHandler(form())
+        _Form = getattr(f, self.__formCls__)
+        form_ins = _Form()
+        form_ins.init_func()
+        fh = FormHandler(form_ins)
+
         return fh.render()
 
 
@@ -391,7 +394,9 @@ class EkoPrePaidHandler(IkejaPrePaidHandler):
     __ServiceName__ = "Eko Disco Prepaid"
     __ServiceCode__ = 'E05E'
     __vendform__ = 'EkoPrePaid'
-    __readonlyFields__ = []
+    __readonlyFields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
     
 
     def call_service(self):
@@ -454,28 +459,27 @@ class MtnDataHandler(DataHandler):
     __name__ = 'Mtn Data'
     __ServiceName__ = "MTN Data Sub"
     __ServiceCode__ = "mtn"
+    __formCls__ = 'MtnData'
 
 
-
-class AirtielDataHandler(DataHandler):
+class AirtelDataHandler(DataHandler):
     __name__ = "Airtel Data"
     __ServiceCode__ = "airtel"
     __ServiceName__ = "Airtel Data Sub"
-
+    __formCls__ = 'AirtelData'
 
 class GloDataHandler(DataHandler):
     __name__ = "Globacom Data"
     __ServiceCode__ = "globacom"
     __ServiceName__ = "Glo Data Sub"
+    __formCls__ = 'GloData'
 
-class NineMobDataHandler(DataHandler):
+class NMobDataHandler(DataHandler):
     __name__ = "Globacom Data"
     __ServiceCode__ = "9mobile"
     __ServiceName__ = "Glo Data Sub"
-
+    __formCls__ = 'NMobileData'
  
-
-
 
 
 class StartimesTvHandler(ServiceHandler):
@@ -583,6 +587,7 @@ class DsTvHandler(ServiceHandler):
     __vendform__ = "Dstv"
     __readonlyFields__ = ["amount", "customerNo", "customerName" ]
     __ServiceCode__ = "dstv"
+    __ServicePlanGrp__ = "dstvpackage"
 
 
     def validate_service(self):
@@ -607,8 +612,18 @@ class DsTvHandler(ServiceHandler):
             firstname = output[1]["statusDescription"]["firstname"]
             lastname = output[1]["statusDescription"]["lastname"]
 
+            # get the service amount here 
+             
+            qry = m.ServicePlan.get_extrafield(code=self.form_data['service_plans'],
+                                               group_name=self.__ServicePlanGrp__
+                                               )
+            
+            print(qry)
+
+            # self.form_data['service_plans']
+
             self.resp_obj.params['data'].extend([
-                    {"amount": 1000},
+                    {"amount": qry.extra_field},
                     {"productCodes": self.form_data['service_plans']},
                     {"customerName": ('{} {}'.format(firstname, lastname)).strip()},
                     {"invoicePeriod": 1}
@@ -631,17 +646,14 @@ class DsTvHandler(ServiceHandler):
         _func = cable_service.multichoice_vending
         self.request_ref = h.random_alphanum(16)        
 
+
+        self.form_data['amount'] = float(self.form_data['amount']) * self.form_data['invoicePeriod']
+        
         output = _func(self.kwargs['login_id'], self.form_data['customerNo'], 
                        self.form_data['customerName'], self.__ServiceCode__,
                        self.form_data['amount'], self.form_data['invoicePeriod'], 
                        self.form_data['productCodes'], self.request_ref
-                    ) 
-
-        # {'statusCode': '00', 'statusDescription': 
-        #     {'message': 'successful', 'amount': '1000', 
-        #     'transactionRef': 'qdz471p7tz3y5oh4', 'transactionNo': '6060131549'
-        #     }
-        # }
+                    )         
 
         self.data = output[1]
 
@@ -715,6 +727,7 @@ class GoTvHandler(DsTvHandler):
     __ServiceName__ = "Gotv Subscription"
     __readonlyFields__ = ["customerNo", "customerName", "amount"]
     __ServiceCode__ = "gotv"
+    __ServicePlanGrp__ = "gotvplan"
  
  
 
