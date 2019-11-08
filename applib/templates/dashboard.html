@@ -69,6 +69,16 @@
     margin: 1rem 0 0;
 }
 
+.donut{
+	padding-bottom: 0px;
+    margin-top: 43px;
+    height: 91%;
+    padding-right: 0px;
+    padding-left: 0px;
+    position: relative;
+
+}
+
 {% endblock%}
 
 {% block main %}
@@ -135,7 +145,8 @@
 </div>
 
 <div class="row">
-	<div class="col-md-12">
+
+	<div class="col-md-7">
 		<div class="card bg-white text-center border-secondary allsides"
 				style="padding-bottom: 0px;">
 			<div class="card-header-tab card-header">
@@ -149,6 +160,23 @@
 		    </div>
     	</div>
 	</div>
+
+	<div class="col-md-5">
+		<div class="card bg-white text-center border-secondary allsides donut"
+			style="padding-bottom: 0px;">
+		    
+		    <div class="card-body bar_body" style="position: relative;">
+		    	<div>
+		    		<div id="donut"></div>
+		    	</div>
+		    </div>
+		    <div class="card-footer text-muted">
+			    Top Agents
+			</div>
+
+    	</div>
+	</div>
+
 </div>
 
 {% endblock %}
@@ -183,7 +211,8 @@ var options = {
             stroke: {
                 curve: 'smooth'
             },
-            series: [{
+            series: {{series}}
+            		[{
                     name: "Airtime",
                     data: [0, 29, 33, 36, 32, 0, 33, 21, 14, 15, 33]
 	                },
@@ -267,4 +296,45 @@ var options = {
         );
 
         chart.render();
+
+
+
+
+var options = {
+            chart: {
+                
+                width: '100%',
+                type: 'donut',
+                height: '400px',
+            },
+            dataLabels: {
+                enabled: true
+            },
+            series: [4400, 5500, 1315, 3345],
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 300
+                    },
+                    legend: {
+                        show: false
+                    }
+                }
+            }],
+            legend: {
+                position: 'right',
+                offsetY: 150,
+                height: 530,
+
+            }
+        }
+
+        var chart = new ApexCharts(
+            document.querySelector("#donut"),
+            options
+        );
+
+        chart.render()
+
 {% endblock %}
