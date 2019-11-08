@@ -120,6 +120,8 @@ class FormHandler:
         count = 1
         field_names = []
 
+        self.readonly_field = self.form.__readonlyfields__
+        
         # self.form.init_func() ## to run inits before displaying the form
 
         
@@ -230,3 +232,6 @@ class FormHandler:
             retv[key] = obj.data
 
         return retv
+
+
+        

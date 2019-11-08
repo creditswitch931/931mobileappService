@@ -120,10 +120,11 @@ class Transactions(Base):
     trans_desc = Column(String(100), nullable=False)
     trans_code = Column(String(30), nullable=False)
     trans_params = Column(Text, nullable=False)
+    trans_amount = Column(String(30), nullable=False)
     trans_resp = Column(Text, nullable=False)
     user_mac_address = Column(String(100), nullable=False)
-    user_id = Column(Integer, ForeignKey("registered_users.id"), nullable=False)
-    trans_type_id = Column(Integer, ForeignKey("service_items.id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
+    trans_type_id = Column(BigInteger, ForeignKey("service_items.id"), nullable=False)
     date_created = Column(DateTime, nullable=False)
 
     

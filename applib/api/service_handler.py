@@ -69,7 +69,8 @@ class ServiceHandler:
             "trans_resp": h.dump2json(self.resp_obj.params),
             "user_mac_address": self.kwargs['mac_address'],
             "user_id": self.kwargs['user_id'],
-            "trans_type_id": self.kwargs['ref_id'],            
+            "trans_type_id": self.kwargs['ref_id'],
+            "trans_amount": self.form_data['amount']
         }
 
 
@@ -265,9 +266,7 @@ class IkejaPrePaidHandler(ServiceHandler):
     __ServiceName__ = "Ikeja Disco Prepaid"
     __ServiceCode__ = "E01E"
     __vendform__ = "IkejaPrePaid"
-    __readonlyFields__ = ["customerDtNumber", "name", 
-                         "address", "meterNumber", "customerAccountType",
-                         "providerRef"]
+    __readonlyFields__ = []
       
 
     def validate_service(self):

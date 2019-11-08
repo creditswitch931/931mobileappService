@@ -62,7 +62,7 @@ def is_required():
 
 
 class BaseForm(Form):
-
+    __readonlyfields__ = []
     def init_func(self):
         pass
 
@@ -105,6 +105,9 @@ class ElectricityValidate(BaseForm):
 
 
 class IkejaPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
     customerDtNumber = HiddenField('CustomerDtNumber')
     customerAccountType = HiddenField("customerAccountType")
     providerRef = HiddenField('ProviderRef No')
@@ -116,6 +119,10 @@ class IkejaPrePaid(BaseForm):
 
 
 class EkoPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+
     customerDtNumber = HiddenField('CustomerDtNumber')
     providerRef = HiddenField('ProviderRef No')
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
@@ -126,6 +133,9 @@ class EkoPrePaid(BaseForm):
 
 
 class IbadanPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
     customerDtNumber = HiddenField('CustomerDtNumber')
     providerRef = HiddenField('ProviderRef No')
     name = StringField('Name', [is_required()])
@@ -136,6 +146,9 @@ class IbadanPrePaid(BaseForm):
 
 
 class AbujaPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
     customerDtNumber = HiddenField('CustomerDtNumber')
     providerRef = HiddenField('ProviderRef No')
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
@@ -175,7 +188,7 @@ class ValidateIUC(BaseForm):
 
 
 class Startimes(BaseForm):
-
+    __readonlyfields__ = ["customerName", 'balance', "smartCardCode"]
     customerName = StringField("Customer Name")
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
     balance = StringField("Balance")
@@ -198,7 +211,7 @@ class GotvValidation(BaseForm):
 
 
 class Gotv(BaseForm):
-    
+    __readonlyfields__ = ["amount", "customerNo", "customerName" ]
     productCodes = HiddenField('Product Code')
 
     customerNo = IntegerField('Smartcard No', [is_required(), number_check()])  
@@ -237,6 +250,7 @@ class DstvValidation(BaseForm):
     
 
 class Dstv(BaseForm):
+    __readonlyfields__ = ["amount", "customerNo", "customerName" ]
     
     productCodes = HiddenField('Product Code')
     
@@ -255,10 +269,7 @@ class Dstv(BaseForm):
                                         ]
                                 )
 
-    phone = IntegerField('Phone No', [is_required()])
-
-    
-    
+    phone = IntegerField('Phone No', [is_required()])   
     
 
 
