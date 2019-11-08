@@ -77,8 +77,8 @@ def login():
 @is_active_session
 def dashboard():
     with m.sql_cursor() as db:
-        # data_count=db.query(func.count(m.Transactions.id)).scalar()
-        pass
+        data_count=db.query(func.count(m.Transactions.id)).scalar()
+        
 
 
     # perform proper logout later on 

@@ -8,7 +8,7 @@ import os
 
 from .service_config import UPLOAD_FOLDER, set_pagination
 from .web_login import is_active_session
-
+from sqlalchemy import or_
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -51,7 +51,7 @@ def item_add():
 @app.route('/item/view')
 @is_active_session
 def item_view():
-
+    content = h.request_data(request)
     with m.sql_cursor() as db:
         page = request.args.get('page', 1, type=int)
         per_page=10
@@ -63,8 +63,16 @@ def item_view():
                 ).join(
                     m.ServicesMd,
                     m.ServicesMd.id == m.ServiceItems.service_id
-                ).order_by(m.ServiceItems.service_id.desc())
-
+                )
+        
+        if content.get('q') is not None:
+            data = data.filter(or_(
+                                   m.ServiceItems.name.like('%' + content['q'] + '%'), 
+                                   m.ServiceItems.label.like('%' + content['q'] + '%'),
+                                   m.ServicesMd.label.like('%' + content['q'] + '%')
+                                  )
+                               )
+        data = data.order_by(m.ServiceItems.service_id.desc())
         users, page_row = set_pagination(data, page, per_page)
 
 
