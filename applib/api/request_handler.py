@@ -9,6 +9,9 @@ from applib import model as m
 from applib.api import service_handler as sh
 from applib.backend.service_config import set_pagination 
 
+import os 
+
+
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -19,6 +22,8 @@ app = Blueprint('request', __name__, url_prefix='/api')
 
 def get_base64_image(img_path):
 
+    # repurpose this to load from a text file  so as to save processing power.
+
     output = ""
     _type = img_path.split('/')[-1]
     _type = _type.split('.')[-1]
@@ -27,11 +32,19 @@ def get_base64_image(img_path):
 
     if _type.lower() == 'jpg':
         schema = "data:image/jpg;base64,"
-
-    print ( img_path , '\nife')
-    with open(img_path, 'rb') as fl:
-        output = h.utf_decode(h.ba64_encode(fl.read()))
+    
+    if not os.path.exists(img_path+'.txt'):
+        with open(img_path, 'rb') as fl:
+            output = h.utf_decode(h.ba64_encode(fl.read()))
         
+
+        with open(img_path+".txt", "w") as fl:
+            fl.write(output)
+
+    else:
+        with open(img_path+".txt", 'r') as fl:
+            output = fl.read()
+
 
     return schema + output
 
@@ -303,9 +316,19 @@ def process_validation():
 def get_transactions():
 
     content = h.request_data(request)
+    _req = {}
     resp = Response() 
+    
+    fields = ["page", 'page_size', 'user_id']
 
-    content = {"page": 1, "user_id": 3}
+    for key, val in  content.items():
+        if key in fields:
+            _req[key] = int(val)
+
+        else:
+            _req[key] = val
+
+
 
     page_size = 10 
  
@@ -317,21 +340,23 @@ def get_transactions():
             m.Transactions.trans_resp,
             m.Transactions.trans_amount,
             m.Transactions.date_created,
-            m.ServiceItems.label
-
+            m.Transactions.trans_desc,
+            m.Transactions.trans_code,
+            m.ServiceItems.label,
+            m.ServiceItems.image
         ).outerjoin(
             m.ServiceItems,
             m.ServiceItems.id == m.Transactions.trans_type_id
 
         ).filter(
-            m.Transactions.user_id == content['user_id']
+            m.Transactions.user_id == _req['user_id']
         ).order_by(m.Transactions.id.desc()) 
 
-        params, _rows = set_pagination(qry, content["page"], page_size)
+        params, _rows = set_pagination(qry, _req["page"], _req.get('page_size') or page_size)
 
     
     retv = []
-    exclude = ['responseCode', "responseDesc", "login_id"]
+    # exclude = ['responseCode', "responseDesc", "login_id"]
 
     for x in params.items:
         
@@ -341,7 +366,10 @@ def get_transactions():
             "service_label": x.label,
             "trans_amount": x.trans_amount,
             "response": format_data(h.json_str2_dic(x.trans_resp)),
-            "date_created": h.date_format(x.date_created)
+            "date_created": h.date_format(x.date_created),
+            "image": get_base64_image(x.image),
+            "responseCode": x.trans_code,
+            "responseDesc": x.trans_desc
         })
 
     
@@ -359,7 +387,7 @@ def get_transactions():
 
 def format_data(iterobj):
     
-    exclude = ['responseCode', "responseDesc", "login_id"]
+    exclude = ["login_id"]
     retv = [] 
 
     for item in iterobj['data']:
