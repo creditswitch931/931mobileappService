@@ -34,7 +34,7 @@ def index():
                 ).join(
                     m.ServiceItems,
                     m.ServiceItems.id == m.ServicePlan.service_id
-                ).order_by(m.ServicePlan.id.desc())
+                )
 
         content = h.request_data(request)
         if content.get('q') is not None:
@@ -45,12 +45,14 @@ def index():
                                    m.ServiceItems.label.like('%' + content['q'] + '%')
                                   )
                                )
+        
         data = data.order_by(m.ServicePlan.id.desc())
 
         pager, _rows = set_pagination(data, page, per_page)
  
     return render_template("service_plan_list.html", pager=pager, 
                             page_row=_rows, cur_page=page)
+
 
 
 @app.route("/add", methods=['POST', 'GET'])

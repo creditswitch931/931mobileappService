@@ -119,6 +119,11 @@ class FormHandler:
         total = len(self.form._fields) - len(self.exclude_field)
         count = 1
         field_names = []
+
+        self.readonly_field = self.form.__readonlyfields__
+        
+        # self.form.init_func() ## to run inits before displaying the form
+
         
         for x in self.form:
             if x.name in self.exclude_field:
@@ -227,3 +232,6 @@ class FormHandler:
             retv[key] = obj.data
 
         return retv
+
+
+        

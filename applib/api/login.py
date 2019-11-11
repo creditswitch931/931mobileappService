@@ -91,7 +91,7 @@ def access_login():
 
     if resp.status():
 
-        resp.add_params("name", "Jerrey Uzodinma Alpha")
+        resp.add_params("name", "Demo Account")
         resp.add_params('user_id', 3) # get this from the mobile_usertable 
 
     else:

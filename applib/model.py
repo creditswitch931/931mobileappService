@@ -120,10 +120,11 @@ class Transactions(Base):
     trans_desc = Column(String(100), nullable=False)
     trans_code = Column(String(30), nullable=False)
     trans_params = Column(Text, nullable=False)
+    trans_amount = Column(String(30), nullable=False)
     trans_resp = Column(Text, nullable=False)
     user_mac_address = Column(String(100), nullable=False)
-    user_id = Column(Integer, ForeignKey("registered_users.id"), nullable=False)
-    trans_type_id = Column(Integer, ForeignKey("service_items.id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
+    trans_type_id = Column(BigInteger, ForeignKey("service_items.id"), nullable=False)
     date_created = Column(DateTime, nullable=False)
 
     
@@ -163,6 +164,28 @@ class ServicePlan(Base):
                 ).filter_by(id=id).first()
 
         return qry 
+
+    @staticmethod
+    def get_choices(grp_name):
+        qry = []
+        with sql_cursor() as db:
+
+            qry = db.query(ServicePlan.code, ServicePlan.label
+                          ).filter_by(group_name=grp_name).all()
+
+        return qry
+
+    @staticmethod
+    def get_extrafield(**kwargs):        
+
+        with sql_cursor() as db:
+            data = db.query(ServicePlan.extra_field).filter_by(**kwargs).first()
+
+        # raise an error if the field is not found. left delibrately. 
+
+        return data 
+
+
 
 
 def form2model(formobj, model_ins, exclude=[]):
