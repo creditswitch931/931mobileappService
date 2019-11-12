@@ -10,12 +10,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import json
 from applib import model as m 
 
-from sqlalchemy import func
+from sqlalchemy import func, extract, cast
 
 from applib.lib import helper as h
 from applib import model as m 
 
 from functools import wraps 
+from datetime import timedelta, date, datetime
+import calendar
 
 
 # +-------------------------+-------------------------+
@@ -77,13 +79,66 @@ def login():
 @is_active_session
 def dashboard():
     with m.sql_cursor() as db:
-        data_count=db.query(func.count(m.Transactions.id)).scalar()
+        today = datetime.now()
         
+        _range = calendar.monthrange(today.year, today.month)
+        
+        first = today.replace(day=1) 
+
+        last = date(today.year, today.month, _range[1])
+
+        total_transact = db.query(m.Transactions.id).count()
+
+        successful_transact = db.query(m.Transactions.trans_desc).filter(
+                                m.Transactions.trans_desc =='successful').count()
+
+        failed_transact = total_transact - successful_transact
+
+        total_users=db.query(m.MobileUser.id).count()
+
+        transact_montly_count = db.query(m.Transactions.id).filter(
+            m.Transactions.date_created.between(first.date(), last)).count()
+
+        users_montly_count = db.query(m.Transactions.id).filter(
+            m.Transactions.date_created.between(first.date(), last)).count()
+        
+ 
+        transaction_qry ="""SELECT strftime('%Y-%m', transactions_table.date_created) as dt,             
+                                    sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
+                                    service_list.label
+                            FROM ((transactions_table
+                            LEFT JOIN service_items 
+                                ON transactions_table.trans_type_id = service_items.id)
+                            LEFT JOIN service_list 
+                                ON service_items.service_id = service_list.id)
+                            GROUP BY strftime('%Y-%m', transactions_table.date_created),
+                                     service_list.label
+                        """ 
+
+        transaction_data = db.execute(transaction_qry)
+        qry_data = transaction_data.fetchall()
+
+        series = {}
+        
+        for x in qry_data:
+            series[x.date_created].append({
+
+                })
+            
+            series.append({'date': x.date_created, 'name':x.label, 'data':[x.amount]})
+                        
+        print(series)       
 
 
     # perform proper logout later on 
 
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', 
+                                total_transact=total_transact, 
+                                transact_montly_count=transact_montly_count,
+                                total_users=total_users,
+                                users_montly_count=users_montly_count,
+                                successful_transact=successful_transact,
+                                failed_transact=failed_transact)
 
 @app.route("/logout")
 @is_active_session

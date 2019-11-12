@@ -66,7 +66,7 @@
 }
 
 .widget-description {
-    margin: 1rem 0 0;
+   
 }
 
 .donut{
@@ -88,16 +88,15 @@
 	    	<div class="widget-chart-content">
 		    	<div class="card-header">Mobile Users</div>
 		    	
-		    	<div class="widget-numbers">
-		    		<span>35</span>
+		    	<a href="{{url_for('mobile.users')}}" class="widget-numbers"
+                    title="View Complete Report">
+		    		<span>{{total_users}}</span>
+		      	</a>
+
+		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
+		        	present month: <span>{{users_montly_count}}</span>
 		      	</div>
 
-		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 8px;">
-		        	Montly: <span>70</span>
-		      	</div>
-		      	<div class="widget-description opacity-8">
-		      		<a href="{{url_for('mobile.users')}}" class="btn btn-link btn-sm" style="padding-bottom: 0px;">click to view list</a>
-		      	</div>
 	    	</div>
 	    </div>
 	</div>
@@ -108,16 +107,14 @@
 	    	<div class="widget-chart-content">
 		    	<div class="card-header">Payments</div>
 		    	
-		    	<div class="widget-numbers">
+		    	<a href="#" class="widget-numbers" title="View Complete Report">
 		    		<span>35</span>
-		      	</div>
+		      	</a>
 
-		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 8px;">
-		        	Montly: <span>70</span>
+		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
+		        	present month: <span>70</span>
 		      	</div>
-		      	<div class="widget-description opacity-8">
-		      		<a href="#" class="btn btn-link btn-sm" style="padding-bottom: 0px;">click to view list</a>
-		      	</div>
+		  
 	    	</div>
 	    </div>
 	</div>
@@ -128,16 +125,14 @@
 	    	<div class="widget-chart-content">
 		    	<div class="card-header">Transactions</div>
 		    	
-		    	<div class="widget-numbers">
-		    		<span>35</span>
+		    	<a href="{{url_for('transaction.transaction_view')}}" class="widget-numbers" title="View Complete Report">
+		    		<span>{{total_transact}}</span>
+		      	</a>
+
+		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
+		        	success: <span>{{successful_transact}}</span><br>failed: <span>{{failed_transact}}</span>
 		      	</div>
 
-		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 8px;">
-		        	Montly: <span>70</span>
-		      	</div>
-		      	<div class="widget-description opacity-8">
-		      		<a href="{{url_for('transaction.transaction_view')}}" class="btn btn-link btn-sm" style="padding-bottom: 0px;">click to view list</a>
-		      	</div>
 	    	</div>
 	    </div>
 	</div>
@@ -147,17 +142,19 @@
 <div class="row">
 
 	<div class="col-md-7">
-		<div class="card bg-white text-center border-secondary allsides"
-				style="padding-bottom: 0px;">
-			<div class="card-header-tab card-header">
-				<div class="card-header-title font-size-lg text-capitalize font-weight-normal col-auto mr-auto">Transactions Bar</div>
-			</div>
+		<div class="card bg-white text-center border-secondary allsides donut"
+				style="padding-bottom: 0px; padding-right: 10px;">
 		    
 		    <div class="card-body bar_body">
 		    	<div style="">
 		    		<div id="chart" style="min-height: 0px;"></div>
 		    	</div>
 		    </div>
+
+            <div class="card-footer text-muted">
+                Montly Service Report
+            </div>
+
     	</div>
 	</div>
 
@@ -165,13 +162,14 @@
 		<div class="card bg-white text-center border-secondary allsides donut"
 			style="padding-bottom: 0px;">
 		    
-		    <div class="card-body bar_body" style="position: relative;">
+		    <div class="card-body bar_body" style="position: relative; padding-top: 0px;">
 		    	<div>
 		    		<div id="donut"></div>
 		    	</div>
 		    </div>
+
 		    <div class="card-footer text-muted">
-			    Top Agents
+			    Montly Sales Distribution
 			</div>
 
     	</div>
@@ -227,10 +225,9 @@ var options = {
 	                {
 	                    name: "Data",
 	                    data: [0, 400, 40, 39, 27, 22, 0, 13, 24, 15, 5690]
-	                }
-            ],
+	                }],
             title: {
-                text: 'Monthly Service Amount',
+                text: 'Transactions',
                 align: 'left',
                 style: {
 			              color: undefined,
@@ -302,31 +299,26 @@ var options = {
 
 var options = {
             chart: {
-                
                 width: '100%',
-                type: 'donut',
+                type: 'pie',
                 height: '400px',
             },
+            colors: ['#77B6EA', '#545454', '#00cc44', '#b10cf2'],
             dataLabels: {
                 enabled: true
             },
+            labels: ['Airtime', 'Cable', 'Electricity', 'Data'],
             series: [4400, 5500, 1315, 3345],
             responsive: [{
                 breakpoint: 480,
                 options: {
                     chart: {
-                        width: 300
-                    },
-                    legend: {
-                        show: false
+                        width: 200
+                        },
                     }
-                }
-            }],
+                }],
             legend: {
-                position: 'right',
-                offsetY: 150,
-                height: 530,
-
+                position: 'bottom',
             }
         }
 
