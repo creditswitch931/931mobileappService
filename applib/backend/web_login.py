@@ -102,7 +102,12 @@ def dashboard():
         users_montly_count = db.query(m.Transactions.id).filter(
             m.Transactions.date_created.between(first.date(), last)).count()
         
- 
+        # transaction_qry = """SELECT transactions_table.id, transactions_table.trans_amount, service_list.label
+        #                         FROM ((transactions_table
+        #                         INNER JOIN service_items ON transactions_table.trans_type_id = service_items.id)
+        #                         INNER JOIN service_list ON service_items.service_id = service_list.id)
+        #                         GROUP BY strftime('%Y%m', transactions_table.date_created)"""
+
         transaction_qry ="""SELECT strftime('%Y-%m', transactions_table.date_created) as dt,             
                                     sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
                                     service_list.label
@@ -118,17 +123,28 @@ def dashboard():
         transaction_data = db.execute(transaction_qry)
         qry_data = transaction_data.fetchall()
 
-        series = {}
+        # series = {}
         
-        for x in qry_data:
-            series[x.date_created].append({
+        # for x in qry_data:
+        #     series[x.date_created].append({
 
-                })
+        #         })
             
-            series.append({'date': x.date_created, 'name':x.label, 'data':[x.amount]})
+        #     series.append({'date': x.date_created, 'name':x.label, 'data':[x.amount]})
                         
-        print(series)       
+        # print(series)       
 
+        # transaction_data = db.query( m.Transactions.trans_amount,
+        #                              m.ServicesMd.label
+        #                             ).join( m.ServiceItems,
+        #                                     m.ServiceItems.id == m.Transactions.trans_type_id
+        #                                 ).join( m.ServicesMd,
+        #                                         m.ServicesMd.id == m.ServiceItems.service_id
+        #                                        ).group_by(extract('month', m.Transactions.date_created)).all()
+        
+       
+        # col_year = func.extract('year', Scrobble.played_at)
+        # extract('year', Foo.Date)
 
     # perform proper logout later on 
 
