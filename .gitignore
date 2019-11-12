@@ -9,6 +9,9 @@ __pycache__
 media/
 
 
+node_modules/
+package-lock.json
+
 *.db
 alembic.ini
 alembic/README

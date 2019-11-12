@@ -106,7 +106,7 @@ class MobileUser(Base):
 
     # field to determine if a user is active or inactive 
     active = Column(Boolean)
-
+    date_created = Column(DateTime, nullable=False)
 
 
 class Transactions(Base):
