@@ -102,43 +102,81 @@ def dashboard():
         users_montly_count = db.query(m.Transactions.id).filter(
             m.Transactions.date_created.between(first.date(), last)).count()
         
- 
-        transaction_qry ="""SELECT strftime('%Y-%m', transactions_table.date_created) as dt,             
-                                    sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
-                                    service_list.label
-                            FROM ((transactions_table
-                            LEFT JOIN service_items 
-                                ON transactions_table.trans_type_id = service_items.id)
-                            LEFT JOIN service_list 
-                                ON service_items.service_id = service_list.id)
-                            GROUP BY strftime('%Y-%m', transactions_table.date_created),
-                                     service_list.label
-                        """ 
-
-        transaction_data = db.execute(transaction_qry)
-        qry_data = transaction_data.fetchall()
-
-        series = {}
         
-        for x in qry_data:
-            series[x.date_created].append({
-
-                })
-            
-            series.append({'date': x.date_created, 'name':x.label, 'data':[x.amount]})
-                        
-        print(series)       
 
 
-    # perform proper logout later on 
+
+
+       
+        transaction_qry ="""SELECT  sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
+                                    strftime('%Y-%m', transactions_table.date_created) as dt,                                    
+                                    service_list.label
+                            
+                            FROM transactions_table
+                            LEFT JOIN service_items 
+                                ON transactions_table.trans_type_id = service_items.id
+                            LEFT JOIN service_list 
+                                ON service_items.service_id = service_list.id
+                            
+                            WHERE strftime('%Y', transactions_table.date_created) = :Year
+                            
+                            GROUP BY dt  
+                            ORDER By dt                          
+                            
+
+                        """  
+        
+
+
+        qry_data = db.execute(transaction_qry, {"Year": str(today.year)}).fetchall()
+
+        series = []
+
+        print('\n\n', qry_data, '\n\n')
+
+ 
+
+        
+        chart_range = [ "{}-{}".format(today.year, str(rng).zfill(2)) for rng in range(1,13, 1)]
+
+        plot_data_collection = []
+        service_names = db.query(m.ServicesMd.label).all()
+           
+        for x in service_names:
+            series.append({"name": x.label, "data": []})
+
+        
+        for sec in chart_range:
+
+            tmp_item = []
+            for x in qry_data:                                 
+                if sec == x.dt:
+                    tmp_item.append(x.values())
+
+            if not tmp_item:
+                for plt in series:
+                    plt['data'].append(0)
+
+            else:
+
+                for plt in series:
+                    for y in tmp_item:
+                        if y[2] == plt['name']:
+                            plt['data'].append(y[0] or 0)
+                            
+
+    print('\n\n', series, '\n\n')
 
     return render_template('dashboard.html', 
-                                total_transact=total_transact, 
-                                transact_montly_count=transact_montly_count,
-                                total_users=total_users,
-                                users_montly_count=users_montly_count,
-                                successful_transact=successful_transact,
-                                failed_transact=failed_transact)
+                            plot_data=series,
+                            total_transact=total_transact, 
+                            transact_montly_count=transact_montly_count,
+                            total_users=total_users,
+                            users_montly_count=users_montly_count,
+                            successful_transact=successful_transact,
+                            failed_transact=failed_transact)
+
+
 
 @app.route("/logout")
 @is_active_session
