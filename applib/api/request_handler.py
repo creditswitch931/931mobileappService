@@ -352,7 +352,7 @@ def get_transactions():
             m.Transactions.user_id == _req['user_id']
         ).order_by(m.Transactions.id.desc()) 
 
-        params, _rows = set_pagination(qry, _req["page"], _req.get('page_size') or page_size)
+        params, _rows = set_pagination(qry, _req["page"] or 1, _req.get('page_size') or page_size)
 
     
     retv = []
