@@ -225,6 +225,16 @@ def process_service():
     fm_handler = get_form_by_name(content['form_cls'], 
                           content['fields'])
     
+    
+    
+    if not fm_handler.is_validate():
+        resp.failed()
+        resp.add_message(fm_handler.get_errormsg())
+        resp.add_params("API_forms", fm_handler.render())
+
+        return resp.get_body()
+    
+    
     HandlerCls = get_handler_cls(content['name'])
     handler_cls = HandlerCls(fm_handler.get_fields(), resp, 
                              login_id=content['user_name'],
@@ -233,18 +243,6 @@ def process_service():
                              mac_address=content['mac_address'],
                              user_id=content['user_id']
                             )
-
-
-
-    # fm_handler.readonly_field = handler_cls.__readonlyFields__
-
-    if not fm_handler.is_validate():
-        resp.failed()
-        resp.add_message(fm_handler.get_errormsg())
-        resp.add_params("API_forms", fm_handler.render())
-
-        return resp.get_body()
-    
     
     handler_cls.vend_service()
 
@@ -280,6 +278,14 @@ def process_validation():
 
     fm_handler = get_form_by_name(content['form_cls'], 
                                   content['fields'])
+        
+    if not fm_handler.is_validate():
+        resp.failed()
+        resp.add_message(fm_handler.get_errormsg())
+        resp.add_params("API_forms", fm_handler.render())
+        resp.add_params('API_formCls', content['form_cls'])
+
+        return resp.get_body()
     
     HandlerCls = get_handler_cls(content['name'])    
     handler_cls = HandlerCls(fm_handler.get_fields(), resp, 
@@ -289,16 +295,6 @@ def process_validation():
                              mac_address=content['mac_address'],
                              user_id=content['user_id'])
 
-    # fm_handler.readonly_field = handler_cls.__readonlyFields__
-    if not fm_handler.is_validate():
-        resp.failed()
-        resp.add_message(fm_handler.get_errormsg())
-        resp.add_params("API_forms", fm_handler.render())
-        resp.add_params('API_formCls', handler_cls.__formCls__)
-
-        return resp.get_body()
-    
-    
     handler_cls.validate_service()    
 
     # lets see if this will suffice, might

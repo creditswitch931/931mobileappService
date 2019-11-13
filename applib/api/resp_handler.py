@@ -52,10 +52,34 @@ class Response:
                 continue
 
             if key == "statusDescription":
-                self.add_message(value)
+                msg = value
+                if isinstance(value, dict):
+                    for key, val in value.items():
+                        if isinstance(val, list):
+                            msg = val[0]
+                        else:
+                            msg = val
+                        
+                        break
+
+                self.add_message(msg)
                 continue
+
             elif key == 'statusMessage':
-                self.add_message(value)
+                
+                msg = value
+                if isinstance(value, dict):
+                    for key, val in value.items():
+                        if isinstance(val, list):
+                            msg = val[0]
+                        else:
+                            msg = val
+                        
+                        break
+
+
+                self.add_message(msg)
+                
                 continue
 
 

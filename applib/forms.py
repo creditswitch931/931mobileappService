@@ -12,7 +12,8 @@ def check_zero_sign():
 
     def negative(form, field):
         if float(field.data) < 1:
-            raise ValidationError("less than or eq 0 not allowed.")
+            raise ValidationError("field must not be less than zero.")
+
     return negative
 
 
@@ -28,8 +29,14 @@ def validate_phone():
 
     def check_format(form, field):
         
-        if len(field.data) < 11 or len(field.data) > 11:
-            raise ValidationError("Field must be 11 digits.")
+        item = field.data 
+
+        if item.startswith("234"):
+            item = item.replace("234", "0")
+            field.data = item
+
+        if len(item) > 12 or len(item) < 11:
+            raise ValidationError("mobile number length too long")
         
         # revisit this function to ensure that the phone number is properly validated 
 
