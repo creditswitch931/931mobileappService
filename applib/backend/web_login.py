@@ -10,8 +10,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import json
 from applib import model as m 
 
-from sqlalchemy import func, extract, cast
-
 from applib.lib import helper as h
 from applib import model as m 
 
@@ -78,40 +76,17 @@ def login():
 @app.route("/dashboard")
 @is_active_session
 def dashboard():
-    with m.sql_cursor() as db:
-        today = datetime.now()
-        
-        _range = calendar.monthrange(today.year, today.month)
-        
-        first = today.replace(day=1) 
 
-        last = date(today.year, today.month, _range[1])
+    today = datetime.now()        
+    _range = calendar.monthrange(today.year, today.month)
+    
+    first = today.replace(day=1) 
 
-        total_transact = db.query(m.Transactions.id).count()
+    last = date(today.year, today.month, _range[1])
 
-        successful_transact = db.query(m.Transactions.trans_desc).filter(
-                                m.Transactions.trans_desc =='successful').count()
-
-        failed_transact = total_transact - successful_transact
-
-        total_users=db.query(m.MobileUser.id).count()
-
-        transact_montly_count = db.query(m.Transactions.id).filter(
-            m.Transactions.date_created.between(first.date(), last)).count()
-
-        users_montly_count = db.query(m.Transactions.id).filter(
-            m.Transactions.date_created.between(first.date(), last)).count()
-        
-        
-
-
-
-
-       
-        transaction_qry ="""SELECT  sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
+    sale_report_annual = """SELECT  sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
                                     strftime('%Y-%m', transactions_table.date_created) as dt,                                    
-                                    service_list.label
-                            
+                                    service_list.label                            
                             FROM transactions_table
                             LEFT JOIN service_items 
                                 ON transactions_table.trans_type_id = service_items.id
@@ -120,32 +95,64 @@ def dashboard():
                             
                             WHERE strftime('%Y', transactions_table.date_created) = :Year
                             
-                            GROUP BY dt  
+                            GROUP BY dt, service_list.label
                             ORDER By dt                          
                             
-
                         """  
         
+    sales_dist_month = """SELECT  sum(cast(transactions_table.trans_amount as INTEGER)) as amount, 
+                                strftime('%Y-%m', transactions_table.date_created) as dt,                                    
+                                service_list.label 
+                        
+                        FROM transactions_table
+                        LEFT JOIN service_items 
+                            ON transactions_table.trans_type_id = service_items.id
+                        LEFT JOIN service_list 
+                            ON service_items.service_id = service_list.id
+                        
+                        WHERE strftime('%Y-%m', transactions_table.date_created) = :range
+                        
+                        GROUP BY dt , service_list.label
+                        ORDER By dt                      
+                        
+                    """
 
 
-        qry_data = db.execute(transaction_qry, {"Year": str(today.year)}).fetchall()
-
-        series = []
-
-        print('\n\n', qry_data, '\n\n')
-
- 
-
+    with m.sql_cursor() as db:    
         
-        chart_range = [ "{}-{}".format(today.year, str(rng).zfill(2)) for rng in range(1,13, 1)]
+        cur_trans = db.query(
+                    m.Transactions.trans_code, 
+                    m.func.count(m.Transactions.id).label("total")
+                ).filter(
+                    m.Transactions.date_created.between(first.date(), last)
+                ).group_by(m.Transactions.trans_code).all()
 
-        plot_data_collection = []
+
+        failed_trans, success_trans = 0, 0 
+        for x in cur_trans:
+            if x.trans_code == '0':
+                success_trans = x.total
+            elif x.trans_code == '1':
+                failed_trans = x.total 
+        
+
+        users_obj = db.query(m.MobileUser)
+        total_users = users_obj.count()
+        newly_created_users = users_obj.filter(m.MobileUser.date_created.between(first.date(), last)).count() 
+
+        qry_data = db.execute(sale_report_annual, {"Year": str(today.year)}).fetchall()
+        
+        sales_dist_data = db.execute(sales_dist_month, {"range": "{}-{}".format(today.year, today.month)}).fetchall()       
+
         service_names = db.query(m.ServicesMd.label).all()
-           
-        for x in service_names:
-            series.append({"name": x.label, "data": []})
-
+        service_name_list = [x.label for x in service_names]
         
+        series = [] 
+        for x in service_name_list:
+            series.append({"name": x, "data": [ x*0 for x in range(1,13, 1)]})
+        
+        index_count = 0 
+        chart_range = ["{}-{}".format(today.year, str(rng).zfill(2)) for rng in range(1,13, 1)]
         for sec in chart_range:
 
             tmp_item = []
@@ -153,28 +160,47 @@ def dashboard():
                 if sec == x.dt:
                     tmp_item.append(x.values())
 
-            if not tmp_item:
-                for plt in series:
-                    plt['data'].append(0)
-
-            else:
+            if tmp_item:
 
                 for plt in series:
                     for y in tmp_item:
                         if y[2] == plt['name']:
-                            plt['data'].append(y[0] or 0)
+                            plt['data'][index_count] = y[0] or 0
                             
 
-    print('\n\n', series, '\n\n')
+            index_count += 1 
+
+                
+        # initialization 
+        
+        pie_chat_values = [0 for x in service_names]
+        index_count = 0
+        
+        for item in service_name_list:
+
+            for x in sales_dist_data:
+ 
+                if x.label == item:
+                    pie_chat_values[index_count] = x.amount
+                    break
+
+            index_count += 1
+
 
     return render_template('dashboard.html', 
                             plot_data=series,
-                            total_transact=total_transact, 
-                            transact_montly_count=transact_montly_count,
+                            
                             total_users=total_users,
-                            users_montly_count=users_montly_count,
-                            successful_transact=successful_transact,
-                            failed_transact=failed_transact)
+                            new_users=newly_created_users,
+                            
+                            successful_transact=success_trans,
+                            failed_transact=failed_trans,
+
+                            year=today.year,
+                            cur_month=today.strftime('%B'),
+                            service_labels=service_name_list,
+                            pie_chat_values=pie_chat_values
+                            )
 
 
 

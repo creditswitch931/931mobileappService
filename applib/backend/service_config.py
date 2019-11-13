@@ -62,7 +62,7 @@ def service_view():
 						m.ServicesMd.name,
 						m.ServicesMd.label,
 						m.ServicesMd.category_name
-			  )
+			  			)
 
 		if content.get('q') is not None:
 			data = data.filter(or_(
