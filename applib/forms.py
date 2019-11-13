@@ -72,7 +72,7 @@ class RegistrationForm(BaseForm):
     first_name = StringField("First Name")
     last_name = StringField("Last Name")
     email = StringField('Email Address', [Email("invalid email address")])
-    phone = IntegerField('Phone', [is_required()])
+    phone = IntegerField('Phone', [is_required(), number_check(), validate_phone()])
     mac_address = StringField('Mac Address', [])
     password = PasswordField('Password', [
                                             validators.EqualTo(
@@ -97,7 +97,7 @@ class ForgotForm(BaseForm):
 
 
 class Airtime(BaseForm):
-    amount = IntegerField('Enter amount', [is_required(), check_zero_sign()])
+    amount = IntegerField('Enter amount', [is_required(), number_check(), check_zero_sign()])
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
     
 
@@ -116,7 +116,7 @@ class IkejaPrePaid(BaseForm):
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
     name = StringField('Name', [is_required()])
     address = StringField('Address')
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
@@ -130,7 +130,7 @@ class EkoPrePaid(BaseForm):
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
     name = StringField('Name', [is_required()])
     address = StringField('Address')
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
@@ -143,7 +143,7 @@ class IbadanPrePaid(BaseForm):
     name = StringField('Name', [is_required()])
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
     address = StringField('Address')
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
     phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
 
 
@@ -156,7 +156,7 @@ class AbujaPrePaid(BaseForm):
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
     name = StringField('Name', [is_required()])
     address = StringField('Address')
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
     phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
@@ -194,8 +194,8 @@ class Startimes(BaseForm):
     customerName = StringField("Customer Name")
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
     balance = StringField("Balance")
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])    
-    phone = IntegerField('Phone', [is_required(), validate_phone()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])    
+    phone = IntegerField('Phone', [is_required(), number_check(), validate_phone()])
 
 
 class GotvValidation(BaseForm):
@@ -218,7 +218,7 @@ class Gotv(BaseForm):
 
     customerNo = IntegerField('Smartcard No', [is_required(), number_check()])  
     customerName = StringField("Customer Name")
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
 
     invoicePeriod = SelectField("Invoice Period", 
                                 [is_required()], coerce=int,
@@ -232,7 +232,7 @@ class Gotv(BaseForm):
                                         ]
                                 )
 
-    phone = IntegerField('Phone No', [is_required()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
     
     
 
@@ -258,7 +258,7 @@ class Dstv(BaseForm):
     
     customerName = StringField("Customer Name")
     customerNo = IntegerField('Smartcard No', [is_required(), number_check()])
-    amount = IntegerField('Amount', [is_required(), check_zero_sign()])    
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])    
     invoicePeriod = SelectField("Invoice Period", 
                                 [is_required()], coerce=int,
                                 choices=[(0, 'Subscription Period'),
@@ -271,7 +271,7 @@ class Dstv(BaseForm):
                                         ]
                                 )
 
-    phone = IntegerField('Phone No', [is_required()])   
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])   
     
 
 
