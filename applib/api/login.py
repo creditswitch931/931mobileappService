@@ -5,6 +5,7 @@ from .resp_handler import Response, RequestHandler, FormHandler
 from applib.lib import helper  as h
 from applib import forms as fm 
 from applib import model as m
+import datetime
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -146,6 +147,7 @@ def register():
             m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation'])
             _mdl.full_name = content['full_name']
             _mdl.active = True
+            _mdl.date_created = datetime.datetime.now() 
             db.add(_mdl)
 
     resp.api_response_format(retv[1])

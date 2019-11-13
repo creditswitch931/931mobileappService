@@ -5,6 +5,8 @@
 	margin-top: 0px;
 	padding: 20px;
 	padding-bottom: 10px;
+    height: 100%;
+
 }
 
 .style_card{
@@ -93,12 +95,12 @@ a:hover {
 		    	<div class="card-header">Mobile Users</div>
 		    	
 		    	<a href="{{url_for('mobile.users')}}" class="widget-numbers"
-                    title="View Complete Report">
+                    title="Total Mobile Users">
 		    		<span>{{total_users}}</span>
 		      	</a>
 
 		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
-		        	present month: <span>{{total_users}}</span>
+		        	new users: <span>{{new_users}}</span>
 		      	</div>
 
 	    	</div>
@@ -111,7 +113,7 @@ a:hover {
 	    	<div class="widget-chart-content">
 		    	<div class="card-header">Payments</div>
 		    	
-		    	<a href="#" class="widget-numbers" title="View Complete Report">
+		    	<a href="#" class="widget-numbers" title="Payment count for {{cur_month}}">
 		    		<span>35</span>
 		      	</a>
 
@@ -129,14 +131,13 @@ a:hover {
 	    	<div class="widget-chart-content">
 		    	<div class="card-header">Transactions</div>
 		    	
-		    	<a href="{{url_for('transaction.transaction_view')}}" class="widget-numbers" title="View Complete Report">
-		    		<span>{{total_transact}}</span>
+		    	<a href="{{url_for('transaction.transaction_view')}}" class="widget-numbers" title="Transaction Count for {{cur_month}}">
+		    		<span>{{ successful_transact + failed_transact }}</span>
 		      	</a>
 
 		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
 		        	success: <span>{{successful_transact}}</span><br>failed: <span>{{failed_transact}}</span>
 		      	</div>
-
 	    	</div>
 	    </div>
 	</div>
@@ -147,16 +148,16 @@ a:hover {
 
 	<div class="col-md-7">
 		<div class="card bg-white text-center border-secondary allsides donut"
-				style="padding-bottom: 0px; padding-right: 10px;">
+				style="padding-bottom: 0px;">
 		    
-		    <div class="card-body bar_body">
+		    <div class="card-body bar_body" style="padding-right: 5px">
 		    	<div style="">
 		    		<div id="chart" style="min-height: 0px;"></div>
 		    	</div>
 		    </div>
 
             <div class="card-footer text-muted">
-                Montly Service Report
+                Service Report For {{year}}
             </div>
 
     	</div>
@@ -173,7 +174,7 @@ a:hover {
 		    </div>
 
 		    <div class="card-footer text-muted">
-			    Montly Sales Distribution
+			    {{cur_month}} Sales Distribution 
 			</div>
 
     	</div>
@@ -217,7 +218,7 @@ var options = {
             series: {{plot_data | safe }},
             		
             title: {
-                text: 'Transactions',
+                text: '.',
                 align: 'left',
                 style: {
 			              color: undefined,
@@ -265,8 +266,8 @@ var options = {
 			              cssClass: 'apexcharts-yaxis-title',
 			        },
                 },
-                min: 0,
-                max: 10000
+                min: 1000,
+                max: 100000
             },
             legend: {
                 position: 'top',
@@ -297,8 +298,8 @@ var options = {
             dataLabels: {
                 enabled: true
             },
-            labels: ['Airtime', 'Cable', 'Electricity', 'Data'],
-            series: [4400, 5500, 1315, 3345],
+            labels: {{service_labels | safe}},
+            series: {{pie_chat_values | safe}},
             responsive: [{
                 breakpoint: 480,
                 options: {

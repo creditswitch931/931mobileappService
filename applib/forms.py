@@ -29,7 +29,7 @@ def validate_phone():
     def check_format(form, field):
         
         if len(field.data) < 11 or len(field.data) > 11:
-            raise ValidationError("should be 11 digits only.")
+            raise ValidationError("Field must be 11 digits.")
         
         # revisit this function to ensure that the phone number is properly validated 
 
@@ -70,7 +70,8 @@ class RegistrationForm(BaseForm):
     password = PasswordField('Password', [
                                             validators.EqualTo(
                                             'password_confirmation', 
-                                            "both passwords must match")])
+                                            "both passwords must match"),
+                                            Length(min=6)])
 
     password_confirmation = PasswordField("Confirm Password")
 
