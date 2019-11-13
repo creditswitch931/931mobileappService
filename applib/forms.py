@@ -36,7 +36,7 @@ def validate_phone():
             field.data = item
 
         if len(item) > 12 or len(item) < 11:
-            raise ValidationError("mobile number length too long")
+            raise ValidationError("mobile number length less or greater than 11")
         
         # revisit this function to ensure that the phone number is properly validated 
 
