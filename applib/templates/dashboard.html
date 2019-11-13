@@ -28,6 +28,10 @@
     margin: 1rem auto;
 }
 
+a:hover {
+        text-decoration: none;
+    }
+    
 .widget-chart{
     font-weight: bold;
     font-size: 2.5rem;
@@ -94,7 +98,7 @@
 		      	</a>
 
 		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
-		        	present month: <span>{{users_montly_count}}</span>
+		        	present month: <span>{{total_users}}</span>
 		      	</div>
 
 	    	</div>
@@ -112,8 +116,8 @@
 		      	</a>
 
 		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
-		        	present month: <span>70</span>
-		      	</div>
+                    success: <span>{{successful_transact}}</span><br>failed: <span>{{failed_transact}}</span>
+                </div>
 		  
 	    	</div>
 	    </div>
@@ -185,6 +189,7 @@
 
 
 {% block scripts %}
+
 var options = {
             chart: {
                 height: 320,
@@ -209,23 +214,8 @@ var options = {
             stroke: {
                 curve: 'smooth'
             },
-            series: {{series}}
-            		[{
-                    name: "Airtime",
-                    data: [0, 1060201, 33, 36, 32, 1060, 33, 21, 14, 15, 33]
-	                },
-	                {
-	                    name: "Cable",
-	                    data: [0, 31, 24, 28, 1905, 27, 34, 19, 0, 29, 23]
-	                }, 
-	                {
-	                    name: "Electricity",
-	                    data: [0, 11, 14, 18, 0, 13, 13, 11, 34, 25, 13]
-	                },
-	                {
-	                    name: "Data",
-	                    data: [0, 400, 40, 39, 27, 22, 0, 13, 24, 15, 5690]
-	                }],
+            series: {{plot_data | safe }},
+            		
             title: {
                 text: 'Transactions',
                 align: 'left',
@@ -254,7 +244,7 @@ var options = {
                 size: 6
             },
             xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul' ,'Sep', 'Oct', 'Nov', 'Dec'],
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug','Sep', 'Oct', 'Nov', 'Dec'],
                 title: {
                     text: 'Month',
                     style: {
@@ -275,8 +265,8 @@ var options = {
 			              cssClass: 'apexcharts-yaxis-title',
 			        },
                 },
-                min: 5000,
-                max: 2000000
+                min: 0,
+                max: 10000
             },
             legend: {
                 position: 'top',

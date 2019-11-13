@@ -45,6 +45,7 @@ def startimes_vending(login_id, smart_card_code, amount, transaction_ref):
 
 
 def multichoice_validate(login_id, customer_no, service_id):
+
     checksum = str(login_id) + "|" + private_key + "|" + str(customer_no)
     checksum_data = hash_data(checksum)
 
@@ -87,6 +88,7 @@ def multichoice_vending(login_id, customer_no, customer_name,
 
     # transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
     
+    
     checksum = (str(login_id) + "|" + private_key + "|" 
                 + customer_no + "|" + transaction_ref + "|" + str(amount))
     
@@ -99,7 +101,6 @@ def multichoice_vending(login_id, customer_no, customer_name,
                 'customerNo': customer_no, 'customerName': customer_name, 
                 'productCodes': productCodes, 'amount': amount, 
                 'invoicePeriod': invoice_period}
-
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
     return retv

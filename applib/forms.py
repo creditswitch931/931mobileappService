@@ -11,8 +11,6 @@ from applib import model as m
 def check_zero_sign():
 
     def negative(form, field):
-        if not field.data:
-            raise ValidationError('field is required')
         if float(field.data) < 1:
             raise ValidationError("less than or eq 0 not allowed.")
     return negative
@@ -25,13 +23,11 @@ def number_check():
             raise ValidationError("numeric values only.")
     return check_numeric
 
+
 def validate_phone():
 
     def check_format(form, field):
         
-        if not field.data:
-            raise ValidationError('field is required')
-
         if len(field.data) < 11 or len(field.data) > 11:
             raise ValidationError("should be 11 digits only.")
         
@@ -44,8 +40,6 @@ def validate_phone():
 def alphanum_check():
 
     def check_alphanumeric(form, field):
-        if not field.data:
-            raise ValidationError('field is required')
             
         if not str(field.data).isalnum():
             raise ValidationError("valid input required.")
@@ -163,7 +157,7 @@ class Data(BaseForm):
                          choices=[(None, 'Select Plan')]
                         )
 
-    phone = IntegerField('Phone No', [is_required()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
 class MtnData(Data):
