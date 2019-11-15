@@ -88,6 +88,7 @@ def multichoice_vending(login_id, customer_no, customer_name,
 
     # transaction_ref = ''.join(random.choice('0123456789ABCDEF') for i in range(16))
     
+    amount = int(amount)
     
     checksum = (str(login_id) + "|" + private_key + "|" 
                 + customer_no + "|" + transaction_ref + "|" + str(amount))

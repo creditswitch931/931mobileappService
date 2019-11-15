@@ -94,6 +94,8 @@ def access_login():
 
         resp.add_params("name", "Demo Account")
         resp.add_params('user_id', 3) # get this from the mobile_usertable 
+        resp.add_params("ussd_gtb", ["*737*50*", "*931#"])
+        resp.add_params("ussd_all", ["*402*96609931*", "#"])
 
     else:
         resp.add_params('fields', fh.render())

@@ -570,7 +570,7 @@ class StartimesTvHandler(ServiceHandler):
             ("Cable TV ", self.__ServiceName__),
             ("Name", self.form_data['customerName']),
             ("Smart Card No", self.req_data['smartCardCode']),
-            ("Amount",  self.form_data['amount'] + " NGN"),                        
+            ("Amount", "{} NGN".format(self.form_data['amount'])),                        
             ("Trans Ref", _resp['transactionNo']),
             ("Status", self.resp_obj.params['responseDesc'].upper())            
         ]
@@ -708,7 +708,7 @@ class DsTvHandler(ServiceHandler):
             ("Cable TV ", self.__ServiceName__),
             ("Name", self.form_data['customerName']),
             ("Smart Card No", self.form_data['customerNo']),
-            ("Amount",  self.form_data['amount'] + " NGN"),                        
+            ("Amount",  "{} NGN".format(self.form_data['amount'])),                        
             ("Trans Ref", self.request_ref),
             ("Trans No", self.data['statusDescription']['transactionNo']),
             ("Status", self.resp_obj.params['responseDesc'].upper())            

@@ -34,9 +34,11 @@ def validate_phone():
         if item.startswith("234"):
             item = item.replace("234", "0")
             field.data = item
-
-        if len(item) > 12 or len(item) < 11:
-            raise ValidationError("mobile number length less or greater than 11")
+        if len(item) < 11:
+            raise ValidationError("phone number digits is less than 11 characters")
+                
+        if len(item) > 12:
+            raise ValidationError("phone number digits is greater than 11 characters ")
         
         # revisit this function to ensure that the phone number is properly validated 
 
@@ -69,18 +71,18 @@ class BaseForm(Form):
 
 
 class RegistrationForm(BaseForm):    
-    first_name = StringField("First Name")
-    last_name = StringField("Last Name")
-    email = StringField('Email Address', [Email("invalid email address")])
+    first_name = StringField("First Name", [is_required()])
+    last_name = StringField("Last Name", [is_required()])
+    email = StringField('Email Address', [is_required(), Email("invalid email address")])
     phone = IntegerField('Phone', [is_required(), number_check(), validate_phone()])
-    mac_address = StringField('Mac Address', [])
-    password = PasswordField('Password', [
+    mac_address = StringField('Mac Address')
+    password = PasswordField('Password', [is_required(),
                                             validators.EqualTo(
                                             'password_confirmation', 
                                             "both passwords must match"),
                                             Length(min=6)])
 
-    password_confirmation = PasswordField("Confirm Password")
+    password_confirmation = PasswordField("Confirm Password", [is_required()])
 
 
     
@@ -97,8 +99,8 @@ class ForgotForm(BaseForm):
 
 
 class Airtime(BaseForm):
-    amount = IntegerField('Enter amount', [is_required(), number_check(), check_zero_sign()])
-    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
+    amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
     
 
 
@@ -117,7 +119,7 @@ class IkejaPrePaid(BaseForm):
     name = StringField('Name', [is_required()])
     address = StringField('Address')
     amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
-    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
 class EkoPrePaid(BaseForm):
@@ -131,7 +133,7 @@ class EkoPrePaid(BaseForm):
     name = StringField('Name', [is_required()])
     address = StringField('Address')
     amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
-    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
 class IbadanPrePaid(BaseForm):
@@ -144,7 +146,7 @@ class IbadanPrePaid(BaseForm):
     meterNumber = StringField('Meter Number', [is_required(), number_check()])
     address = StringField('Address')
     amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])
-    phone = IntegerField('Phone Number', [is_required(), number_check(), validate_phone()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
 class AbujaPrePaid(BaseForm):
@@ -195,7 +197,7 @@ class Startimes(BaseForm):
     smartCardCode = IntegerField('Smartcard No', [is_required(), number_check()])
     balance = StringField("Balance")
     amount = IntegerField('Amount', [is_required(), number_check(), check_zero_sign()])    
-    phone = IntegerField('Phone', [is_required(), number_check(), validate_phone()])
+    phone = IntegerField('Phone No', [is_required(), number_check(), validate_phone()])
 
 
 class GotvValidation(BaseForm):
