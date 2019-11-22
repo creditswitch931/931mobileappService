@@ -217,7 +217,6 @@ def process_service():
     content = h.request_data(request)
     resp = Response()
 
-    print("\n", content, '\n')
     # {'service_id': 1, 'name': 'mtn', 'item_id': 1, 
     # 'service_name': 'airtime', 'amount': '897889', 'phone': '58247'}
 
@@ -422,7 +421,71 @@ def format_data(iterobj):
 
  
 
-      
+@app.route("/initiatePayment", methods=['POST'])
+def payment_init():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "validatepayment")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
+@app.route("/authPayment", methods=['POST'])
+def payment_auth():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "authpayment")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
+    print('\n\n',retv, '\n\n')
+
+    resp.api_response_format(retv[1])
+    
+
+    return resp.get_body()
+
+
+
+
+@app.route("/processPayment", methods=['POST'])
+def payment_process():
+
+    content = h.request_data(request)
+    resp = Response()
+
+
+    url = h.get_config("SERVICES", "processpayment")
+    
+    print('\n\n',content, '\n\n')
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
+    print('\n\n',retv, '\n\n')
+
+    resp.api_response_format(retv[1])
+    
+
+    return resp.get_body()
+
+
+
+
+
+
+
+    
 
 
 

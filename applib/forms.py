@@ -90,7 +90,7 @@ class LoginForm(BaseForm):
     username = StringField('Username', [is_required()])
     password = PasswordField('Password', [is_required()])
     mac_address = StringField("Mac Address")
-
+    code = StringField("Code")
     
 
 class ForgotForm(BaseForm):

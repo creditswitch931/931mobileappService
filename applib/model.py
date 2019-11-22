@@ -106,11 +106,24 @@ class MobileUser(Base):
     full_name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     phone = Column(String(30), nullable=False)
-    mac_address = Column(String(15), nullable=False)
+    # mac_address = Column(String(15), nullable=False)
 
     # field to determine if a user is active or inactive 
     active = Column(Boolean)
     date_created = Column(DateTime, nullable=False)
+
+
+class Devices(Base):
+
+    __tablename__ ="user_devices"
+
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'), 
+                primary_key=True, autoincrement=True)
+    
+    mac_address = Column(String(15), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
+    date_created = Column(DateTime, nullable=False)
+    active = Column(Boolean) 
 
 
 class Transactions(Base):

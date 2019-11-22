@@ -58,10 +58,10 @@ def access_login():
                     responseCode: 0,
                     responseDesc: User login successful,
                     data: [
-                        {"Last 5 Transaction": [...]},
-                        {"CurrentBalance": 891029},
-                        {"Menu": [...]},
-                        {"FormObject": [Airtime Form object]}
+                        {"name": [...]},
+                        {"user_id": 891029},
+                        {"ussd_gtb": [...]},
+                        {"ussd_all": [Airtime Form object]}
                     ]
 
                 }
@@ -69,36 +69,139 @@ def access_login():
 
     content = h.request_data(request)
     resp = Response()
-    
+        
     form = fm.LoginForm(**content)
+    fh = FormHandler(form, 
+                    exclude_data=["password"],
+                    exclude_field=['mac_address', 'code'])
 
-    if not form.validate():
-
-        fh = FormHandler(form, 
-                        exclude_data=["password"],
-                        exclude_field=['mac_address'])
+    if not fh.is_validate():
 
         resp.add_params("fields", fh.render())
         resp.failed()
         resp.add_message(fh.get_errormsg())
         return resp.get_body()
     
+
     url = h.get_config("API", "login")
     
+    # if user.active is False 
+    # user needs to activate their token
+
+    user_device = None
+
+    with m.sql_cursor() as db:
+
+        qry = db.query(m.MobileUser.active, m.MobileUser.id,
+                       m.MobileUser.full_name,
+                       m.MobileUser.email,
+                       m.MobileUser.phone
+                      ).filter(m.MobileUser.phone == content['username'],
+                               ).first()
+        
+        if qry:
+
+            user_device = db.query(m.Devices.mac_address
+                                  ).filter(m.Devices.user_id==qry.id,
+                                           m.Devices.mac_address == content['mac_address'],
+                                           m.Devices.active == 1
+                                          ).first()
+
+    if not qry:
+        
+        form.username.errors = ['Unknown username specified.']
+        resp.add_params('fields', fh.render())
+        resp.add_params("status", -1)
+        resp.failed()
+        resp.add_message("Unknown username specified")
+
+        return resp.get_body()
+
+
+    if qry.active == 0 and not content.get('code'):
+        form.username.errors = ['account not activated yet']
+        resp.add_params("status", 0)
+        resp.add_params('fields', fh.render())
+
+        resp.failed()
+
+        return resp.get_body()
+ 
+    # how to detect another mobile activation??
+
+
+    if not user_device and not content.get('code'):
+    
+        form.username.errors = ['Unregistered device detected. please activate device first']
+        resp.add_params("status", 0)
+        resp.add_params('fields', fh.render())
+
+        resp.failed()
+        resp.add_message("Unregistered device detected.")
+
+        return resp.get_body()
+
+
+    if not user_device and content.get("code"):
+
+        max_device_allowed = h.get_config("DeviceMgr", 'max')
+        with m.sql_cursor() as db:
+            total = db.query(m.Devices.id).filter_by(user_id=qry.id).count()
+
+        if total >= int(max_device_allowed):
+            resp.failed()
+            resp.add_message("Allowed Maximum device count has been reached.")
+
+            return resp.get_body()
+
+
+    # else it will be sent for verification     
+
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
-
+    # status is 1 when the token has been validated
     resp.api_response_format(retv[1])
+    
 
     if resp.status():
 
-        resp.add_params("name", "Demo Account")
+        if content.get("code") is not None:
+            with m.sql_cursor() as db:
+                qry_resp = db.query(m.MobileUser).get(qry.id)
+                qry_resp.active = True
+
+                if not user_device:                   
+                    # can always llimit the number of concurrent devices here 
+                    
+                    max_device_allowed = int(h.get_config("DeviceMgr", "max"))
+
+                    # check how many devices are active 
+                    total_device = db.query(m.Devices.id).filter(m.Devices.active==1).count()
+
+                    if total_device <= (max_device_allowed):
+
+                        dev = m.Devices()
+                        dev.user_id = qry.id
+                        dev.mac_address = content['mac_address']
+                        dev.active = True
+                        dev.date_created = datetime.datetime.now()
+                        db.add(dev)
+
+
+        resp.add_params('username', "38457")
+        resp.add_params("name", qry.full_name)
+        resp.add_params("email", qry.email)
+        resp.add_params("phone", qry.phone)
         resp.add_params('user_id', 3) # get this from the mobile_usertable 
         resp.add_params("ussd_gtb", ["*737*50*", "*931#"])
-        resp.add_params("ussd_all", ["*402*96609931*", "#"])
+        resp.add_params("ussd_all", ["*402*96609931*", "#"])        
+
+        resp.add_params("status", 1)
+
 
     else:
         resp.add_params('fields', fh.render())
+
         # resp.add_message("username or password is incorrect")
     
 
@@ -146,11 +249,19 @@ def register():
         
         with m.sql_cursor() as db:
             _mdl = m.MobileUser()
-            m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation'])
+            m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation', 'mac_address'])
             _mdl.full_name = content['full_name']
-            _mdl.active = True
+            _mdl.active = False
             _mdl.date_created = datetime.datetime.now() 
             db.add(_mdl)
+            db.flush()
+
+            dev = m.Devices()
+            dev.user_id = _mdl.id
+            dev.mac_address = content['mac_address']
+            dev.active = True
+            dev.date_created = datetime.datetime.now()
+            db.add(dev)
 
     resp.api_response_format(retv[1])
  
@@ -234,20 +345,46 @@ def fetch_api_balance():
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
+@app.route("/resendotp")
+def resent_otp():
 
-@app.route("/errors")
-def store_logs():
-    """
-    Log Tracker
-    -----------
-    """
+    content = h.request_data(request)
+    resp = Response()
+
+    qry = None
+
+    with m.sql_cursor() as db:
+        qry = db.query(m.Devices.id
+                      ).filter_by(mac_address=content['mac_address']
+                                 ).first()
+
+    if not qry:
+        resp.failed()
+        resp.add_message("Unknown mobile device")
+
+        return resp.get_body()
+
+
+    url = h.get_config("API", "resend_otp_code")
+
+    rh = RequestHandler(url, method=1, data={"phone": qry.phone})
+    retv = rh.send()
+
+    resp.api_response_format(retv[1])
+    return resp.get_body()
+
+
+# @app.route("/errors")
+# def store_logs():
+#     """
+#     Log Tracker
+#     -----------
+#     """
     
-    # not yet implemented 
+#     # not yet implemented 
     
-    from sentry_sdk import capture_message
+#     from sentry_sdk import capture_message
 
-    capture_message()
+#     capture_message()
 
     
-
-

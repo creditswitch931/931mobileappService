@@ -93,7 +93,7 @@ class Response:
 
 class RequestHandler:
 
-    def __init__(self, url, method=0, data={}, headers={"content-type": "application/json"}):
+    def __init__(self, url, method=0, data={}, headers={"Content-Type": "application/json"}):
 
         self.method = "GET" if method == 0 else "POST"
         self.url = url

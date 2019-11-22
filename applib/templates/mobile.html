@@ -26,15 +26,17 @@
 				<tr> 
 					<th> Name </th>
 					<th> Email </th>
-					<th> phone </th>
+					<th> Phone </th>
+					<th> Mac Address </th>
 				</tr>
 			</thead>
 			<tbody>
-			{% for item in data %}
+			{% for item in data.items %}
 				<tr>
 					<td> {{ item.full_name | title }} </td>
 					<td> {{ item.email }} </td>
 					<td> {{ item.phone }} </td>
+					<td> {{ item.mac_address }} </td>
 					
 				</tr>			
 			{% else %}
@@ -46,6 +48,8 @@
 			</tbody>
 
 		</table>
+		
+		{{ pagination(data, "mobile.users") }}
 
 		
 	</div>

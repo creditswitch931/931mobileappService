@@ -1,6 +1,6 @@
 
 from flask import (Blueprint, url_for, request, 
-					render_template, redirect)
+                    render_template, redirect)
 from applib.lib import helper  as h
 from applib.backend import bk_form as fm 
 from applib import model as m 
@@ -19,28 +19,35 @@ app = Blueprint('mobile', __name__, url_prefix='/backend')
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
-@app.route('/mobile/users', methods=['POST', 'GET'])
+@app.route('/mobile/users')  # , methods=['POST', 'GET'])
 @is_active_session
 def users():
-	content = h.request_data(request)
-	with m.sql_cursor() as db:
-		data = db.query(m.MobileUser.full_name,
-						m.MobileUser.email,
-						m.MobileUser.phone
-					)
-		if content.get('q') is not None:
-			data = data.filter(or_(
-								   m.MobileUser.full_name.like('%' + content['q'] + '%'), 
-								   m.MobileUser.email.like('%' + content['q'] + '%'),
-								   m.MobileUser.phone.like('%' + content['q'] + '%')
-								  )
-							   )
 
-		data = data.order_by(m.MobileUser.id.desc()).all()
+    content = h.request_data(request)
+    page = int(content.get('page')) if content.get('page') else 1
+    per_page = 10
 
-		data_count=db.query(func.count(m.MobileUser.id)).scalar()
+    with m.sql_cursor() as db:
+        data = db.query(m.MobileUser.full_name,
+                        m.MobileUser.email,
+                        m.MobileUser.phone,
+                        m.MobileUser.mac_address
+                    ).order_by(m.MobileUser.id.desc())
+        if content.get('q') is not None:
+            data = data.filter(or_(
+                                   m.MobileUser.full_name.like('%' + content['q'] + '%'), 
+                                   m.MobileUser.email.like('%' + content['q'] + '%'),
+                                   m.MobileUser.phone.like('%' + content['q'] + '%')
+                                  )
+                               )
 
-	return render_template('mobile.html', data=data)
-		
+        
+        
+        data, page_rows = set_pagination(data, page, per_page)
+
+
+    return render_template('mobile.html', data=data,
+                            page_row=page_rows, cur_page=content.get('page'))
+        
 
 
