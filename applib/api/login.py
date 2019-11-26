@@ -95,7 +95,8 @@ def access_login():
         qry = db.query(m.MobileUser.active, m.MobileUser.id,
                        m.MobileUser.full_name,
                        m.MobileUser.email,
-                       m.MobileUser.phone
+                       m.MobileUser.phone,
+                       m.MobileUser.username
                       ).filter(m.MobileUser.phone == content['username'],
                                ).first()
         
@@ -146,7 +147,7 @@ def access_login():
 
         max_device_allowed = h.get_config("DeviceMgr", 'max')
         with m.sql_cursor() as db:
-            total = db.query(m.Devices.id).filter_by(user_id=qry.id).count()
+            total = db.query(m.Devices.id).filter_by(user_id=qry.id, active=1).count()
 
         if total >= int(max_device_allowed):
             resp.failed()
@@ -176,7 +177,9 @@ def access_login():
                     max_device_allowed = int(h.get_config("DeviceMgr", "max"))
 
                     # check how many devices are active 
-                    total_device = db.query(m.Devices.id).filter(m.Devices.active==1).count()
+                    total_device = db.query(m.Devices.id).filter(
+                                            m.Devices.active==1, m.Devices.user_id==qry.id
+                                            ).count()
 
                     if total_device <= (max_device_allowed):
 
@@ -188,11 +191,11 @@ def access_login():
                         db.add(dev)
 
 
-        resp.add_params('username', "38457")
+        resp.add_params('username', qry.username  or "38457")
         resp.add_params("name", qry.full_name)
         resp.add_params("email", qry.email)
         resp.add_params("phone", qry.phone)
-        resp.add_params('user_id', 3) # get this from the mobile_usertable 
+        resp.add_params('user_id', qry.id) # get this from the mobile_usertable 
         resp.add_params("ussd_gtb", ["*737*50*", "*931#"])
         resp.add_params("ussd_all", ["*402*96609931*", "#"])        
 
@@ -252,6 +255,7 @@ def register():
             m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation', 'mac_address'])
             _mdl.full_name = content['full_name']
             _mdl.active = False
+            _mdl.username = retv[1].get('username')
             _mdl.date_created = datetime.datetime.now() 
             db.add(_mdl)
             db.flush()
@@ -346,17 +350,28 @@ def fetch_api_balance():
 # +-------------------------+-------------------------+
 
 @app.route("/resendotp")
-def resent_otp():
+def resend_otp():
 
     content = h.request_data(request)
     resp = Response()
 
     qry = None
 
+    _phone = content.get('phone')
+    _mac_add = content.get('mac_address')
+
     with m.sql_cursor() as db:
-        qry = db.query(m.Devices.id
-                      ).filter_by(mac_address=content['mac_address']
+        if _phone:
+            qry = db.query(m.MobileUser.phone
+                      ).filter_by(phone=content.get('phone')
                                  ).first()
+        elif _mac_add:
+            qry = db.query(m.MobileUser.phone, m.Devices.id).join(
+                    m.Devices,
+                    m.Devices.user_id == m.MobileUser.id 
+                ).filter(m.Devices.mac_address == _mac_add,
+                         m.Devices.active == 1
+                        ).first()
 
     if not qry:
         resp.failed()

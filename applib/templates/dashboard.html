@@ -111,14 +111,16 @@ a:hover {
 	<div class="col-md-4">
 	   <div class="card bg-white text-center border-secondary allsides top_up">
 	    	<div class="widget-chart-content">
-		    	<div class="card-header">Payments</div>
+		    	<div class="card-header">Online Payments</div>
 		    	
-		    	<a href="#" class="widget-numbers" title="Payment count for {{cur_month}}">
-		    		<span>35</span>
+		    	<a href="{{url_for('transaction.payment_view')}}" class="widget-numbers" title="Payment value for {{cur_month}}">
+		    		<span>{{ cur_fmt(payment_info['total_online_payment']) }}</span>
 		      	</a>
 
 		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">
-                    success: <span>30</span><br>failed: <span>5</span>
+                    success: <span>{{ payment_info['total_online_count']}} </span>
+                    <br>
+                    failed: <span>{{payment_info['total_online_count_failed']}}</span>
                 </div>
 		  
 	    	</div>
@@ -131,8 +133,8 @@ a:hover {
 	    	<div class="widget-chart-content">
 		    	<div class="card-header">Transactions</div>
 		    	
-		    	<a href="{{url_for('transaction.transaction_view')}}" class="widget-numbers" title="Transaction Count for {{cur_month}}">
-		    		<span>{{ successful_transact + failed_transact }}</span>
+		    	<a href="{{url_for('transaction.transaction_view')}}" class="widget-numbers" title="Transaction Amount for {{cur_month}}">
+		    		<span>{{ cur_fmt(amount_transact) }}</span>
 		      	</a>
 
 		      	<div class="widget-subheading fsize-1 pt-2 opacity-10 text-muted font-weight-bold" style="padding-bottom: 0px;">

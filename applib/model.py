@@ -107,8 +107,8 @@ class MobileUser(Base):
     email = Column(String(100), nullable=False)
     phone = Column(String(30), nullable=False)
     # mac_address = Column(String(15), nullable=False)
-
     # field to determine if a user is active or inactive 
+    username = Column(String(100))
     active = Column(Boolean)
     date_created = Column(DateTime, nullable=False)
 
@@ -131,17 +131,18 @@ class Transactions(Base):
     __tablename__ = "transactions_table"
 
     # remove the method with_variant 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'), 
+                primary_key=True, autoincrement=True)
 
     trans_ref = Column(String(100), nullable=False)    
-    trans_desc = Column(String(100), nullable=False)
-    trans_code = Column(String(30), nullable=False)
+    trans_desc = Column(String(100), nullable=True)
+    trans_code = Column(String(30), nullable=True)
     trans_params = Column(Text, nullable=False)
     trans_amount = Column(String(30), nullable=False)
     trans_resp = Column(Text, nullable=False)
     user_mac_address = Column(String(100), nullable=False)
     user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
-    trans_type_id = Column(BigInteger, ForeignKey("service_items.id"), nullable=False)
+    trans_type_id = Column(BigInteger, ForeignKey("service_items.id"), nullable=True)
     date_created = Column(DateTime, nullable=False)
 
     

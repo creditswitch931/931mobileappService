@@ -31,8 +31,16 @@ def users():
         data = db.query(m.MobileUser.full_name,
                         m.MobileUser.email,
                         m.MobileUser.phone,
-                        m.MobileUser.mac_address
-                    ).order_by(m.MobileUser.id.desc())
+                        m.Devices.mac_address
+                    ).outerjoin(
+                        
+                        m.Devices, 
+                        m.Devices.user_id == m.MobileUser.id
+                    ).filter(
+                        m.Devices.active == 1
+                    ).order_by(
+                        m.MobileUser.id.desc()
+                    )
         if content.get('q') is not None:
             data = data.filter(or_(
                                    m.MobileUser.full_name.like('%' + content['q'] + '%'), 

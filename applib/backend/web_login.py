@@ -95,7 +95,9 @@ def dashboard():
                                 ON service_items.service_id = service_list.id
                             
                             WHERE strftime('%Y', transactions_table.date_created) = :Year
-                            
+                            AND  transactions_table.trans_type_id is not Null
+                            AND transactions_table.trans_code = '0'
+
                             GROUP BY dt, service_list.label
                             ORDER By dt                          
                             
@@ -112,37 +114,76 @@ def dashboard():
                             ON service_items.service_id = service_list.id
                         
                         WHERE strftime('%Y-%m', transactions_table.date_created) = :range
-                        
+                         AND  transactions_table.trans_type_id is not Null
+                         AND transactions_table.trans_code = '0'
+
                         GROUP BY dt , service_list.label
                         ORDER By dt                      
                         
                     """
 
+    payment_distribution = """SELECT transactions_table.trans_code as status,
+                                sum(cast(transactions_table.trans_amount as INTEGER)) as amount,
+                                count(transactions_table.trans_code) as count
+                            FROM transactions_table
+                            WHERE strftime('%Y-%m', transactions_table.date_created) = :range
+                            AND  transactions_table.trans_type_id is Null
+                            GROUP BY status
+                    """
+
+    transactions_sql = """SELECT transactions_table.trans_code as status,
+                                sum(cast(transactions_table.trans_amount as INTEGER)) as amount,
+                                count(transactions_table.trans_code) as count
+                            FROM transactions_table
+                            WHERE strftime('%Y-%m', transactions_table.date_created) = :range
+                            AND  transactions_table.trans_type_id is not Null
+                            GROUP BY status
+                    """
+
+
 
     with m.sql_cursor() as db:    
         
-        cur_trans = db.query(
-                    m.Transactions.trans_code, 
-                    m.func.count(m.Transactions.id).label("total")
-                ).filter(
-                    m.Transactions.date_created.between(first.date(), last)
-                ).group_by(m.Transactions.trans_code).all()
 
-
+        cur_trans = db.execute(transactions_sql, {"range": "{}-{}".format(today.year, today.month)}).fetchall()
+        
         failed_trans, success_trans = 0, 0 
+        success_trans_amount = 0
+
         for x in cur_trans:
-            if x.trans_code == '0':
-                success_trans = x.total
-            elif x.trans_code == '1':
-                failed_trans = x.total 
+            if x.status == '0':
+                success_trans = x.count
+                success_trans_amount = x.amount
+            elif x.status == '1':
+                failed_trans = x.count 
         
 
-        users_obj = db.query(m.MobileUser)
+        users_obj = db.query(m.MobileUser).filter(m.MobileUser.active == 1)
         total_users = users_obj.count()
-        newly_created_users = users_obj.filter(m.MobileUser.date_created.between(first.date(), last)).count() 
+        newly_created_users = users_obj.filter(
+                                            m.MobileUser.date_created.between(first.date(), last)
+                                            ).count() 
         qry_data = db.execute(sale_report_annual, {"Year": str(today.year)}).fetchall()
         
-        sales_dist_data = db.execute(sales_dist_month, {"range": "{}-{}".format(today.year, today.month)}).fetchall()       
+        sales_dist_data = db.execute(sales_dist_month, {"range": "{}-{}".format(today.year, today.month)}).fetchall()
+        payments_result = db.execute(payment_distribution, {"range": "{}-{}".format(today.year, today.month)}).fetchall()             
+    
+        payment_info = dict(
+            total_online_payment = 0,
+            total_online_count = 0,
+            total_online_payment_failed = 0,
+            total_online_count_failed = 0
+        )
+
+        for pay in payments_result:
+            if pay.status == '0':
+                payment_info['total_online_payment'] = pay.amount 
+                payment_info['total_online_count'] = pay.count 
+
+            elif pay.status == '1':
+                payment_info['total_online_payment_failed'] = pay.amount
+                payment_info['total_online_count_failed'] = pay.count 
+
 
         service_names = db.query(m.ServicesMd.label).all()
         service_name_list = [x.label for x in service_names]
@@ -195,11 +236,13 @@ def dashboard():
                             
                             successful_transact=success_trans,
                             failed_transact=failed_trans,
-
+                            amount_transact=success_trans_amount,
                             year=today.year,
                             cur_month=today.strftime('%B'),
                             service_labels=service_name_list,
-                            pie_chat_values=pie_chat_values
+                            pie_chat_values=pie_chat_values,
+                            payment_info=payment_info,
+                            cur_fmt=h.currency_formatter
                             )
 
 

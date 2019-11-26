@@ -100,7 +100,8 @@ class ServiceHandler:
                 ('out', self.__ServiceName__),
                 ("cmd", "left"), 
                 ('out', "Date: {}".format(self.get_date())),
-                ("out", "_+" * 15 )
+                ("cmd", "center"),
+                ("out", "__" * 15 )
             ]
  
 
@@ -109,8 +110,9 @@ class ServiceHandler:
         # may be the mac_address is also sufficient
 
         return [
-                ('out', ''), # print our a space before displaying the other
+                ('out', '\n\r'), # print our a space before displaying the other
                 ("cmd", "center"),
+                ("out", "_" * 15 ),
                 ("out", 'Mac Address: {}'.format(self.kwargs['mac_address'])),
                 ("out", "Login Id: {}".format(self.kwargs['login_id'])),
                 ("out", "\n\r"),
@@ -189,11 +191,6 @@ class AirtimeHandler(ServiceHandler):
                          "network": self.__ServiceCode__,
                          'recipient': self.form_data['phone']
                         }
-        # {'statusCode': '00', 'statusDescription': 'successful', 
-        #  'mReference': '933306100502', 'tranxReference': '150069864',
-        #  'recipient': '08023238912', 'amount': '500.00', 
-        #  'confirmCode': '5db96bfdbc585', 
-        #  'transactionDate': '2019-10-30 10:54:53'}
         
         self.data = api_resp[1]
 
@@ -221,8 +218,7 @@ class AirtimeHandler(ServiceHandler):
             (out, "mReference: " + self.data['mReference']),                        
             (out, '\n\r'),
             (out, "Status: " + self.resp_obj.params['responseDesc'].upper()),
-            (cmd, "center"),
-            (out, "_+" * 15 )
+            (cmd, "center")            
             
         ]
 

@@ -105,7 +105,7 @@ class RequestHandler:
         if self.method == "POST":
             assert self.data , "Data parameter is missing for post method"
 
-        print("=== Request Data ===", self.data, '\n\n')
+        print("=== Request Data ===", self.data, '\n')
         if self.method == "GET":
             self.format_get_params()
             output = rq.get(self.url, headers=self.headers)
@@ -241,7 +241,8 @@ class FormHandler:
     def get_errormsg(self):       
 
         for fld, obj in self.form.errors.items():
-            return "field {} {}".format(fld, obj[0])
+            # return "field {} {}".format(fld, obj[0])
+            return obj[0]
 
 
     def is_validate(self):        

@@ -247,7 +247,11 @@
             padding: 3px 10px;
             font-size: 14px;
         }
-
+        
+        img.mobileimg{
+            width: 150px;
+            height: 150px;
+        }
         
         
 
@@ -374,7 +378,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link btn tab" href="#">
+                    <a class="nav-link btn tab" href="{{url_for('transaction.payment_view')}}">
                         <i class="fas fa-dollar-sign fa-lg"></i>
                         &nbsp; Payments
                     </a>

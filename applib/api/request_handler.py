@@ -324,7 +324,7 @@ def get_transactions():
             _req[key] = val
 
 
-
+    print(_req, "\n\n")
     page_size = 10 
  
     with m.sql_cursor() as db:
@@ -342,9 +342,9 @@ def get_transactions():
         ).outerjoin(
             m.ServiceItems,
             m.ServiceItems.id == m.Transactions.trans_type_id
-
         ).filter(
-            m.Transactions.user_id == _req['user_id']
+            m.Transactions.user_id == _req['user_id'],
+            m.Transactions.trans_type_id != None
         ).order_by(m.Transactions.id.desc()) 
 
         params, _rows = set_pagination(qry, _req["page"] or 1, _req.get('page_size') or page_size)
@@ -445,13 +445,32 @@ def payment_auth():
 
     url = h.get_config("SERVICES", "authpayment")
 
+    param = {
+        'card_no': content['cardno'][:5] + "****" + content['cardno'][-4:],
+        "amount": content['amount'], 
+        "redirect_url": content['redirect_url']
+    }
+    trans_details = {
+        "trans_ref": content['transaction_id'],
+        "trans_desc": None,
+        "trans_code": None,
+        "trans_params": h.dump2json(param),
+        "trans_resp": '[]',
+        "user_mac_address": content['macaddress'],
+        "user_id": content.pop("user_id"),
+        "trans_type_id": None,
+        "trans_amount": content['amount']
+    }
+
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
 
-    print('\n\n',retv, '\n\n')
+    m.Transactions.save(**trans_details)
 
     resp.api_response_format(retv[1])
     
+    # add the trasaction in a table 
+    # create the record here 
 
     return resp.get_body()
 
@@ -467,15 +486,27 @@ def payment_process():
 
     url = h.get_config("SERVICES", "processpayment")
     
-    print('\n\n',content, '\n\n')
+    trans_id = content.pop("transaction_id")
+
 
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
-
-    print('\n\n',retv, '\n\n')
-
+    
     resp.api_response_format(retv[1])
     
+    # update the payment transaction record here
+    content.pop('otp')
+    content.update(**resp.params)
+
+    with m.sql_cursor() as db:
+        db.query(m.Transactions
+                ).filter_by(trans_ref=trans_id
+                ).update({"trans_desc": resp.params['responseDesc'], 
+                          "trans_code":resp.params['responseCode'],
+                          "trans_resp": h.dump2json(content)
+                        }
+                    )
+
 
     return resp.get_body()
 
