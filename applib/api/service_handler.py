@@ -277,7 +277,7 @@ class IkejaPrePaidHandler(ServiceHandler):
         
         if validate_resp[0] == 200:
             if temp_resp['statusCode'] == '00':                                
-                self.resp_obj.api_response_format(temp_resp['details']["details"])
+                self.resp_obj.api_response_format(temp_resp['detail'])
                 self.resp_obj.add_message(temp_resp['statusDescription'])
                 self.resp_obj.success()
 

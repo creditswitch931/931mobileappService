@@ -110,8 +110,7 @@ class RequestHandler:
             self.format_get_params()
             output = rq.get(self.url, headers=self.headers)
         else:
-            output = rq.post(self.url, data=json.dumps(self.data), 
-                             headers=self.headers)
+            output = rq.post(self.url, data=json.dumps(self.data), headers=self.headers)
 
         try:
             resp = output.status_code, output.json()            

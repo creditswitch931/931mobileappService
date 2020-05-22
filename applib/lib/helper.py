@@ -19,9 +19,12 @@ def get_logo():
 
 def get_config(header, key=None, filename='settings.cfg'):
 
-    cfg = ConfigObj(filename)
+    _filename = os.getenv("CONFIGFILENAME")
+
+    cfg = ConfigObj(_filename)
     if not key:
         return cfg[header]
+
 
     return cfg[header][key]
 

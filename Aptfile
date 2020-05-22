@@ -1,0 +1,8 @@
+
+unixodbc
+unixodbc-dev
+python-pyodbc
+libsqliteodbc
+libmysqlclient-dev
+python-dev
+mysql-devel
