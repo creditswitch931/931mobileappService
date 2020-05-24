@@ -6,9 +6,13 @@ import random
 from .api_lib import get_config, hash_data
 from applib.api.resp_handler import RequestHandler
  
-
+auth_login='38457'
 public_key='j6kHi1NXAOjrHFk0'
 private_key="XY1t9Y159hWJaETD"
+
+# auth_login='17000'
+# public_key='f7a2b427dedbdbdc4825675b306741ff2772a9243b938faa7fb2db2a5615fd0b6a88b5ae33b0d21b3c60c64e7ceb2c49e1cbe73063dad713430af1abbb884662'
+# private_key="c555b496d8a3c659547bb84bf1e3cae25f4cbec7f81913f3cf35abb48fa23b6eeaefe74f6489aa97d083e6dcabeccaa1a6acde6b6623a9bd5e0ff604fbf389ad"
 
 
 def airtime_vending(login_id, amount, recipient, provider, 
@@ -34,8 +38,10 @@ def airtime_vending(login_id, amount, recipient, provider,
 
     url = get_config('SERVICES', 'airtime')
 
-    payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 
-                'amount': amount, 'recipient' : recipient , 'checksum': checksum_data} 
+    #payload = {'loginId': login_id, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 
+    #            'amount': amount, 'recipient' : recipient , 'checksum': checksum_data} 
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'requestId': request_id, 'serviceId': service_id, 'amount': amount, 'recipient' : recipient , 'checksum': checksum_data, 'ip':'54.198.95.28'} 
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()

@@ -6,6 +6,8 @@ from applib.lib import helper  as h
 from applib import forms as fm 
 from applib import model as m
 import datetime
+import os
+
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -16,56 +18,7 @@ app = Blueprint('customers', __name__, url_prefix='/api')
 # +-------------------------+-------------------------+
 
 @app.route("/login", methods=['POST'])
-def access_login():
-    """
-    Login Function
-    ==============
-
-    Function to handle login and authentication for the clients. 
-    the below information describes the request and response data for this view.
-    
-    Request Data:
-        Url pathname and http method to access this function
-        
-        :param url: ``http://BASEURL/api/login``.
-        
-        :param method: ``POST``
-                
-        Request Body::
-
-            {
-                username: client username (str) -- <phone, email, username/>,
-                passwd:  client password
-            }  
-        
-
-    Response Data:        
-        Response data type is json.
-
-        On failed authentication.
-            Response Body::
-
-                {
-                    responseCode: 1,
-                    responseDesc: invalid credentials. either user name or password is incorrect.
-                }
-        
-
-        On success authentication.
-            Response body::
-
-                {
-                    responseCode: 0,
-                    responseDesc: User login successful,
-                    data: [
-                        {"name": [...]},
-                        {"user_id": 891029},
-                        {"ussd_gtb": [...]},
-                        {"ussd_all": [Airtime Form object]}
-                    ]
-
-                }
-    """    
+def access_login():    
 
     content = h.request_data(request)
     resp = Response()
@@ -87,7 +40,6 @@ def access_login():
     
     # if user.active is False 
     # user needs to activate their token
-
     user_device = None
 
     with m.sql_cursor() as db:
@@ -97,8 +49,8 @@ def access_login():
                        m.MobileUser.email,
                        m.MobileUser.phone,
                        m.MobileUser.username
-                      ).filter(m.MobileUser.phone == content['username'],
-                               ).first()
+                      ).filter(m.MobileUser.username == content['username']
+                               ).order_by(m.MobileUser.id).first()
         
         if qry:
 
@@ -181,7 +133,7 @@ def access_login():
                                             m.Devices.active==1, m.Devices.user_id==qry.id
                                             ).count()
 
-                    if total_device <= (max_device_allowed):
+                    if total_device <= max_device_allowed:
 
                         dev = m.Devices()
                         dev.user_id = qry.id
@@ -191,7 +143,8 @@ def access_login():
                         db.add(dev)
 
 
-        resp.add_params('username', qry.username  or "38457")
+        #resp.add_params('username', qry.username if os.getenv("MODE") == '1' else os.getenv('GLOBALUSERNAME'))
+        #resp.add_params('username', qry.username)
         resp.add_params("name", qry.full_name)
         resp.add_params("email", qry.email)
         resp.add_params("phone", qry.phone)
@@ -255,8 +208,9 @@ def register():
             m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation', 'mac_address'])
             _mdl.full_name = content['full_name']
             _mdl.active = False
-            _mdl.username = retv[1].get('username')
+            _mdl.username = form.phone.data #retv[1].get('username')
             _mdl.date_created = datetime.datetime.now() 
+
             db.add(_mdl)
             db.flush()
 

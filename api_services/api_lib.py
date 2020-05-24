@@ -3,21 +3,10 @@ import bcrypt
 import requests
 import json
 import random
-from configobj import ConfigObj
-
+from applib.lib.helper import get_config
 
 public_key='j6kHi1NXAOjrHFk0'
 private_key="XY1t9Y159hWJaETD"
-
-
-def get_config(header, key=None, filename='settings.cfg'):
-
-	cfg = ConfigObj(filename)
-	if not key:
-		return cfg[header]
-
-	return cfg[header][key]
-
 
 
 def hash_data(checksum):

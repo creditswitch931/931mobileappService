@@ -59,7 +59,7 @@ def is_required():
 
     def check_required(form, field):
         if not field.data:
-            raise ValidationError("field is required.")
+            raise ValidationError("required.")
 
     return check_required
 
@@ -68,21 +68,21 @@ def is_required():
 def field_required(field):
 
     if field.data is None:
-        return False, " Field is required"
+        return False, " is required"
 
     return True, None
 
 def field_alphanum(field):
 
     if not str(field.data).isalnum():
-        return False, " Field is required"
+        return False, " is required"
 
     return True, None
 
 
 def field_numeric(field):
     if not str(field.data).isdigit():
-        return False, " Field should be numeric"
+        return False, " should be numeric"
 
     return True, None
 
@@ -90,7 +90,7 @@ def field_numeric(field):
 def field_nonzero(field):
 
     if float(field.data) < 1:
-        return False, " Field is less than 1"
+        return False, " is less than 1"
 
     return True, None 
 
@@ -104,10 +104,10 @@ def field_phone(field):
         field.data = item
     
     if len(item) < 11:
-        return False, " Field is less than 11 characters"
+        return False, " is less than 11 characters"
             
     if len(item) > 12:
-        return False, " Field is greater than 11 characters"
+        return False, " is greater than 11 characters"
 
 
     return True, None 
@@ -159,7 +159,7 @@ class RegistrationForm(BaseForm):
 
     
 class LoginForm(BaseForm):     
-    username = StringField('Username', [global_validator("required")])
+    username = StringField('Email/Phone number', [global_validator("required")])
     password = PasswordField('Password', [global_validator("required")])
     mac_address = StringField("Mac Address")
     code = StringField("Code")
@@ -237,7 +237,7 @@ class AbujaPrePaid(BaseForm):
 
 class Data(BaseForm):
     amount = SelectField('Select Plans', [global_validator("required")],
-                         choices=[(None, 'Select Plan')]
+                         choices=[]
                         )
 
     phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
@@ -277,7 +277,7 @@ class GotvValidation(BaseForm):
 
     service_plans = SelectField("Select Plan", 
                                 [global_validator("required")], 
-                                 choices=[(None, 'Select Package')]
+                                 choices=[]
                                 )
 
     smartCardCode = IntegerField('Smartcard No', [global_validator("required", "numeric")])
@@ -297,7 +297,7 @@ class Gotv(BaseForm):
 
     invoicePeriod = SelectField("Invoice Period", 
                                 [global_validator("required")], coerce=int,
-                                choices=[(0, 'Subscription Period'),
+                                choices=[
                                          (1, 'One Month'), (2, 'Two Months'), 
                                          (3, 'Three Months'), (4, 'Four Months'), 
                                          (5, 'Five Months'), (6, 'Six Months'), 
@@ -315,7 +315,7 @@ class DstvValidation(BaseForm):
 
     service_plans = SelectField("Select Plan", 
                                 [global_validator("required")], 
-                                 choices=[(None, 'Select Package')]
+                                 choices=[]
                                 )
 
     smartCardCode = IntegerField('Smartcard No', [global_validator("required", "numeric")])
@@ -336,7 +336,7 @@ class Dstv(BaseForm):
     amount = IntegerField('Amount', [global_validator("required", "numeric", "lessthanzero")])
     invoicePeriod = SelectField("Invoice Period", 
                                 [global_validator("required")], coerce=int,
-                                choices=[(0, 'Subscription Period'),
+                                choices=[
                                          (1, 'One Month'), (2, 'Two Months'), 
                                          (3, 'Three Months'), (4, 'Four Months'), 
                                          (5, 'Five Months'), (6, 'Six Months'), 

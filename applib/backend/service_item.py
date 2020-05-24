@@ -73,10 +73,10 @@ def item_view():
                                   )
                                )
         data = data.order_by(m.ServiceItems.service_id.desc())
-        users, page_row = set_pagination(data, page, per_page)
+        page_data, page_row = set_pagination(data, page, per_page)
 
 
-    return render_template('item_list.html', data=data, users=users, 
+    return render_template('item_list.html', data=page_data, # users=users, 
                             page_row=page_row, cur_page=page)
 
 # +-------------------------+-------------------------+

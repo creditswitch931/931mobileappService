@@ -2,11 +2,12 @@
 from contextlib import contextmanager
 from sqlalchemy import (create_engine, Integer, String,
                         Text, DateTime, BigInteger, Date, 
-                        Column, ForeignKey, or_, Sequence, Boolean,
+                        Column, ForeignKey, or_, and_, Sequence, Boolean,
                         func, extract, cast
                         )
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects import postgresql, mysql, sqlite
 
 
 
@@ -39,7 +40,8 @@ def sql_cursor():
 class ServicesMd(Base):
     __tablename__  = 'service_list'
 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
+    id = Column(BigInteger, 
+                primary_key=True, autoincrement=True)
     name = Column(String(80), nullable=False)
     label = Column(String(120),  nullable=False)
     image = Column(Text)
@@ -61,7 +63,8 @@ class ServiceItems(Base):
     
     __tablename__  = 'service_items'
 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
+    id = Column(BigInteger,
+                 primary_key=True, autoincrement=True)
     name = Column(String(80), nullable=False)
     label = Column(String(100),  nullable=False)
     label_desc = Column(String(100), nullable=False)
@@ -102,7 +105,7 @@ class MobileUser(Base):
 
     __tablename__ = "registered_users"
 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'), primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     full_name = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     phone = Column(String(30), nullable=False)
@@ -117,10 +120,10 @@ class Devices(Base):
 
     __tablename__ ="user_devices"
 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'), 
+    id = Column(BigInteger, 
                 primary_key=True, autoincrement=True)
     
-    mac_address = Column(String(15), nullable=False)
+    mac_address = Column(String(50), nullable=False)
     user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
     date_created = Column(DateTime, nullable=False)
     active = Column(Boolean) 
@@ -131,7 +134,7 @@ class Transactions(Base):
     __tablename__ = "transactions_table"
 
     # remove the method with_variant 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'), 
+    id = Column(BigInteger, 
                 primary_key=True, autoincrement=True)
 
     trans_ref = Column(String(100), nullable=False)    
@@ -160,7 +163,7 @@ class ServicePlan(Base):
     
     __tablename__  = 'service_plans'
 
-    id = Column(BigInteger().with_variant(Integer, 'sqlite'),
+    id = Column(BigInteger,
                 primary_key=True, autoincrement=True)
     code = Column(String(80), nullable=False)
     label = Column(String(200), nullable=False)

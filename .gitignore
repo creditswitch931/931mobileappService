@@ -20,3 +20,5 @@ alembic/script.py.mako
 docs/
 
 *.txt
+settings.cfg
+

@@ -9,6 +9,8 @@ from applib.api.resp_handler import RequestHandler
 
 public_key='j6kHi1NXAOjrHFk0'
 private_key="XY1t9Y159hWJaETD"
+ip = '54.198.95.28'
+auth_login='38457'
 
 
 def startimes_validate(login_id, smart_card_code):
@@ -17,8 +19,8 @@ def startimes_validate(login_id, smart_card_code):
 
     url = get_config('SERVICES', 'star_validate')
 
-    payload = {'loginId': login_id, 'key': public_key, 'smartCardCode': smart_card_code, 
-                'checksum': checksum_data}
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'smartCardCode': smart_card_code, 
+                'checksum': checksum_data, 'ip':ip}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -34,10 +36,10 @@ def startimes_vending(login_id, smart_card_code, amount, transaction_ref):
 
     url = get_config('SERVICES', 'star_recharge')
 
-    payload = {'loginId': login_id, 'key': public_key, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
                 'smartCardCode': smart_card_code, 
                 'fee': amount, 'transactionRef': transaction_ref, 
-                'checksum': checksum_data}
+                'checksum': checksum_data, 'ip':ip}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -51,8 +53,8 @@ def multichoice_validate(login_id, customer_no, service_id):
 
     url = get_config('SERVICES', 'multi_validate')
 
-    payload = {'loginId': login_id, 'key': public_key, 'customerNo': customer_no, 
-                'serviceId': service_id, 'checksum': checksum_data}
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'customerNo': customer_no, 
+                'serviceId': service_id, 'checksum': checksum_data, 'ip':ip}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -63,7 +65,7 @@ def multichoice_validate(login_id, customer_no, service_id):
 def multichoice_fetch_product(login_id, service_id):
     url = get_config('SERVICES', 'multi_fetch_prod')
 
-    payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'serviceId': service_id}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -74,7 +76,7 @@ def multichoice_fetch_product(login_id, service_id):
 def multichoice_fetch_product_addons(login_id, service_id):
     url = get_config('SERVICES', 'multi_fetch_prod')
 
-    payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id}
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'serviceId': service_id}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -97,11 +99,11 @@ def multichoice_vending(login_id, customer_no, customer_name,
 
     url = get_config('SERVICES', 'multi_recharge')
 
-    payload = {'loginId': login_id, 'key': public_key, 'serviceId': service_id, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'serviceId': service_id, 
                 'checksum': checksum_data, 'transactionRef': transaction_ref, 
                 'customerNo': customer_no, 'customerName': customer_name, 
-                'productCodes': productCodes, 'amount': amount, 
-                'invoicePeriod': invoice_period}
+                'productsCodes': productCodes, 'amount': amount, 
+                'invoicePeriod': invoice_period, 'ip':ip}
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
     return retv

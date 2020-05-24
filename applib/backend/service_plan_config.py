@@ -21,7 +21,7 @@ app = Blueprint('service_plan', __name__, url_prefix='/backend/plan')
 @app.route("/")
 @is_active_session
 def index():
-
+    
     with m.sql_cursor() as db:
         page = request.args.get('page', 1, type=int)
         per_page=10

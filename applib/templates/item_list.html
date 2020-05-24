@@ -48,7 +48,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for item in data %}
+			{% for item in data.items %}
 				<tr>
 					<td> {{ item.name | title }} </td>
 					<td> {{ item.label }} </td>
@@ -77,7 +77,7 @@
 
 		</table>
 		
-		{{ pagination(users, "service_item.item_view") }}
+		{{ pagination(data, "service_item.item_view") }}
 		
 		{% endblock %}
 

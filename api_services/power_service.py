@@ -9,6 +9,8 @@ from applib.api.resp_handler import RequestHandler
 
 public_key='j6kHi1NXAOjrHFk0'
 private_key="XY1t9Y159hWJaETD"
+ip = '54.198.95.28'
+auth_login='38457'
 
 
 def electricity_validate(login_id, customer_account_id, service_id):
@@ -18,9 +20,10 @@ def electricity_validate(login_id, customer_account_id, service_id):
 
     url = get_config('SERVICES', 'electic_validate')
 
-    payload = {'loginId': login_id, 'key': public_key, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
                'customerAccountId': customer_account_id, 
-               'serviceId': service_id, 'checksum': checksum_data}
+               'serviceId': service_id, 'checksum': checksum_data,
+               'ip':ip}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -42,11 +45,11 @@ def electricity_vending(login_id, customer_account_id, service_id,
 
     # providerRef: to be generated from the validation response
 
-    payload = {'loginId': login_id, 'key': public_key, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
                'customerAccountId': customer_account_id, 
                'serviceId': service_id, 'amount': amount, 
                'requestId': request_id, 'providerRef':'150144078049', 
-               'checksum': checksum_data}
+               'checksum': checksum_data, 'ip':ip}
 
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -63,10 +66,10 @@ def ikeja_prepaid(login_id, customer_account_id, service_id,
 
     url = get_config('SERVICES', 'electic_recharge')
 
-    payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'customerAccountId': customer_account_id, 
                 'serviceId': service_id, 'amount': amount, 'requestId': request_id, 
                 'checksum': checksum_data, 'providerRef':providerRef, 
-                'customerDtNumber':customerDtNumber}
+                'customerDtNumber':customerDtNumber, 'ip':ip}
             
     rh = RequestHandler(url, method=1, data=payload)
     retv = rh.send()
@@ -83,10 +86,10 @@ def eko_prepaid(login_id, customer_account_id, service_id,
 
     electricity_vending = get_config('SERVICES', 'electic_recharge')
 
-    payload = {'loginId': login_id, 'key': public_key, 'customerAccountId': customer_account_id, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 'customerAccountId': customer_account_id, 
                 'serviceId': service_id, 'amount': amount, 'requestId': request_id, 
                 'checksum': checksum_data, 'providerRef': providerRef,
-                'customerDtNumber': customerDtNumber}
+                'customerDtNumber': customerDtNumber, 'ip':ip}
 
     # providerRef: to be generated from the validation response
      
@@ -110,13 +113,13 @@ def ibadan_prepaid(login_id, customer_account_id, service_id,
 
     url = get_config('SERVICES', 'electic_recharge')
 
-    payload = {'loginId': login_id, 'key': public_key, 
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
                 'customerAccountId': customer_account_id, 
                 'serviceId': service_id, 'amount': amount, 
                 'requestId': request_id, 
                 'checksum': checksum_data, 
                 'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
-                'customerDtNumber': customerDtNumber}
+                'customerDtNumber': customerDtNumber, 'ip':ip}
 
     # thirdPartyCode and providerRef: to be generated from the validation response
             
