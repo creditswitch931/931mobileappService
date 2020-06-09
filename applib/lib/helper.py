@@ -198,22 +198,54 @@ def random_alphanum(size=6):
 
 
 
-def date_format(date_obj, strft='%H: %M: %S'):
-    
-    now = datetime.datetime.now()
+def date_group(date_obj, strft='%H: %M: %S'):
+    date_obj = date_obj.date()
+    now = datetime.date.today()
     diff = now - date_obj
+    monthdiff = now.month - date_obj.month
+    yeardiff = now.year - date_obj.year
 
     if diff.days == 0:
-        retv = date_obj.strftime(strft)
+        #retv = date_obj.strftime(strft)
+        retv = 'Today'
 
     elif diff.days == 1:
         retv = 'Yesterday'
-
-    elif diff.days > 1 and diff.days < 10:
-        retv = date_obj.strftime('%d, %B')
-
-    else:
-        retv = date_obj.strftime("%d-%m-%Y")
     
+    elif diff.days > 1 and diff.days < 8:
+        retv = 'This Week'
+
+    elif diff.days > 7 and diff.days < 15:
+        retv = 'Last Week'
+
+    elif monthdiff == 0:
+        retv = 'This Month'
+    
+    elif monthdiff == 1:
+        retv = 'Last Month'
+
+    elif monthdiff > 1 and monthdiff < 12:
+        #retv = str(monthdiff)+' Months ago'
+        retv = 'This Year'
+
+    elif yeardiff == 1 :
+        retv = 'Last Year'
+    
+    else:
+        retv = str(yeardiff)+' Years Ago'
+
 
     return retv
+
+
+def day_month_format(date_obj):
+    return date_obj.strftime("%b %d")
+
+def suffix(d):
+    return 'th' if 11<=d<=13 else {1:'st',2:'nd',3:'rd'}.get(d%10, 'th')
+
+def custom_strftime(format, t):
+    return t.strftime(format).replace('{S}', str(t.day) + suffix(t.day))
+
+def date_format(date_obj):
+    return custom_strftime('{S} %B %Y, %I:%M%P', date_obj)

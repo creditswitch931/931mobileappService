@@ -63,36 +63,45 @@ def access_login():
     if not qry:
         
         form.username.errors = ['Unknown username specified.']
-        resp.add_params('fields', fh.render())
+        #resp.add_params('fields', fh.render())
         resp.add_params("status", -1)
-        resp.failed()
-        resp.add_message("Unknown username specified")
 
-        return resp.get_body()
+        content['user_registered'] = 0
+        # resp.failed()
+        # resp.add_message("Unknown username specified")
+
+        # return resp.get_body()
 
 
-    if qry.active == 0 and not content.get('code'):
-        form.username.errors = ['account not activated yet']
-        resp.add_params("status", 0)
-        resp.add_params('fields', fh.render())
+    if qry:
+        if qry.active == 0 and not content.get('code'):
+            form.username.errors = ['account not activated yet']
+            content['user_device'] = 0
+            resp.add_params("status", 0)
+            #resp.add_params('fields', fh.render())
 
-        resp.failed()
+            # Proceed to API to send Email with token
+            # resp.failed()
 
-        return resp.get_body()
+            # return resp.get_body()
  
     # how to detect another mobile activation??
 
 
-    if not user_device and not content.get('code'):
+    if qry:
+        if not user_device and not content.get('code'):
     
-        form.username.errors = ['Unregistered device detected. please activate device first']
-        resp.add_params("status", 0)
-        resp.add_params('fields', fh.render())
+            form.username.errors = ['Unregistered device detected. please activate device first']
+            resp.add_params("status", 0)
+            #resp.add_params('fields', fh.render())
+            content['user_device'] = 0
 
-        resp.failed()
-        resp.add_message("Unregistered device detected.")
+            # Proceed to API to send Email with token
 
-        return resp.get_body()
+            # resp.failed()
+            # resp.add_message("Unregistered device detected.")
+
+            # return resp.get_body()
 
 
     if not user_device and content.get("code"):
@@ -117,6 +126,43 @@ def access_login():
     
 
     if resp.status():
+
+        if not qry:
+
+            print(retv[1].get('phone'))
+            user_id = ""
+
+            with m.sql_cursor() as db:
+
+                _mdl = m.MobileUser()
+                _mdl.full_name = retv[1].get('name')
+                _mdl.email = retv[1].get('email')
+                _mdl.phone = retv[1].get('phone')
+                _mdl.username = retv[1].get('phone')
+                _mdl.active = True
+                _mdl.date_created = datetime.datetime.now() 
+
+                db.add(_mdl)
+                db.flush()
+
+                user_id = _mdl.id
+
+                dev = m.Devices()
+                dev.user_id = _mdl.id
+                dev.mac_address = content['mac_address']
+                dev.active = True
+                dev.date_created = datetime.datetime.now()
+                db.add(dev)
+            
+            resp.add_params('user_id', user_id) # get this from the mobile_usertable 
+            resp.add_params("ussd_gtb", ["*737*50*", "*931#"])
+            resp.add_params("ussd_all", ["*402*96609931*", "#"])        
+
+            resp.add_params("status", 1)
+            resp.add_params('fields', fh.render())
+            
+            return resp.get_body()
+
 
         if content.get("code") is not None:
             with m.sql_cursor() as db:
@@ -145,6 +191,7 @@ def access_login():
 
         #resp.add_params('username', qry.username if os.getenv("MODE") == '1' else os.getenv('GLOBALUSERNAME'))
         #resp.add_params('username', qry.username)
+        resp.add_params('fields', fh.render())
         resp.add_params("name", qry.full_name)
         resp.add_params("email", qry.email)
         resp.add_params("phone", qry.phone)
@@ -200,6 +247,7 @@ def register():
 
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
+    print(retv)
 
     if retv[1]['statusCode'] == "00":
         

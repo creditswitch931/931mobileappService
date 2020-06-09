@@ -195,6 +195,16 @@ class ServicePlan(Base):
                           ).filter_by(group_name=grp_name).all()
 
         return qry
+    
+    @staticmethod
+    def get_choices_extra(grp_name):
+        qry = []
+        with sql_cursor() as db:
+
+            qry = db.query(ServicePlan.code, ServicePlan.label, ServicePlan.extra_field
+                          ).filter_by(group_name=grp_name).all()
+
+        return qry
 
     @staticmethod
     def get_extrafield(**kwargs):        
