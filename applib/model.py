@@ -129,6 +129,21 @@ class Devices(Base):
     active = Column(Boolean) 
 
 
+class Cards(Base):
+
+    __tablename__ ="saved_cards"
+
+    id = Column(BigInteger, 
+                primary_key=True, autoincrement=True)
+    
+    card_label = Column(String(255), nullable=False)
+    card_token = Column(String(255), nullable=False)
+    card_type = Column(String(50))
+    user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
+    date_created = Column(DateTime, nullable=False)
+    active = Column(Boolean) 
+
+
 class Transactions(Base):
 
     __tablename__ = "transactions_table"

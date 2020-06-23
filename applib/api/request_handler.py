@@ -10,6 +10,7 @@ from applib.api import service_handler as sh
 from applib.backend.service_config import set_pagination 
 
 import os, calendar
+import datetime
 
 
 # +-------------------------+-------------------------+
@@ -527,7 +528,46 @@ def format_data(iterobj):
 
     return retv 
 
- 
+
+@app.route("/getSavedCards")
+def get_saved_cards():
+
+    content = h.request_data(request)
+    resp = Response()
+    retv = []
+
+    with m.sql_cursor() as db:
+        qry = db.query(
+                       m.Cards.id,
+                       m.Cards.card_label,
+                       m.Cards.card_token,
+                       m.Cards.card_type,
+                       m.Cards.user_id
+                       ).filter(m.Cards.active==1,
+                                m.Cards.user_id == content['user_id']
+                       ).all()
+
+
+        for item in qry:
+            retv.append({ 
+                         "label": item.card_label,
+                         "token": item.card_token,
+                         "type": item.card_type
+                        }
+                )
+
+    resp.add_params('saved_cards', retv)
+
+    if retv:
+        resp.success()
+        resp.add_message("cards fetched successfully")
+    else:
+        resp.failed()
+        resp.add_message("No saved cards found...")
+
+    return resp.get_body()
+
+
 
 @app.route("/initiatePayment", methods=['POST'])
 def payment_init():
@@ -552,14 +592,19 @@ def payment_auth():
     resp = Response()
 
     url = h.get_config("SERVICES", "authpayment")
+    
 
     param = {
-        'card_no': content['cardno'][:5] + "****" + content['cardno'][-4:],
-        "amount": content['amount'], 
-        "redirect_url": content['redirect_url']
+        "card_no": content['cardno'][:5] + "****" + content['cardno'][-4:],
+        "amount": content['amount']
     }
+
+    #print(trans_details)
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
     trans_details = {
-        "trans_ref": content['transaction_id'],
+        "trans_ref": retv[1]['transactionRef'],
         "trans_desc": None,
         "trans_code": None,
         "trans_params": h.dump2json(param),
@@ -569,16 +614,13 @@ def payment_auth():
         "trans_type_id": None,
         "trans_amount": content['amount']
     }
-
-    rh = RequestHandler(url, method=1, data=content)
-    retv = rh.send()
-
+    
     m.Transactions.save(**trans_details)
 
     resp.api_response_format(retv[1])
     
-    # add the trasaction in a table 
-    # create the record here 
+    # # add the trasaction in a table 
+    # # create the record here 
 
     return resp.get_body()
 
@@ -595,6 +637,7 @@ def payment_process():
     url = h.get_config("SERVICES", "processpayment")
     
     trans_id = content.pop("transaction_id")
+    user_id = content.pop("user_id")
 
 
     rh = RequestHandler(url, method=1, data=content)
@@ -607,6 +650,18 @@ def payment_process():
     content.update(**resp.params)
 
     with m.sql_cursor() as db:
+        #Save the card
+        if retv[1]['statusCode'] == "00":
+            card = m.Cards()
+            card.user_id = user_id
+            card.card_label = retv[1]['card']['label']
+            card.card_token = retv[1]['card']['token']
+            card.card_type = retv[1]['card']['type']
+            card.active = True
+            card.date_created = datetime.datetime.now()
+            db.add(card)
+            db.flush()
+        
         db.query(m.Transactions
                 ).filter_by(trans_ref=trans_id
                 ).update({"trans_desc": resp.params['responseDesc'], 
@@ -616,6 +671,84 @@ def payment_process():
                     )
 
 
+    return resp.get_body()
+
+
+@app.route("/payWithToken", methods=['POST'])
+def pay_with_token():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "paywithtoken")
+    
+
+    param = {
+        "card_no": content['card_label'],
+        "amount": content['amount']
+    }
+
+    #print(trans_details)
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
+    if retv[1]['statusCode'] == "00":
+        tranxRef = retv[1]['transactionRef']
+    else:
+        tranxRef = ""
+
+    resp.api_response_format(retv[1])
+
+    # # add the trasaction in a table 
+    # # create the record here 
+    trans_details = {
+        "trans_ref": tranxRef,
+        "trans_desc": resp.params['responseDesc'],
+        "trans_code": resp.params['responseCode'],
+        "trans_params": h.dump2json(param),
+        "trans_resp": '[]',
+        "user_mac_address": content['macaddress'],
+        "user_id": content.pop("user_id"),
+        "trans_type_id": None,
+        "trans_amount": content['amount']
+    }
+    
+    m.Transactions.save(**trans_details)
+
+    return resp.get_body()
+
+
+
+@app.route("/mobilemoney/validate", methods=['POST'])
+def mobilemoney_validate():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "mmvalidate")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
+
+@app.route("/mobilemoney/pay", methods=['POST'])
+def mobilemoney_pay():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "mmpay")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
     return resp.get_body()
 
 
