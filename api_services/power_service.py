@@ -131,10 +131,176 @@ def ibadan_prepaid(login_id, customer_account_id, service_id,
     retv = rh.send()
     return retv
 
-
 def abuja_prepaid(login_id, customer_account_id, service_id, 
-                  amount, request_id, customerDtNumber, providerRef):
+                   amount, request_id, customerDtNumber, providerRef):
+    
+    # request_id = random.randrange(10000000, 99999999)
 
-    pass
+    checksum = (str(login_id) + "|" + service_id + "|" 
+                + private_key + "|" + str(customer_account_id) + "|" 
+                + str(request_id) + "|" + str(amount)
+               )
+
+    checksum_data = hash_data(checksum)
+
+    url = get_config('SERVICES', 'electic_recharge')
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
+                'customerAccountId': customer_account_id, 
+                'serviceId': service_id, 'amount': amount, 
+                'requestId': request_id, 
+                'checksum': checksum_data, 
+                'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber, 'ip':ip}
+
+    # thirdPartyCode and providerRef: to be generated from the validation response
+            
+    rh = RequestHandler(url, method=1, data=payload)
+    retv = rh.send()
+    return retv
+
+
+def enugu_prepaid(login_id, customer_account_id, service_id, 
+                   amount, request_id, customerDtNumber, providerRef):
+    
+    # request_id = random.randrange(10000000, 99999999)
+
+    checksum = (str(login_id) + "|" + service_id + "|" 
+                + private_key + "|" + str(customer_account_id) + "|" 
+                + str(request_id) + "|" + str(amount)
+               )
+
+    checksum_data = hash_data(checksum)
+
+    url = get_config('SERVICES', 'electic_recharge')
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
+                'customerAccountId': customer_account_id, 
+                'serviceId': service_id, 'amount': amount, 
+                'requestId': request_id, 
+                'checksum': checksum_data, 
+                'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber, 'ip':ip}
+
+    # thirdPartyCode and providerRef: to be generated from the validation response
+            
+    rh = RequestHandler(url, method=1, data=payload)
+    retv = rh.send()
+    return retv
+
+def portharcourt_prepaid(login_id, customer_account_id, service_id, 
+                   amount, request_id, customerDtNumber, providerRef):
+    
+    # request_id = random.randrange(10000000, 99999999)
+
+    checksum = (str(login_id) + "|" + service_id + "|" 
+                + private_key + "|" + str(customer_account_id) + "|" 
+                + str(request_id) + "|" + str(amount)
+               )
+
+    checksum_data = hash_data(checksum)
+
+    url = get_config('SERVICES', 'electic_recharge')
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
+                'customerAccountId': customer_account_id, 
+                'serviceId': service_id, 'amount': amount, 
+                'requestId': request_id, 
+                'checksum': checksum_data, 
+                'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber, 'ip':ip}
+
+    # thirdPartyCode and providerRef: to be generated from the validation response
+            
+    rh = RequestHandler(url, method=1, data=payload)
+    retv = rh.send()
+    return retv
+
+def jos_prepaid(login_id, customer_account_id, service_id, 
+                   amount, request_id, customerDtNumber, providerRef):
+    
+    # request_id = random.randrange(10000000, 99999999)
+
+    checksum = (str(login_id) + "|" + service_id + "|" 
+                + private_key + "|" + str(customer_account_id) + "|" 
+                + str(request_id) + "|" + str(amount)
+               )
+
+    checksum_data = hash_data(checksum)
+
+    url = get_config('SERVICES', 'electic_recharge')
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
+                'customerAccountId': customer_account_id, 
+                'serviceId': service_id, 'amount': amount, 
+                'requestId': request_id, 
+                'checksum': checksum_data, 
+                'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber, 'ip':ip}
+
+    # thirdPartyCode and providerRef: to be generated from the validation response
+            
+    rh = RequestHandler(url, method=1, data=payload)
+    retv = rh.send()
+    return retv
+
+
+def kaduna_prepaid(login_id, customer_account_id, service_id, 
+                   amount, request_id, customerDtNumber, providerRef):
+    
+    # request_id = random.randrange(10000000, 99999999)
+
+    checksum = (str(login_id) + "|" + service_id + "|" 
+                + private_key + "|" + str(customer_account_id) + "|" 
+                + str(request_id) + "|" + str(amount)
+               )
+
+    checksum_data = hash_data(checksum)
+
+    url = get_config('SERVICES', 'electic_recharge')
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
+                'customerAccountId': customer_account_id, 
+                'serviceId': service_id, 'amount': amount, 
+                'requestId': request_id, 
+                'checksum': checksum_data, 
+                'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber, 'ip':ip}
+
+    # thirdPartyCode and providerRef: to be generated from the validation response
+            
+    rh = RequestHandler(url, method=1, data=payload)
+    retv = rh.send()
+    return retv
+
+
+def kano_prepaid(login_id, customer_account_id, service_id, 
+                   amount, request_id, customerDtNumber, providerRef):
+    
+    # request_id = random.randrange(10000000, 99999999)
+
+    checksum = (str(login_id) + "|" + service_id + "|" 
+                + private_key + "|" + str(customer_account_id) + "|" 
+                + str(request_id) + "|" + str(amount)
+               )
+
+    checksum_data = hash_data(checksum)
+
+    url = get_config('SERVICES', 'electic_recharge')
+
+    payload = {'loginId': login_id, 'authId': auth_login, 'key': public_key, 
+                'customerAccountId': customer_account_id, 
+                'serviceId': service_id, 'amount': amount, 
+                'requestId': request_id, 
+                'checksum': checksum_data, 
+                'providerRef': providerRef, 'thirdPartyCode': 'AKRN', 
+                'customerDtNumber': customerDtNumber, 'ip':ip}
+
+    # thirdPartyCode and providerRef: to be generated from the validation response
+            
+    rh = RequestHandler(url, method=1, data=payload)
+    retv = rh.send()
+    return retv
+
 
 

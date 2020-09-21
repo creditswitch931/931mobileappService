@@ -170,6 +170,7 @@ class AirtimeHandler(ServiceHandler):
     __form_label__ = "Send"
     __ServiceName__ = "Airtime Service"
     __ServiceCode__ = ""
+    __Commission__ = 0.0
     
     def call_service(self):
         return airtime_service.airtime_vending(
@@ -208,11 +209,14 @@ class AirtimeHandler(ServiceHandler):
     def printout(self):
         cmd = "cmd"
         out = "out"
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
         body = [
             (cmd, "center"), 
-            (out, "NETWORK: {}".format(self.req_data['network'])),            
+            (out, "NETWORK: {}".format(self.req_data['network'])),        
             (out, "RECEIPIENT: " + self.req_data['phone'] + ""),            
-            (out, "AMOUNT: " + h.currency_formatter(float(self.req_data['amount'])) + " NGN"),                        
+            (out, "Amount Charged: " + h.currency_formatter(amount) + " NGN"),                        
+            (out, "Discount Given: " + h.currency_formatter(discount) + " NGN"),                        
             (out, "Trans Ref: {}".format(self.data['tranxReference'])),            
             (out, "Confirmation Code: " + self.data['confirmCode']),
             (out, "mReference: " + self.data['mReference']),                        
@@ -226,10 +230,13 @@ class AirtimeHandler(ServiceHandler):
 
 
     def get_response(self):
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
         return [
             ("NETWORK", self.req_data['network'] ),
             ("RECEIPIENT", self.req_data['phone']),
-            ("AMOUNT", self.data["amount"] + " NGN"),
+            ("Amount Charged", str(amount) + " NGN"),
+            ("Discount Given", str(discount) + " NGN"),
             ("Trans Ref", self.data['tranxReference']),
             ("Confirmation Code", self.data['confirmCode']),
             ("mReference", self.data['mReference']),
@@ -239,16 +246,20 @@ class AirtimeHandler(ServiceHandler):
 
 class MtnHandler(AirtimeHandler):
     __ServiceCode__ = "mtn"
+    __Commission__ = 0.025
 
 
 class _9MobileHandler(AirtimeHandler):
     __ServiceCode__ = "9mobile"
+    __Commission__ = 0.05
 
 class AirtelHandler(AirtimeHandler):
     __ServiceCode__ = "airtel"
+    __Commission__ = 0.025
  
 class GlobacomHandler(AirtimeHandler):
     __ServiceCode__ = "globacom"
+    __Commission__ = 0.04
  
 
  
@@ -263,6 +274,7 @@ class IkejaPrePaidHandler(ServiceHandler):
     __ServiceCode__ = "E01E"
     __vendform__ = "IkejaPrePaid"
     __readonlyFields__ = []
+    __Commission__ = 0.1
       
 
     def validate_service(self):
@@ -335,6 +347,8 @@ class IkejaPrePaidHandler(ServiceHandler):
     def printout(self):
         cmd = "cmd"
         out = "out"
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
  
         body = [
             (cmd, "center"),
@@ -343,7 +357,9 @@ class IkejaPrePaidHandler(ServiceHandler):
             (cmd, "center"),
             (out, "Meter No: " + self.req_data['meterNumber']),
             (cmd, "center"),
-            (out, "Amount: " + h.currency_formatter(float(self.req_data['amount'])) + " NGN"),
+            (out, "Amount Charged: " + h.currency_formatter(amount) + " NGN"),
+            (cmd, "center"),
+            (out, "Discount Given: " + h.currency_formatter(discount) + " NGN"),
             (out, "\n\r"),              
             (cmd, "left"),
             (out, "Unit Cost: {}".format(self.data['detail'].get('unitCost'))),
@@ -366,13 +382,16 @@ class IkejaPrePaidHandler(ServiceHandler):
     def get_response(self):       
 
         _resp = self.data['detail']
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
 
         return [
             ("Disco", self.__ServiceName__),
             ("Name", _resp['name']),
             ("Meter Number", self.req_data['meterNumber']),
             ("Account ID", _resp['accountId']),
-            ("Amount",  _resp['amount'] + " NGN"),
+            ("Amount Charged",  str(amount) + " NGN"),
+            ("Discount Given",  str(discount) + " NGN"),
             ("Unit Cost", _resp.get('unitCost')),
             ("Units", _resp.get("units")),
             ('Vat', _resp.get('vat')),
@@ -381,6 +400,28 @@ class IkejaPrePaidHandler(ServiceHandler):
             ("Status", self.resp_obj.params['responseDesc'].upper())            
         ]
 
+
+class IkejaPostpaidHandler(IkejaPrePaidHandler):
+
+    __name__ = "IkejaPostpaid" 
+    __ServiceName__ = "Ikeja Disco Postpaid"
+    __ServiceCode__ = 'E02E'
+    __vendform__ = 'IkejaPrepaid'
+    __readonlyFields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    __Commission__ = 0.01
+    
+
+    def call_service(self):
+        return power_service.ikeja_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        self.form_data.get('providerRef') or "89128942039"
+                    )
 
 
 class EkoPrePaidHandler(IkejaPrePaidHandler):
@@ -392,6 +433,7 @@ class EkoPrePaidHandler(IkejaPrePaidHandler):
     __readonlyFields__ = ["customerDtNumber", "name", 
                          "address", "meterNumber", "customerAccountType",
                          "providerRef"]
+    __Commission__ = 0.005
     
 
     def call_service(self):
@@ -404,13 +446,39 @@ class EkoPrePaidHandler(IkejaPrePaidHandler):
                         self.form_data.get('providerRef') or "89128942039"
                     )
 
+
+class EkoPostpaidHandler(IkejaPrePaidHandler):
+
+    __name__ = "EkoPostpaid" 
+    __ServiceName__ = "Eko Disco Postpaid"
+    __ServiceCode__ = 'E06E'
+    __vendform__ = 'EkoPrePaid'
+    __readonlyFields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    __Commission__ = 0.005
+    
+
+    def call_service(self):
+        return power_service.eko_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        self.form_data.get('providerRef') or "89128942039"
+                    )
+
+
+
 class IbadanPrePaidHandler(IkejaPrePaidHandler):          
     
     __name__ = "IbadanPrePaid"      
     __ServiceName__ = "Ibadan Disco Prepaid"
-    __ServiceCode__ = "E07E"
+    __ServiceCode__ = "E03E"
     __vendform__ = 'IbadanPrePaid'
     __readonlyFields__ = []
+    __Commission__ = 0.005
 
 
     def call_service(self):
@@ -423,14 +491,277 @@ class IbadanPrePaidHandler(IkejaPrePaidHandler):
                         (self.form_data.get('providerRef') or "89128942039")
                     )
 
-# class AbujaPrePaidHandler(IkejaPrePaidHandler):      
-#     # __url__ = "/api/service/validate"
-#     # __formCls__ = "ElectricityValidate"
-#     # __form_label__ = "Validate"
-#     __name__ = "AbujaPrePaid"
-#     __ServiceName__ = "Abuja Disco Prepaid"
-#     __ServiceCode__ = "E07E"
-#     __vendform__ = 'AbujaPrePaid'
+
+class IbadanPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "IbadanPostpaid"      
+    __ServiceName__ = "Ibadan Disco Postpaid"
+    __ServiceCode__ = "E04E"
+    __vendform__ = 'IbadanPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.ibadan_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+
+
+class AbujaPrePaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "AbujaPrePaid"      
+    __ServiceName__ = "Abuja Disco Prepaid"
+    __ServiceCode__ = "E07E"
+    __vendform__ = 'AbujaPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.01
+
+
+    def call_service(self):
+        return power_service.abuja_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+class AbujaPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "AbujaPostpaid"      
+    __ServiceName__ = "Abuja Disco Postpaid"
+    __ServiceCode__ = "E08E"
+    __vendform__ = 'AbujaPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.01
+
+
+    def call_service(self):
+        return power_service.abuja_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+
+
+class EnuguPrePaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "EnuguPrePaid"      
+    __ServiceName__ = "Enugu Disco Prepaid"
+    __ServiceCode__ = "E15E"
+    __vendform__ = 'EnuguPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.01
+
+
+    def call_service(self):
+        return power_service.enugu_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+class EnuguPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "EnuguPostpaid"      
+    __ServiceName__ = "Enugu Disco Postpaid"
+    __ServiceCode__ = "E16E"
+    __vendform__ = 'EnuguPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.01
+
+
+    def call_service(self):
+        return power_service.enugu_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+
+
+class PortHarcourtPrePaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "PortHarcourtPrePaid"      
+    __ServiceName__ = "PortHarcourt Disco Prepaid"
+    __ServiceCode__ = "E09E"
+    __vendform__ = 'PortHarcourtPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.01
+
+
+    def call_service(self):
+        return power_service.portharcourt_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+class PortHarcourtPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "PortHarcourtPostpaid"      
+    __ServiceName__ = "PortHarcourt Disco Postpaid"
+    __ServiceCode__ = "E10E"
+    __vendform__ = 'PortHarcourtPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.01
+
+
+    def call_service(self):
+        return power_service.portharcourt_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+
+
+class JosPrePaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "JosPrePaid"      
+    __ServiceName__ = "Jos Disco Prepaid"
+    __ServiceCode__ = "E13E"
+    __vendform__ = 'JosPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.jos_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+class JosPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "JosPostpaid"      
+    __ServiceName__ = "Jos Disco Postpaid"
+    __ServiceCode__ = "E14E"
+    __vendform__ = 'JosPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.jos_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+
+class KadunaPrePaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "KadunaPrePaid"      
+    __ServiceName__ = "Kaduna Disco Prepaid"
+    __ServiceCode__ = "E11E"
+    __vendform__ = 'KadunaPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.kaduna_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+class KadunaPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "KadunaPostpaid"      
+    __ServiceName__ = "Kaduna Disco Postpaid"
+    __ServiceCode__ = "E12E"
+    __vendform__ = 'KadunaPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.kaduna_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+
+class KanoPrePaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "KanoPrePaid"      
+    __ServiceName__ = "Kano Disco Prepaid"
+    __ServiceCode__ = "E17E"
+    __vendform__ = 'KanoPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.kano_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
+class KanoPostpaidHandler(IkejaPrePaidHandler):          
+    
+    __name__ = "KanoPostpaid"      
+    __ServiceName__ = "Kano Disco Postpaid"
+    __ServiceCode__ = "E18E"
+    __vendform__ = 'KanoPrePaid'
+    __readonlyFields__ = []
+    __Commission__ = 0.005
+
+
+    def call_service(self):
+        return power_service.kano_prepaid(self.kwargs['login_id'], 
+                        self.form_data['meterNumber'],
+                        self.__ServiceCode__,
+                        self.form_data["amount"],
+                        self.request_ref,
+                        self.form_data['customerDtNumber'],
+                        (self.form_data.get('providerRef') or "89128942039")
+                    )
+
 
 
 
@@ -440,6 +771,7 @@ class DataHandler(AirtimeHandler):
     __formCls__ = 'Data'
     __form_label__ = "Send"
     __ServiceName__ = "Data Subscription"
+    __Commission__ = 0.0
 
     def call_service(self):
         return data_service.data_vending(self.kwargs['login_id'], 
@@ -455,6 +787,7 @@ class MtnDataHandler(DataHandler):
     __ServiceName__ = "MTN Data Sub"
     __ServiceCode__ = "mtn"
     __formCls__ = 'MtnData'
+    __Commission__ = 0.025
 
 
 class AirtelDataHandler(DataHandler):
@@ -462,18 +795,21 @@ class AirtelDataHandler(DataHandler):
     __ServiceCode__ = "airtel"
     __ServiceName__ = "Airtel Data Sub"
     __formCls__ = 'AirtelData'
+    __Commission__ = 0.025
 
 class GloDataHandler(DataHandler):
     __name__ = "Globacom Data"
     __ServiceCode__ = "globacom"
     __ServiceName__ = "Glo Data Sub"
     __formCls__ = 'GloData'
+    __Commission__ = 0.04
 
 class NMobDataHandler(DataHandler):
     __name__ = "Globacom Data"
     __ServiceCode__ = "9mobile"
     __ServiceName__ = "Glo Data Sub"
     __formCls__ = 'NMobileData'
+    __Commission__ = 0.05
  
 
 
@@ -485,7 +821,10 @@ class StartimesTvHandler(ServiceHandler):
     __form_label__ = "Validate"
     __ServiceName__ = "Startimes Subscription"
     __vendform__ = "Startimes"
-    __readonlyFields__ = ["customerName", 'balance', "smartCardCode"]
+    __readonlyFields__ = ["amount", "customerName", 'balance', "smartCardCode"]
+    __ServiceCode__ = "startimes"
+    __ServicePlanGrp__ = "startimesbouquet"
+    __Commission__ = 0.03
 
 
     def validate_service(self):
@@ -495,6 +834,19 @@ class StartimesTvHandler(ServiceHandler):
 
 
         self.resp_obj.api_response_format(output[1])
+
+        qry = m.ServicePlan.get_extrafield(code=self.form_data['service_plans'],
+                                               group_name=self.__ServicePlanGrp__
+                                               )
+            
+        print(qry)
+
+        # self.form_data['service_plans']
+
+        self.resp_obj.params['data'].extend([
+                {"amount": qry.extra_field}
+            ]
+        )
 
         if self.resp_obj.status():
             self.resp_obj.add_params("API_url_path", "/api/service/vending")
@@ -538,12 +890,15 @@ class StartimesTvHandler(ServiceHandler):
     def printout(self):
         cmd = "cmd"
         out = "out"
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
  
         body = [
             (cmd, "center"),            
             (out, self.__ServiceName__),            
             (out, "Smart Card No: " + self.req_data['smartCardCode']),            
-            (out, "Amount: " + h.currency_formatter(float(self.req_data['amount'])) + " NGN"),
+            (out, "Amount Charged: " + h.currency_formatter(amount) + " NGN"),
+            (out, "Discount Given: " + h.currency_formatter(discount) + " NGN"),
             (out, "\n\r"),              
             (cmd, "left"),
             (out, "Trans Ref: {}".format(self.data['transactionNo'])),
@@ -556,6 +911,8 @@ class StartimesTvHandler(ServiceHandler):
     def get_response(self):
         
         _resp = self.data
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
         
         # {'statusCode': '00', 'statusDescription': 'successful', 
         # 'details': {'name': 'MR & MRS XD MICHAEL', 'address': '71 XAVIER CRESCENT ', 
@@ -566,7 +923,8 @@ class StartimesTvHandler(ServiceHandler):
             ("Cable TV ", self.__ServiceName__),
             ("Name", self.form_data['customerName']),
             ("Smart Card No", self.req_data['smartCardCode']),
-            ("Amount", "{} NGN".format(self.form_data['amount'])),                        
+            ("Amount Charged", "{:.2f} NGN".format(amount)),                        
+            ("Discount Given", "{:.2f} NGN".format(discount)),                        
             ("Trans Ref", _resp['transactionNo']),
             ("Status", self.resp_obj.params['responseDesc'].upper())            
         ]
@@ -583,6 +941,7 @@ class DsTvHandler(ServiceHandler):
     __readonlyFields__ = ["amount", "customerNo", "customerName" ]
     __ServiceCode__ = "dstv"
     __ServicePlanGrp__ = "dstvpackage"
+    __Commission__ = 0.015
 
 
     def validate_service(self):
@@ -684,13 +1043,16 @@ class DsTvHandler(ServiceHandler):
     def printout(self):
         cmd = 'cmd'
         out = 'out'
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
 
         return [
             (out, '\n\r'),
             (cmd, "center"),                                   
             (out, "Smart Card No: " + self.form_data['customerNo']), 
             (out, "Customer Name: " + self.form_data['customerName']),
-            (out, "Amount: " + h.currency_formatter(float(self.form_data['amount'])) + " NGN"),
+            (out, "Amount Charged: " + h.currency_formatter(amount) + " NGN"),
+            (out, "Discount Given: " + h.currency_formatter(discount) + " NGN"),
             (out, '\n\r'),
             (out, 'Trans Ref: {}'.format(self.request_ref)),
             (out, "Trans No: {}".format(self.data['statusDescription']['transactionNo'])),
@@ -700,11 +1062,15 @@ class DsTvHandler(ServiceHandler):
 
     def get_response(self):
         
+        discount = float(self.req_data['amount']) * self.__Commission__
+        amount = float(self.req_data['amount']) - discount
+
         return [
             ("Cable TV ", self.__ServiceName__),
             ("Name", self.form_data['customerName']),
             ("Smart Card No", self.form_data['customerNo']),
-            ("Amount",  "{} NGN".format(self.form_data['amount'])),                        
+            ("Amount Charged",  "{:.2f} NGN".format(amount)),                        
+            ("Discount Given",  "{:.2f} NGN".format(discount)),                        
             ("Trans Ref", self.request_ref),
             ("Trans No", self.data['statusDescription']['transactionNo']),
             ("Status", self.resp_obj.params['responseDesc'].upper())            

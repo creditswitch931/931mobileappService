@@ -21,6 +21,7 @@ app = Blueprint('customers', __name__, url_prefix='/api')
 def access_login():    
 
     content = h.request_data(request)
+    print(content)
     resp = Response()
         
     form = fm.LoginForm(**content)
@@ -64,7 +65,7 @@ def access_login():
         
         form.username.errors = ['Unknown username specified.']
         #resp.add_params('fields', fh.render())
-        resp.add_params("status", -1)
+        resp.add_params("status", 0)
 
         content['user_registered'] = 0
         # resp.failed()
@@ -129,7 +130,21 @@ def access_login():
 
         if not qry:
 
-            print(retv[1].get('phone'))
+            print("======Incomplete registration=======")
+
+            #Determine if user is active on creditswitch portal or not. For incomplete registrations
+            if retv[1].get('status') == 1 :
+                active = True
+                status = 1
+            else :
+                active = False
+                status = 0
+                resp.failed()
+                resp.add_message("Inactive account/device! An SMS has been sent to your phone, "+ retv[1].get('phone') +" with your activation token.")
+
+            print(active)
+            print(status)
+
             user_id = ""
 
             with m.sql_cursor() as db:
@@ -139,7 +154,7 @@ def access_login():
                 _mdl.email = retv[1].get('email')
                 _mdl.phone = retv[1].get('phone')
                 _mdl.username = retv[1].get('phone')
-                _mdl.active = True
+                _mdl.active = active
                 _mdl.date_created = datetime.datetime.now() 
 
                 db.add(_mdl)
@@ -158,8 +173,9 @@ def access_login():
             resp.add_params("ussd_gtb", ["*737*50*", "*931#"])
             resp.add_params("ussd_all", ["*402*96609931*", "#"])        
 
-            resp.add_params("status", 1)
+            resp.add_params("status", status)
             resp.add_params('fields', fh.render())
+
             
             return resp.get_body()
 
@@ -389,6 +405,47 @@ def resend_otp():
 
     resp.api_response_format(retv[1])
     return resp.get_body()
+
+
+@app.route("/resendvoiceotp")
+def resend_voice_otp():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    qry = None
+
+    _phone = content.get('phone')
+    _mac_add = content.get('mac_address')
+
+    with m.sql_cursor() as db:
+        if _phone:
+            qry = db.query(m.MobileUser.phone
+                      ).filter_by(phone=content.get('phone')
+                                 ).first()
+        elif _mac_add:
+            qry = db.query(m.MobileUser.phone, m.Devices.id).join(
+                    m.Devices,
+                    m.Devices.user_id == m.MobileUser.id 
+                ).filter(m.Devices.mac_address == _mac_add,
+                         m.Devices.active == 1
+                        ).first()
+
+    if not qry:
+        resp.failed()
+        resp.add_message("Unknown mobile device")
+
+        return resp.get_body()
+
+
+    url = h.get_config("API", "resend_voice_otp")
+
+    rh = RequestHandler(url, method=1, data={"phone": qry.phone})
+    retv = rh.send()
+
+    resp.api_response_format(retv[1])
+    return resp.get_body()
+
 
 
 # @app.route("/errors")

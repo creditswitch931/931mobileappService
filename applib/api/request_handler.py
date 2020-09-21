@@ -484,6 +484,42 @@ def get_funding_history():
     return resp.get_body()
 
 
+@app.route("/notifications")
+def get_notifications():
+
+    content = h.request_data(request)
+    _req = {}
+
+    resp = Response() 
+
+    url = h.get_config("API", "notifications")
+    
+    fields = ['page_size', 'user_id']
+
+    for key, val in  content.items():
+        if key in fields:
+            _req[key] = int(val)
+
+        else:
+            _req[key] = val
+
+
+    rh = RequestHandler(url, method=1, data=_req)
+    retv = []
+    sendr = rh.send()
+
+    if sendr[1]['statusCode'] == "00":
+        print(sendr[1]['notifications'])
+        retv = sendr[1]['notifications']
+        resp.success()
+    
+    else:
+        resp.failed()
+
+    resp.add_params('notifications', retv)
+
+    return resp.get_body()
+
 
 def format_data(iterobj):
     
