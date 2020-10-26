@@ -406,7 +406,7 @@ class IkejaPostpaidHandler(IkejaPrePaidHandler):
     __name__ = "IkejaPostpaid" 
     __ServiceName__ = "Ikeja Disco Postpaid"
     __ServiceCode__ = 'E02E'
-    __vendform__ = 'IkejaPrepaid'
+    __vendform__ = 'IkejaPrePaid'
     __readonlyFields__ = ["customerDtNumber", "name", 
                          "address", "meterNumber", "customerAccountType",
                          "providerRef"]
