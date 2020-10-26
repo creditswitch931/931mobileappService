@@ -21,6 +21,7 @@ docs/
 
 *.txt
 staging.cfg
+*.cfg
 
 venv/
 .vscode/
