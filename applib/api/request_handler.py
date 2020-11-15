@@ -1065,6 +1065,113 @@ def get_trans_stats():
 
 
 
+@app.route('/getdevices') 
+def getdevices():
+
+    resp = Response()
+    retv = []
+
+    content = h.request_data(request)
+    user_id = ""
+
+    if content.get('user_id'):
+        user_id = content.get('user_id')
+
+    if content.get('username'):
+        with m.sql_cursor() as db:
+            user = db.query(m.MobileUser.id).filter(m.MobileUser.username == content['username']).order_by(m.MobileUser.id).first()
+
+            if user:
+                user_id = user.id
+
+
+    with m.sql_cursor() as db:
+        if user_id is not None:
+            qry = db.query(m.Devices.mac_address,
+                    m.Devices.date_created                        
+                ).filter(
+                    m.Devices.user_id == user_id,
+                    m.Devices.active == 1
+                ).order_by(
+                    m.Devices.date_created.desc()
+                ).all()
+
+            for item in qry:
+                retv.append({ 
+                            "macaddress": item.mac_address,
+                            "date": h.date_format_no_time(item.date_created)
+                        }
+                    )
+
+    resp.add_params('active_devices', retv)
+    print(retv)
+    if retv:
+        resp.success()
+        resp.add_message("devices fetched successfully")
+    else:
+        resp.failed()
+        resp.add_message("No active devices found...")
+
+    return resp.get_body()
+    
+
+
+@app.route('/removedevice') 
+def removedevice():
+
+    resp = Response()
+    retv = []
+
+    content = h.request_data(request)
+    user_id = ""
+
+    if content.get('user_id'):
+        user_id = content.get('user_id')
+
+    if content.get('username'):
+        with m.sql_cursor() as db:
+            user = db.query(m.MobileUser.id).filter(m.MobileUser.username == content['username']).order_by(m.MobileUser.id).first()
+
+            if user:
+                user_id = user.id
+
+    with m.sql_cursor() as db:
+        if user_id is not None:
+            qry = db.query(m.Devices.mac_address,
+                    m.Devices.date_created                        
+                ).filter(
+                    m.Devices.user_id == user_id,
+                    m.Devices.active == 1
+                )
+                
+            qryupd = qry.filter(
+                    m.Devices.mac_address == content.get('macaddress')
+                ).update({'active':0})
+
+            reqry = qry.order_by(
+                    m.Devices.date_created.desc()
+                ).all()
+            
+
+            for item in reqry:
+                retv.append({ 
+                            "macaddress": item.mac_address,
+                            "date": h.date_format_no_time(item.date_created)
+                        }
+                    )
+
+            resp.add_params('active_devices', retv)
+            print(retv)
+
+            if qryupd:
+                resp.success()
+                resp.add_message("Device removed successfully")
+            else:
+                resp.failed()
+                resp.add_message("Error occurred removing device")
+
+    return resp.get_body()
+    
 
 
 

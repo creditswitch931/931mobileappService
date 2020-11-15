@@ -18,6 +18,12 @@ class Response:
 
     def add_params(self, key, value):
         self.params['data'].append({key: value})
+        
+    def remove_params(self, key):
+        for i, k in enumerate(self.params['data']):
+            if key in k:
+                del self.params['data'][i]
+                break
 
     def mode(self, indicator):
         self.params['validation'] = indicator

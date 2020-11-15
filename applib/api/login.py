@@ -9,6 +9,9 @@ import datetime
 import os
 
 
+#STATUS CODE 0 FOR LOGIN & REGISER == CANNOT VIEW DASHBOARD YET (ACTIVATE  USER)
+#STATUS CODE 1 FOR LOGIN & REGISER == VIEW DASHBOARD
+#STATUS CODE 2 FOR LOGIN == COMPLETE REGISTRATION
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
 
@@ -113,6 +116,7 @@ def access_login():
 
         if total >= int(max_device_allowed):
             resp.failed()
+            resp.add_params("status", 3)
             resp.add_message("Allowed Maximum device count has been reached.")
 
             return resp.get_body()
@@ -122,17 +126,20 @@ def access_login():
 
     rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
+    print("Response:",retv[0])
+    
     # status is 1 when the token has been validated
     resp.api_response_format(retv[1])
     
+    print("Response Status:",resp.status())
 
-    if resp.status():
-
+    if resp.status() and retv[0] >= 200 and retv[0] < 300:
+        #IF USER IS ACTIVE ON CSW BUT NOT REGISTERED ON MOBILE DATABASE
         if not qry:
-
             print("======Incomplete registration=======")
-
-            #Determine if user is active on creditswitch portal or not. For incomplete registrations
+            #CHECK ACTIVE STATUS ON CSW
+            #IF ACTIVE JUST COPY DETAILS TO MOBILE DB AND LOGIN 
+             
             if retv[1].get('status') == 1 :
                 active = True
                 status = 1
@@ -217,13 +224,23 @@ def access_login():
 
         resp.add_params("status", 1)
 
+    elif (not resp.status()) and retv[0] >= 200 and retv[0] < 300:
+        if retv[1].get('statusCode') == 'C002': # 931 merchant
+            resp.remove_params("status")
+            resp.add_params("status", 2)
+        elif retv[1].get('statusCode') == 'C001': # inactive merchant
+            resp.remove_params("status")
+            resp.add_params("status", 0)
+        else:
+            resp.remove_params("status")
+            resp.add_params("status", 4)
 
-    else:
         resp.add_params('fields', fh.render())
 
-        # resp.add_message("username or password is incorrect")
+    else:
+        resp.add_message("Error logging, please retry")
+        resp.add_params('fields', fh.render())
     
-
     return resp.get_body()
 
 
@@ -265,13 +282,13 @@ def register():
     retv = rh.send()
     print(retv)
 
-    if retv[1]['statusCode'] == "00":
+    if retv[1]['statusCode'] == "00" or retv[1]['statusCode'] == 'C001':
         
         with m.sql_cursor() as db:
             _mdl = m.MobileUser()
             m.form2model(form, _mdl, exclude=['first_name', 'last_name', 'password', 'password_confirmation', 'mac_address'])
             _mdl.full_name = content['full_name']
-            _mdl.active = False
+            _mdl.active = False if retv[1]['statusCode'] == 'C001' else True
             _mdl.username = form.phone.data #retv[1].get('username')
             _mdl.date_created = datetime.datetime.now() 
 
@@ -285,8 +302,16 @@ def register():
             dev.date_created = datetime.datetime.now()
             db.add(dev)
 
+        if retv[1]['statusCode'] == '00': #Active account, proceed to login
+            resp.remove_params("status")
+            resp.add_params("status", 1)
+        elif retv[1]['statusCode'] == 'C001': # Inactive account, activate
+            resp.remove_params("status")
+            resp.add_params("status", 0)
+        
+    
     resp.api_response_format(retv[1])
- 
+
     return resp.get_body()
 
 
@@ -302,27 +327,43 @@ def handle_password_recovery():
     
     cfg = h.get_config("API")    
 
-    form = fm.ForgotForm(**content)
+    url = cfg['reset_password_sms']
 
-    if not form.validate():
-        fh = FormHandler(form)
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
 
-        resp.add_params("fields", fh.render())
-        resp.failed()
-        resp.add_message(fh.get_errormsg())
-        return resp.get_body()
+    resp.api_response_format(retv[1])
+    return resp.get_body()
 
 
-    if "@" in content['email']: 
-        url = cfg['reset_password_email']
-        _data = {'email': content['email']}
-
-    else:
-        url = cfg['reset_password_sms']
-        _data = {"phone": content['email']}
+# +-------------------------+-------------------------+
+# +-------------------------+-------------------------+
 
 
-    rh = RequestHandler(url, method=1, data=_data)
+@app.route("/update_password", methods=['POST'])
+def update_password():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("API", "update_password")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
+    resp.api_response_format(retv[1])
+    return resp.get_body()
+
+
+@app.route("/add_password", methods=['POST'])
+def add_password():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("API", "add_password")
+
+    rh = RequestHandler(url, method=1, data=content)
     retv = rh.send()
 
     resp.api_response_format(retv[1])

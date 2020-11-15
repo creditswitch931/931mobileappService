@@ -249,3 +249,7 @@ def custom_strftime(format, t):
 
 def date_format(date_obj):
     return custom_strftime('{S} %B %Y, %I:%M%P', date_obj)
+
+def date_format_no_time(date_obj):
+    return custom_strftime('{S} %b, %Y', date_obj)
+
