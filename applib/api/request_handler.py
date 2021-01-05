@@ -606,6 +606,23 @@ def get_saved_cards():
 
 
 
+@app.route("/getcoraltoken", methods=['POST'])
+def get_coral_token():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "getcoraltoken")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
+
 @app.route("/initiatePayment", methods=['POST'])
 def payment_init():
 

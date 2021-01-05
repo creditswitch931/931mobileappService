@@ -274,7 +274,7 @@ class IkejaPrePaidHandler(ServiceHandler):
     __ServiceCode__ = "E01E"
     __vendform__ = "IkejaPrePaid"
     __readonlyFields__ = []
-    __Commission__ = 0.1
+    __Commission__ = 0.01
       
 
     def validate_service(self):
