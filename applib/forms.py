@@ -235,6 +235,71 @@ class AbujaPrePaid(BaseForm):
     phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
 
 
+class EnuguPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [global_validator("required", "numeric")])
+    name = StringField('Name', [global_validator("required")])
+    address = StringField('Address')
+    amount = IntegerField('Amount',[global_validator("required", "numeric", "lessthanzero")])
+    phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
+
+
+class PortHarcourtPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [global_validator("required", "numeric")])
+    name = StringField('Name', [global_validator("required")])
+    address = StringField('Address')
+    amount = IntegerField('Amount',[global_validator("required", "numeric", "lessthanzero")])
+    phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
+
+
+class JosPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [global_validator("required", "numeric")])
+    name = StringField('Name', [global_validator("required")])
+    address = StringField('Address')
+    amount = IntegerField('Amount',[global_validator("required", "numeric", "lessthanzero")])
+    phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
+
+
+class KadunaPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [global_validator("required", "numeric")])
+    name = StringField('Name', [global_validator("required")])
+    address = StringField('Address')
+    amount = IntegerField('Amount',[global_validator("required", "numeric", "lessthanzero")])
+    phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
+
+
+class KanoPrePaid(BaseForm):
+    __readonlyfields__ = ["customerDtNumber", "name", 
+                         "address", "meterNumber", "customerAccountType",
+                         "providerRef"]
+    customerDtNumber = HiddenField('CustomerDtNumber')
+    providerRef = HiddenField('ProviderRef No')
+    meterNumber = StringField('Meter Number', [global_validator("required", "numeric")])
+    name = StringField('Name', [global_validator("required")])
+    address = StringField('Address')
+    amount = IntegerField('Amount',[global_validator("required", "numeric", "lessthanzero")])
+    phone = IntegerField('Phone No', [global_validator("required", "numeric", "phonefield")])
+
+
 class Data(BaseForm):
     amount = SelectField('Select Plans', [global_validator("required")],
                          choices=[]
@@ -261,11 +326,20 @@ class NMobileData(Data):
 
 
 class ValidateIUC(BaseForm):
+    service_plans = SelectField("Select Plan", 
+                                [global_validator("required")], 
+                                 choices=[]
+                                )
+
     customerNo = IntegerField("Smartcard No", [global_validator("required", "numeric")])
+
+    def init_func(self):        
+        self.service_plans.choices = self.service_plans.choices + m.ServicePlan.get_choices("startimesbouquet")
+ 
 
 
 class Startimes(BaseForm):
-    __readonlyfields__ = ["customerName", 'balance', "smartCardCode"]
+    __readonlyfields__ = ["amount", "customerName", 'balance', "smartCardCode"]
     customerName = StringField("Customer Name")
     smartCardCode = IntegerField('Smartcard No', [global_validator("required", "numeric")])
     balance = StringField("Balance")

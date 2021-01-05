@@ -129,6 +129,21 @@ class Devices(Base):
     active = Column(Boolean) 
 
 
+class Cards(Base):
+
+    __tablename__ ="saved_cards"
+
+    id = Column(BigInteger, 
+                primary_key=True, autoincrement=True)
+    
+    card_label = Column(String(255), nullable=False)
+    card_token = Column(String(255), nullable=False)
+    card_type = Column(String(50))
+    user_id = Column(BigInteger, ForeignKey("registered_users.id"), nullable=False)
+    date_created = Column(DateTime, nullable=False)
+    active = Column(Boolean) 
+
+
 class Transactions(Base):
 
     __tablename__ = "transactions_table"
@@ -192,6 +207,16 @@ class ServicePlan(Base):
         with sql_cursor() as db:
 
             qry = db.query(ServicePlan.code, ServicePlan.label
+                          ).filter_by(group_name=grp_name).all()
+
+        return qry
+    
+    @staticmethod
+    def get_choices_extra(grp_name):
+        qry = []
+        with sql_cursor() as db:
+
+            qry = db.query(ServicePlan.code, ServicePlan.label, ServicePlan.extra_field
                           ).filter_by(group_name=grp_name).all()
 
         return qry

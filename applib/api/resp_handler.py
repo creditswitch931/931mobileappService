@@ -1,6 +1,7 @@
 
 import json 
 
+from applib.lib import helper  as h
 import requests as rq 
 import urllib
 
@@ -17,6 +18,12 @@ class Response:
 
     def add_params(self, key, value):
         self.params['data'].append({key: value})
+        
+    def remove_params(self, key):
+        for i, k in enumerate(self.params['data']):
+            if key in k:
+                del self.params['data'][i]
+                break
 
     def mode(self, indicator):
         self.params['validation'] = indicator
@@ -95,10 +102,16 @@ class RequestHandler:
 
     def __init__(self, url, method=0, data={}, headers={"Content-Type": "application/json"}):
 
+        self.proxyurl = h.get_config("PROXIES", "FIXIE_URL")
+
         self.method = "GET" if method == 0 else "POST"
         self.url = url
         self.data = data 
         self.headers = headers 
+        self.proxyDict = {
+            "http"  : self.proxyurl,
+            "https" : self.proxyurl
+        }
 
     def send(self):
 
@@ -108,9 +121,9 @@ class RequestHandler:
         print("=== Request Data ===", self.data, '\n')
         if self.method == "GET":
             self.format_get_params()
-            output = rq.get(self.url, headers=self.headers)
+            output = rq.get(self.url, headers=self.headers, proxies=self.proxyDict)
         else:
-            output = rq.post(self.url, data=json.dumps(self.data), headers=self.headers)
+            output = rq.post(self.url, data=json.dumps(self.data), headers=self.headers, proxies=self.proxyDict)
 
         try:
             resp = output.status_code, output.json()            

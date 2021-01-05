@@ -10,7 +10,9 @@ from applib.api import service_handler as sh
 from applib.backend.service_config import set_pagination 
 
 import os, calendar
+import datetime
 
+print('got here')
 
 # +-------------------------+-------------------------+
 # +-------------------------+-------------------------+
@@ -331,6 +333,8 @@ def process_validation():
                                   content['fields'])
         
     if not fm_handler.is_validate():
+        print("Thid not validate")
+        print(content)
         resp.failed()
         resp.add_message(fm_handler.get_errormsg())
         resp.add_params("API_forms", fm_handler.render())
@@ -364,7 +368,10 @@ def get_transactions():
 
     content = h.request_data(request)
     _req = {}
+
     resp = Response() 
+
+    url = h.get_config("API", "transactions")
     
     fields = ["page", 'page_size', 'user_id']
 
@@ -376,53 +383,13 @@ def get_transactions():
             _req[key] = val
 
 
-    print(_req, "\n\n")
-    page_size = 10 
- 
-    with m.sql_cursor() as db:
-        qry = db.query( 
-            m.Transactions.id,            
-            m.Transactions.trans_desc,
-            m.Transactions.trans_params,
-            m.Transactions.trans_resp,
-            m.Transactions.trans_amount,
-            m.Transactions.date_created,
-            m.Transactions.trans_desc,
-            m.Transactions.trans_code,
-            m.ServiceItems.label,
-            m.ServiceItems.image,
-            m.Transactions.trans_type_id
-        ).outerjoin(
-            m.ServiceItems,
-            m.ServiceItems.id == m.Transactions.trans_type_id
-        ).filter(
-            m.Transactions.user_id == _req['user_id'],
-            # m.Transactions.trans_type_id != None
-        ).order_by(m.Transactions.id.desc()) 
-
-        params, _rows = set_pagination(qry, _req["page"] or 1, _req.get('page_size') or page_size)
-
-    
+    rh = RequestHandler(url, method=1, data=_req)
     retv = []
-    # exclude = ['restponseCode', "responseDesc", "login_id"]
+    sendr = rh.send()
 
-    for x in params.items:
-        
-        retv.append({
-            "status": x.trans_desc,
-            "request": h.json_str2_dic(x.trans_params),
-            "service_label": x.label if x.trans_type_id else 'Wallet Funding',
-            "trans_amount": x.trans_amount,
-            "response": format_data(h.json_str2_dic(x.trans_resp)),
-            "date_created": h.date_format(x.date_created),
-            "image": get_base64_image(x.image) if x.trans_type_id else get_base64_image('applib/static/media/walletImage.png'),
-            "responseCode": x.trans_code,
-            "responseDesc": x.trans_desc,
-            "type": "service" if x.trans_type_id else "payment"
-        })
-
-    
-    if retv:
+    if sendr[1]['statusCode'] == "00":
+        print(sendr[1]['transactions'])
+        retv = sendr[1]['transactions']
         resp.success()
     
     else:
@@ -432,6 +399,127 @@ def get_transactions():
 
     return resp.get_body()
 
+    # print(_req, "\n\n")
+    # page_size = 10 
+    
+ 
+    # with m.sql_cursor() as db:
+    #     qry = db.query( 
+    #         m.Transactions.id,            
+    #         m.Transactions.trans_desc,
+    #         m.Transactions.trans_params,
+    #         m.Transactions.trans_resp,
+    #         m.Transactions.trans_amount,
+    #         m.Transactions.date_created,
+    #         m.Transactions.trans_desc,
+    #         m.Transactions.trans_code,
+    #         m.ServiceItems.label,
+    #         m.ServiceItems.image,
+    #         m.Transactions.trans_type_id
+    #     ).outerjoin(
+    #         m.ServiceItems,
+    #         m.ServiceItems.id == m.Transactions.trans_type_id
+    #     ).filter(
+    #         m.Transactions.user_id == _req['user_id'],
+    #         # m.Transactions.trans_type_id != None
+    #     ).order_by(m.Transactions.id.desc()) 
+
+    #     params, _rows = set_pagination(qry, _req["page"] or 1, _req.get('page_size') or page_size)
+
+    
+    # retv = []
+    # # exclude = ['restponseCode', "responseDesc", "login_id"]
+
+    # for x in params.items:
+        
+    #     retv.append({
+    #         "status": x.trans_desc,
+    #         "request": h.json_str2_dic(x.trans_params),
+    #         "service_label": x.label if x.trans_type_id else 'Wallet Funding',
+    #         "trans_amount": x.trans_amount,
+    #         "response": format_data(h.json_str2_dic(x.trans_resp)),
+    #         "date_created": h.date_format(x.date_created),
+    #         "date_group": h.date_group(x.date_created),
+    #         "day_month": h.day_month_format(x.date_created),
+    #         #"image": get_base64_image(x.image) if x.trans_type_id else get_base64_image('applib/static/media/walletImage.png'),
+    #         "responseCode": x.trans_code,
+    #         "responseDesc": x.trans_desc,
+    #         "type": "service" if x.trans_type_id else "payment"
+    #     })
+
+
+@app.route("/funding/history")
+def get_funding_history():
+
+    content = h.request_data(request)
+    _req = {}
+
+    resp = Response() 
+
+    url = h.get_config("API", "funding_history")
+    
+    fields = ['page_size', 'user_id']
+
+    for key, val in  content.items():
+        if key in fields:
+            _req[key] = int(val)
+
+        else:
+            _req[key] = val
+
+
+    rh = RequestHandler(url, method=1, data=_req)
+    retv = []
+    sendr = rh.send()
+
+    if sendr[1]['statusCode'] == "00":
+        print(sendr[1]['funding'])
+        retv = sendr[1]['funding']
+        resp.success()
+    
+    else:
+        resp.failed()
+
+    resp.add_params('funding', retv)
+
+    return resp.get_body()
+
+
+@app.route("/notifications")
+def get_notifications():
+
+    content = h.request_data(request)
+    _req = {}
+
+    resp = Response() 
+
+    url = h.get_config("API", "notifications")
+    
+    fields = ['page_size', 'user_id']
+
+    for key, val in  content.items():
+        if key in fields:
+            _req[key] = int(val)
+
+        else:
+            _req[key] = val
+
+
+    rh = RequestHandler(url, method=1, data=_req)
+    retv = []
+    sendr = rh.send()
+
+    if sendr[1]['statusCode'] == "00":
+        print(sendr[1]['notifications'])
+        retv = sendr[1]['notifications']
+        resp.success()
+    
+    else:
+        resp.failed()
+
+    resp.add_params('notifications', retv)
+
+    return resp.get_body()
 
 
 def format_data(iterobj):
@@ -477,7 +565,63 @@ def format_data(iterobj):
 
     return retv 
 
- 
+
+@app.route("/getSavedCards")
+def get_saved_cards():
+
+    content = h.request_data(request)
+    resp = Response()
+    retv = []
+
+    with m.sql_cursor() as db:
+        qry = db.query(
+                       m.Cards.id,
+                       m.Cards.card_label,
+                       m.Cards.card_token,
+                       m.Cards.card_type,
+                       m.Cards.user_id
+                       ).filter(m.Cards.active==1,
+                                m.Cards.user_id == content['user_id']
+                       ).all()
+
+
+        for item in qry:
+            retv.append({ 
+                         "label": item.card_label,
+                         "token": item.card_token,
+                         "type": item.card_type
+                        }
+                )
+
+    resp.add_params('saved_cards', retv)
+
+    if retv:
+        resp.success()
+        resp.add_message("cards fetched successfully")
+    else:
+        resp.failed()
+        resp.add_message("No saved cards found...")
+
+    return resp.get_body()
+
+
+
+@app.route("/getcoraltoken", methods=['POST'])
+def get_coral_token():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "getcoraltoken")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
 
 @app.route("/initiatePayment", methods=['POST'])
 def payment_init():
@@ -502,14 +646,19 @@ def payment_auth():
     resp = Response()
 
     url = h.get_config("SERVICES", "authpayment")
+    
 
     param = {
-        'card_no': content['cardno'][:5] + "****" + content['cardno'][-4:],
-        "amount": content['amount'], 
-        "redirect_url": content['redirect_url']
+        "card_no": content['cardno'][:5] + "****" + content['cardno'][-4:],
+        "amount": content['amount']
     }
+
+    #print(trans_details)
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
     trans_details = {
-        "trans_ref": content['transaction_id'],
+        "trans_ref": retv[1]['transactionRef'],
         "trans_desc": None,
         "trans_code": None,
         "trans_params": h.dump2json(param),
@@ -519,16 +668,13 @@ def payment_auth():
         "trans_type_id": None,
         "trans_amount": content['amount']
     }
-
-    rh = RequestHandler(url, method=1, data=content)
-    retv = rh.send()
-
+    
     m.Transactions.save(**trans_details)
 
     resp.api_response_format(retv[1])
     
-    # add the trasaction in a table 
-    # create the record here 
+    # # add the trasaction in a table 
+    # # create the record here 
 
     return resp.get_body()
 
@@ -545,6 +691,7 @@ def payment_process():
     url = h.get_config("SERVICES", "processpayment")
     
     trans_id = content.pop("transaction_id")
+    user_id = content.pop("user_id")
 
 
     rh = RequestHandler(url, method=1, data=content)
@@ -557,6 +704,18 @@ def payment_process():
     content.update(**resp.params)
 
     with m.sql_cursor() as db:
+        #Save the card
+        if retv[1]['statusCode'] == "00":
+            card = m.Cards()
+            card.user_id = user_id
+            card.card_label = retv[1]['card']['label']
+            card.card_token = retv[1]['card']['token']
+            card.card_type = retv[1]['card']['type']
+            card.active = True
+            card.date_created = datetime.datetime.now()
+            db.add(card)
+            db.flush()
+        
         db.query(m.Transactions
                 ).filter_by(trans_ref=trans_id
                 ).update({"trans_desc": resp.params['responseDesc'], 
@@ -569,136 +728,276 @@ def payment_process():
     return resp.get_body()
 
 
+@app.route("/payWithToken", methods=['POST'])
+def pay_with_token():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "paywithtoken")
+    
+
+    param = {
+        "card_no": content['card_label'],
+        "amount": content['amount']
+    }
+
+    #print(trans_details)
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()
+
+    if retv[1]['statusCode'] == "00":
+        tranxRef = retv[1]['transactionRef']
+    else:
+        tranxRef = ""
+
+    resp.api_response_format(retv[1])
+
+    # # add the trasaction in a table 
+    # # create the record here 
+    trans_details = {
+        "trans_ref": tranxRef,
+        "trans_desc": resp.params['responseDesc'],
+        "trans_code": resp.params['responseCode'],
+        "trans_params": h.dump2json(param),
+        "trans_resp": '[]',
+        "user_mac_address": content['macaddress'],
+        "user_id": content.pop("user_id"),
+        "trans_type_id": None,
+        "trans_amount": content['amount']
+    }
+    
+    m.Transactions.save(**trans_details)
+
+    return resp.get_body()
+
+
+
+@app.route("/mobilemoney/validate", methods=['POST'])
+def mobilemoney_validate():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "mmvalidate")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
+
+@app.route("/mobilemoney/pay", methods=['POST'])
+def mobilemoney_pay():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "mmpay")
+
+    rh = RequestHandler(url, method=1, data=content)
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
 
 
 @app.route("/get/transaction/dist")
 def get_trans_distro():
+
+    _req = {}
     
     resp = Response()
 
-    user_id = h.request_data(request).get("user_id")
-        
-    _now = m.datetime.datetime.now()        
-    last_day = calendar.monthrange(_now.year, _now.month)
-     
-    start_date = m.datetime.date(_now.year, _now.month, 1)
-    end_date = m.datetime.date(_now.year, _now.month, last_day[1])
+    url = h.get_config("API", "tranxstats")
     
-    output = []
-    
-    color_bank = ["#2CA4E0", "#9FE02B", "#65E6F8", "#27AE60"]
+    _req['user_id'] = h.request_data(request).get("user_id")
 
-    with m.sql_cursor() as db:
+    print(_req, "\n\n")
 
-        qry = db.query(            
-            (m.func.count(m.Transactions.id)).label("count"),
-            m.func.sum(m.Transactions.trans_amount.cast(m.Integer)).label('sumtotal'),
-            m.ServiceItems.service_id,
-            m.ServicesMd.label            
-        ).join(
-            m.ServiceItems,
-            m.ServiceItems.id == m.Transactions.trans_type_id
-        ).join(
-            m.ServicesMd, m.ServicesMd.id == m.ServiceItems.service_id
-        ).filter(            
-            m.Transactions.date_created.between(start_date, end_date),
-            m.Transactions.trans_code == '0'
-        ).group_by(
-            m.ServiceItems.service_id,
-            m.ServicesMd.label 
-        ).order_by(
-            m.Transactions.date_created
-        )
+    rh = RequestHandler(url, method=1, data=_req)
+    retv = []
+    sendr = rh.send()
 
-        if user_id:
-            qry = qry.filter(
-                    m.Transactions.user_id == user_id
-                )
+    print(sendr)
 
- 
-        retv = []
-        cnt = 0
-        total_colors = len(color_bank)
-
-        for x in qry.all():
-            retv.append(
-                {
-                    'value': x.count,
-                    "name": x.label ,
-                    "sumtotal": str(x.sumtotal),
-                    "color" : color_bank[cnt]
-                }
-            )                    
-
-            cnt += 1 
-
-            if cnt >= total_colors:
-                cnt = 0 # reverse the counter avoid failure 
-
-
-    if retv:
+    if sendr[1]['statusCode'] == "00":
+        print(sendr[1]['tranxstats'])
+        retv = sendr[1]['tranxstats']
         resp.success()
-        
+    
     else:
         resp.failed()
 
-    
     resp.add_params('piedata', retv)
 
     return resp.get_body()
+
+    # user_id = h.request_data(request).get("user_id")
+        
+    # _now = m.datetime.datetime.now()        
+    # last_day = calendar.monthrange(_now.year, _now.month)
+     
+    # start_date = m.datetime.date(_now.year, _now.month, 1)
+    # end_date = m.datetime.date(_now.year, _now.month, last_day[1])
+    
+    # output = []
+    
+    # color_bank = ["#2CA4E0", "#9FE02B", "#65E6F8", "#27AE60"]
+
+    # with m.sql_cursor() as db:
+
+    #     qry = db.query(            
+    #         (m.func.count(m.Transactions.id)).label("count"),
+    #         m.func.sum(m.Transactions.trans_amount.cast(m.Integer)).label('sumtotal'),
+    #         m.ServiceItems.service_id,
+    #         m.ServicesMd.label            
+    #     ).join(
+    #         m.ServiceItems,
+    #         m.ServiceItems.id == m.Transactions.trans_type_id
+    #     ).join(
+    #         m.ServicesMd, m.ServicesMd.id == m.ServiceItems.service_id
+    #     ).filter(            
+    #         m.Transactions.date_created.between(start_date, end_date),
+    #         m.Transactions.trans_code == '0'
+    #     ).group_by(
+    #         m.ServiceItems.service_id,
+    #         m.ServicesMd.label 
+    #     ).order_by(
+    #         m.Transactions.date_created
+    #     )
+
+    #     if user_id:
+    #         qry = qry.filter(
+    #                 m.Transactions.user_id == user_id
+    #             )
+
+ 
+    #     retv = []
+    #     cnt = 0
+    #     total_colors = len(color_bank)
+
+    #     for x in qry.all():
+    #         retv.append(
+    #             {
+    #                 'value': x.count,
+    #                 "name": x.label ,
+    #                 "sumtotal": str(x.sumtotal),
+    #                 "color" : color_bank[cnt]
+    #             }
+    #         )                    
+
+    #         cnt += 1 
+
+    #         if cnt >= total_colors:
+    #             cnt = 0 # reverse the counter avoid failure 
+
+
+    # if retv:
+    #     resp.success()
+        
+    # else:
+    #     resp.failed()
+
+    
+    # resp.add_params('piedata', retv)
+
+    # return resp.get_body()
 
 
 @app.route("/get/transaction/today")
 def get_trans_stats_today():
     
+    _req = {}
     resp = Response()
 
-    user_id = h.request_data(request).get("user_id")
-        
-    _now = m.datetime.datetime.now()
-     
-    start_date = m.datetime.date.today()
-    end_date = _now
+    url = h.get_config("API", "todaystats")
     
-    output = []
+    _req['user_id'] = h.request_data(request).get("user_id")
+
+    print(_req, "\n\n")
+
+    # content = h.request_data(request)
+
     
+    # fields = ['user_id']
 
-    with m.sql_cursor() as db:
+    # for key, val in  content.items():
+    #     if key in fields:
+    #         _req[key] = int(val)
+    #     else:
+    #         _req[key] = val
 
-        qry = db.query(            
-            (m.func.count(m.Transactions.id)).label("count"),
-            m.func.sum(m.Transactions.trans_amount.cast(m.Integer)).label('sumtotal'),
-        ).filter(            
-            m.Transactions.date_created.between(start_date, end_date),
-            m.Transactions.trans_code == '0'
-        )
 
-        if user_id:
-            qry = qry.filter(
-                    m.Transactions.user_id == user_id
-                )
+    rh = RequestHandler(url, method=1, data=_req)
+    retv = []
+    sendr = rh.send()
 
- 
-        retv = []
+    print(sendr)
 
-        for x in qry.all():
-            retv.append(
-                {
-                    'value': x.count,
-                    "sumtotal": str(x.sumtotal)
-                }
-            )                  
-
-    if retv:
+    if sendr[1]['statusCode'] == "00":
+        print(sendr[1]['todaystats'])
+        retv = sendr[1]['todaystats']
         resp.success()
-        
+    
     else:
         resp.failed()
 
-    
     resp.add_params('todaystats', retv)
 
     return resp.get_body()
+
+        
+    # _now = m.datetime.datetime.now()
+     
+    # start_date = m.datetime.date.today()
+    # end_date = _now
+    
+    # output = []
+    
+
+    # with m.sql_cursor() as db:
+
+    #     qry = db.query(            
+    #         (m.func.count(m.Transactions.id)).label("count"),
+    #         m.func.sum(m.Transactions.trans_amount.cast(m.Integer)).label('sumtotal'),
+    #     ).filter(            
+    #         m.Transactions.date_created.between(start_date, end_date),
+    #         m.Transactions.trans_code == '0'
+    #     )
+
+    #     if user_id:
+    #         qry = qry.filter(
+    #                 m.Transactions.user_id == user_id
+    #             )
+
+ 
+    #     retv = []
+
+    #     for x in qry.all():
+    #         retv.append(
+    #             {
+    #                 'value': x.count,
+    #                 "sumtotal": str(x.sumtotal)
+    #             }
+    #         )                  
+
+    # if retv:
+    #     resp.success()
+        
+    # else:
+    #     resp.failed()
+
+    
+    # resp.add_params('todaystats', retv)
+
+    # return resp.get_body()
 
 
 
@@ -783,6 +1082,113 @@ def get_trans_stats():
 
 
 
+@app.route('/getdevices') 
+def getdevices():
+
+    resp = Response()
+    retv = []
+
+    content = h.request_data(request)
+    user_id = ""
+
+    if content.get('user_id'):
+        user_id = content.get('user_id')
+
+    if content.get('username'):
+        with m.sql_cursor() as db:
+            user = db.query(m.MobileUser.id).filter(m.MobileUser.username == content['username']).order_by(m.MobileUser.id).first()
+
+            if user:
+                user_id = user.id
+
+
+    with m.sql_cursor() as db:
+        if user_id is not None:
+            qry = db.query(m.Devices.mac_address,
+                    m.Devices.date_created                        
+                ).filter(
+                    m.Devices.user_id == user_id,
+                    m.Devices.active == 1
+                ).order_by(
+                    m.Devices.date_created.desc()
+                ).all()
+
+            for item in qry:
+                retv.append({ 
+                            "macaddress": item.mac_address,
+                            "date": h.date_format_no_time(item.date_created)
+                        }
+                    )
+
+    resp.add_params('active_devices', retv)
+    print(retv)
+    if retv:
+        resp.success()
+        resp.add_message("devices fetched successfully")
+    else:
+        resp.failed()
+        resp.add_message("No active devices found...")
+
+    return resp.get_body()
+    
+
+
+@app.route('/removedevice') 
+def removedevice():
+
+    resp = Response()
+    retv = []
+
+    content = h.request_data(request)
+    user_id = ""
+
+    if content.get('user_id'):
+        user_id = content.get('user_id')
+
+    if content.get('username'):
+        with m.sql_cursor() as db:
+            user = db.query(m.MobileUser.id).filter(m.MobileUser.username == content['username']).order_by(m.MobileUser.id).first()
+
+            if user:
+                user_id = user.id
+
+    with m.sql_cursor() as db:
+        if user_id is not None:
+            qry = db.query(m.Devices.mac_address,
+                    m.Devices.date_created                        
+                ).filter(
+                    m.Devices.user_id == user_id,
+                    m.Devices.active == 1
+                )
+                
+            qryupd = qry.filter(
+                    m.Devices.mac_address == content.get('macaddress')
+                ).update({'active':0})
+
+            reqry = qry.order_by(
+                    m.Devices.date_created.desc()
+                ).all()
+            
+
+            for item in reqry:
+                retv.append({ 
+                            "macaddress": item.mac_address,
+                            "date": h.date_format_no_time(item.date_created)
+                        }
+                    )
+
+            resp.add_params('active_devices', retv)
+            print(retv)
+
+            if qryupd:
+                resp.success()
+                resp.add_message("Device removed successfully")
+            else:
+                resp.failed()
+                resp.add_message("Error occurred removing device")
+
+    return resp.get_body()
+    
 
 
 
