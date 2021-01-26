@@ -622,6 +622,22 @@ def get_coral_token():
     return resp.get_body()
 
 
+@app.route("/get_providus_account", methods=['GET'])
+def get_providus_account():
+
+    content = h.request_data(request)
+    resp = Response()
+
+    url = h.get_config("SERVICES", "getprovidusaccount")
+
+    rh = RequestHandler(url, method=1, data={"loginId": content['username']})
+    retv = rh.send()   
+
+    resp.api_response_format(retv[1])
+    
+    return resp.get_body()
+
+
 
 @app.route("/initiatePayment", methods=['POST'])
 def payment_init():
